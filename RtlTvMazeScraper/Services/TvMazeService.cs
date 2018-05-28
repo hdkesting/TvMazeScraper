@@ -74,8 +74,13 @@ namespace RtlTvMazeScraper.Services
                         {
                             Id = (int)person["id"],
                             Name = (string)person["name"],
-                            Birthdate = (DateTime?)person["birthday"]
                         };
+
+                        var bd = person["birthday"];
+                        if (bd.Type == JTokenType.Date)
+                        {
+                            member.Birthdate = (DateTime?)bd;
+                        }
 
                         result.Add(member);
                     }
@@ -123,8 +128,14 @@ namespace RtlTvMazeScraper.Services
                         {
                             Id = (int)person["id"],
                             Name = (string)person["name"],
-                            Birthdate = (DateTime?)person["birthday"]
                         };
+
+                        var bd = person["birthday"];
+                        if (bd.Type == JTokenType.Date)
+                        {
+                            member.Birthdate = (DateTime?)bd;
+                        }
+
                         show.Cast.Add(member);
                     }
 
