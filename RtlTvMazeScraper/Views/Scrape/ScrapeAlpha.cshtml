@@ -7,6 +7,12 @@
 
 <p>Pausing to scrape by initial <em>@ViewBag.Initial</em></p>
 
+<blockquote>
+    <h2>Explanation</h2>
+    Try and read a batch of shows by a search for a letter, which cycles once through the alphabet. This way an initial scraping is performed quickly.
+    After each batch is read (and stored locally) there is a short pause before reading the next one to prevent overloading the remote system.
+</blockquote>
+
 <script type="text/javascript">
     setTimeout(function () { location.href = "@Url.Action("ScrapeAlpha", new { initial = ViewBag.Initial })" }, 5000);
 </script>

@@ -1,0 +1,18 @@
+﻿
+@{
+    ViewBag.Title = "Scraper";
+}
+
+<h2>Scrape by show id</h2>
+
+<p>Pausing to scrape by show id starting from <em>@ViewBag.Start</em></p>
+
+<blockquote>
+    <h2>Explanation</h2>
+    Try and read a batch of shows by ID, starting from the number as specified in the "start" parameter. 
+    After each batch is read (and stored locally) there is a short pause before reading the next one to prevent overloading the remote system.
+</blockquote>
+
+<script type="text/javascript">
+    setTimeout(function () { location.href = "@Url.Action("Scrape", new { start = ViewBag.Start })" }, 5000);
+</script>
