@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using RtlTvMazeScraper.Services;
 
@@ -52,13 +53,34 @@ namespace RtlTvMazeScraper.Controllers
 
         public async Task<ActionResult> Scrape(int start = 1)
         {
+            const string key = "noresult";
             if (start < 1) start = 1;
 
             var svc = new TvMazeService();
 
             var (count, list) = await svc.ScrapeById(start);
 
-            await showRepo.StoreShowList(list, null);
+            if (list.Any())
+            {
+                await showRepo.StoreShowList(list, null);
+                TempData.Remove(key);
+            }
+            else
+            {
+                int failcount = 0;
+                if (TempData.ContainsKey(key))
+                {
+                    failcount = (int)TempData[key];
+                    if (failcount > 3)
+                    {
+                        // apparently no more shows to load
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+
+                failcount++;
+                TempData[key] = failcount;
+            }
 
             ViewBag.Start = start + count;
             return View();
