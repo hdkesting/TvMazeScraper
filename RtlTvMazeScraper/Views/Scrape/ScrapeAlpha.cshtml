@@ -1,0 +1,12 @@
+﻿
+@{
+    ViewBag.Title = "ScrapeAlpha";
+}
+
+<h2>Scrape by initial letter</h2>
+
+<p>Pausing to scrape by initial <em>@ViewBag.Initial</em></p>
+
+<script type="text/javascript">
+    setTimeout(function () { location.href = "@Url.Action("ScrapeAlpha", new { initial = ViewBag.Initial })" }, 5000);
+</script>

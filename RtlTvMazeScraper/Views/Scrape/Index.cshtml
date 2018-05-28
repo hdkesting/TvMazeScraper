@@ -1,0 +1,12 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Start or resume scraping</h2>
+
+<ul>
+    <li><a href="@Url.Action("Scrape")">Start from beginning</a></li>
+    <li><a href="@Url.Action("Scrape",new { start = ViewBag.Max })">Start from @ViewBag.Max</a></li>
+    <li><a href="@Url.Action("ScrapeAlpha")">Use alphabet</a></li>
+</ul>
