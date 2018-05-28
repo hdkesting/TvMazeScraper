@@ -11,13 +11,19 @@
     <div class="col-md-4">
         <h2>Getting started</h2>
         <p>
+            (re)load the shows from TVMaze.
+        </p>
+        <p>
            <a href="@Url.Action("Index", "Scrape")">Start scraper</a>
         </p>
     </div>
     <div class="col-md-4">
         <h2>Get shows</h2>
         <p>
-            <a href="@Url.Action("Index", "List", new { page = 0 })">List shows</a>
+            Get the JSON. Adjust the page (0-based pagenumber) and the pagesize (number of shows per page).
+        </p>
+        <p>
+            <a href="@Url.Action("Index", "List", new { page = 0, pagesize=20 })">List shows</a>
         </p>
     </div>
 </div>
