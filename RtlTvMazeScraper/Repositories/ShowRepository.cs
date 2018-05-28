@@ -96,7 +96,16 @@ namespace RtlTvMazeScraper.Repositories
                 }
                 // else: already stored
 
-                var cast = await getCastOfShow(show.Id);
+                List<CastMember> cast;
+                if (getCastOfShow == null || show.Cast.Any())
+                {
+                    cast = show.Cast;
+                }
+                else
+                {
+                    cast = await getCastOfShow(show.Id);
+                }
+
                 await StoreCastList(show.Id, cast);
             }
         }

@@ -217,6 +217,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Scrape\Index.cshtml" />
     <Content Include="Views\Scrape\ScrapeAlpha.cshtml" />
+    <Content Include="Views\Scrape\Scrape.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

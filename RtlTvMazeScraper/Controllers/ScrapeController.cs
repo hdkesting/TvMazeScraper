@@ -53,5 +53,19 @@ namespace RtlTvMazeScraper.Controllers
 
             return View();
         }
+
+        public async Task<ActionResult> Scrape(int start = 1)
+        {
+            if (start < 1) start = 1;
+
+            var svc = new TvMazeService();
+
+            var (count, list) = await svc.ScrapeById(start);
+
+            await showRepo.StoreShowList(list, null);
+
+            ViewBag.Start = start + count;
+            return View();
+        }
     }
 }
