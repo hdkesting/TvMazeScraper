@@ -67,6 +67,16 @@ namespace RtlTvMazeScraper.Repositories
             return result;
         }
 
+        internal async Task<List<Show>> GetShowsWithCast(int page, int pagesize)
+        {
+            var shows = await this.GetShowsByPage(page, pagesize);
+
+            // get cast for these shows
+            await this.ReadCast(shows);
+
+            return shows;
+        }
+
         internal async Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow)
         {
             // alleen als de ID niet bekend is, dan INSERT
@@ -131,6 +141,91 @@ namespace RtlTvMazeScraper.Repositories
 
                 return cast;
             }
+        }
+
+        /// <summary>
+        /// Add the cast to the supplied shows.
+        /// </summary>
+        /// <param name="shows"></param>
+        /// <returns></returns>
+        private async Task ReadCast(List<Show> shows)
+        {
+            int minShowId = shows.Select(s => s.Id).Min();
+            int maxShowId = shows.Select(s => s.Id).Max();
+
+            using (SqlConnection conn = new SqlConnection(this.connstr))
+            {
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand(@"
+SELECT ShowId, MemberId, Name, Birthdate 
+FROM CastMembers 
+WHERE showId BETWEEN @min and @max
+ORDER BY ShowId, Birthdate desc", conn);
+                cmd.Parameters.Add(new SqlParameter("min", System.Data.SqlDbType.Int) { Value = minShowId });
+                cmd.Parameters.Add(new SqlParameter("max", System.Data.SqlDbType.Int) { Value = maxShowId });
+
+                var reader = await cmd.ExecuteReaderAsync();
+
+                var allcast = new List<(int show, CastMember member)>();
+                while (reader.Read())
+                {
+                    var showId = reader.GetInt32(0);
+                    var member = new CastMember
+                    {
+                        Id = reader.GetInt32(1),
+                        Name = reader.GetString(2),
+                        Birthdate = reader.IsDBNull(3) ? default(DateTime?) : reader.GetDateTime(3)
+                    };
+                    allcast.Add((showId, member));
+                }
+
+                foreach (var show in shows)
+                {
+                    var cast = allcast.Where(c => c.show == show.Id).Select(c => c.member).ToList();
+                    show.Cast.AddRange(cast);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the shows by page.
+        /// </summary>
+        /// <param name="page">The page number (0-based).</param>
+        /// <param name="pagesize">The page size.</param>
+        /// <returns></returns>
+        private async Task<List<Show>> GetShowsByPage(int page, int pagesize)
+        {
+            using (SqlConnection conn = new SqlConnection(this.connstr))
+            {
+                conn.Open();
+
+                SqlCommand showCmd = new SqlCommand(@"
+SELECT Id, Name 
+FROM Shows
+ORDER BY Id
+OFFSET @start Rows
+FETCH NEXT @size ROWS ONLY", conn);
+                showCmd.Parameters.Add(new SqlParameter("start", System.Data.SqlDbType.Int) { Value = page * pagesize + 1 });
+                showCmd.Parameters.Add(new SqlParameter("size", System.Data.SqlDbType.Int) { Value = pagesize });
+
+                var result = new List<Show>();
+                var reader = await showCmd.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    var show = new Show
+                    {
+                        Id = reader.GetInt32(0),
+                        Name = reader.GetString(1)
+                    };
+
+                    result.Add(show);
+                }
+
+                return result;
+            }
+
         }
 
         private async Task StoreCastList(int showId, List<CastMember> cast)
