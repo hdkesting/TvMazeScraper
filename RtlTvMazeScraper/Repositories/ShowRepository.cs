@@ -4,7 +4,6 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using RtlTvMazeScraper.Models;
 
 namespace RtlTvMazeScraper.Repositories
@@ -110,6 +109,22 @@ namespace RtlTvMazeScraper.Repositories
             }
         }
 
+        public async Task<(int shows, int members)> GetCounts()
+        {
+            using (SqlConnection conn = new SqlConnection(this.connstr))
+            {
+                conn.Open();
+
+                SqlCommand showCmd = new SqlCommand("SELECT count(1) FROM Shows", conn);
+
+                var shows = (await showCmd.ExecuteScalarAsync()) as int?;
+
+                showCmd = new SqlCommand("SELECT count(1) FROM CastMembers", conn);
+                var members = (await showCmd.ExecuteScalarAsync()) as int?;
+
+                return (shows.GetValueOrDefault(), members.GetValueOrDefault());
+            }
+        }
 
         public async Task<int> GetMaxShowId()
         {

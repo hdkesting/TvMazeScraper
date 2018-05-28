@@ -1,15 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Threading.Tasks;
 using System.Web.Mvc;
+using RtlTvMazeScraper.Repositories;
 
 namespace RtlTvMazeScraper.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
+            var repo = new ShowRepository();
+
+            var (shows, members) = await repo.GetCounts();
+
+            ViewBag.Shows = shows;
+            ViewBag.Members = members;
             return View();
         }
 
