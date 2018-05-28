@@ -23,7 +23,7 @@
             Get the JSON. Adjust the page (0-based pagenumber) and the pagesize (number of shows per page).
         </p>
         <p>
-            Currently available: @ViewBag.Shows shows with a total of @ViewBag.Members cast members.
+            Currently available: @(((int)ViewBag.Shows).ToString("N0")) shows with a total of @(((int)ViewBag.Members).ToString("N0")) cast members.
         </p>
         <p>
             <a href="@Url.Action("Index", "List", new { page = 0, pagesize=20 })">List shows</a>
