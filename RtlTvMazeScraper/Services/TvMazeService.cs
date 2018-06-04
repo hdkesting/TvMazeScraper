@@ -4,11 +4,12 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using RtlTvMazeScraper.Interfaces;
 using RtlTvMazeScraper.Models;
 
 namespace RtlTvMazeScraper.Services
 {
-    public class TvMazeService
+    public class TvMazeService: ITvMazeService
     {
         public async Task<List<Show>> ScrapeShowsByInitial(string initial)
         {
@@ -49,7 +50,7 @@ namespace RtlTvMazeScraper.Services
             }
         }
 
-        internal async Task<List<CastMember>> ScrapeCastMembers(int showid)
+        public async Task<List<CastMember>> ScrapeCastMembers(int showid)
         {
             var delay = TimeSpan.FromSeconds(5);
             while (true)
@@ -94,7 +95,7 @@ namespace RtlTvMazeScraper.Services
             }
         }
 
-        internal async Task<(int count, List<Show> shows)> ScrapeById(int start)
+        public async Task<(int count, List<Show> shows)> ScrapeById(int start)
         {
             const int MAX = 40;
             int count = 0;

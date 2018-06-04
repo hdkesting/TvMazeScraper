@@ -1,16 +1,17 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json.Linq;
+using RtlTvMazeScraper.Interfaces;
 
 namespace RtlTvMazeScraper.Controllers
 {
     public class ListController : ApiController
     {
-        private readonly Repositories.ShowRepository showRepo;
+        private readonly IShowRepository showRepository;
 
-        public ListController()
+        public ListController(IShowRepository showRepository)
         {
-            showRepo = new Repositories.ShowRepository();
+            this.showRepository = showRepository;
         }
 
         [HttpGet]
@@ -20,7 +21,7 @@ namespace RtlTvMazeScraper.Controllers
             if (page < 0) page = 0;
             if (pagesize < 2) pagesize = 2;
 
-            var shows = await showRepo.GetShowsWithCast(page, pagesize);
+            var shows = await this.showRepository.GetShowsWithCast(page, pagesize);
 
             JArray result = new JArray();
 

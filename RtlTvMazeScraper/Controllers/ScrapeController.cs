@@ -1,23 +1,28 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using RtlTvMazeScraper.Interfaces;
 using RtlTvMazeScraper.Services;
 
 namespace RtlTvMazeScraper.Controllers
 {
     public class ScrapeController : Controller
     {
-        private readonly Repositories.ShowRepository showRepo;
+        private readonly IShowRepository showRepository;
+        private readonly ITvMazeService tvMazeService;
 
-        public ScrapeController()
+        public ScrapeController(
+            IShowRepository showRepository,
+            ITvMazeService tvMazeService)
         {
-            showRepo = new Repositories.ShowRepository();
+            this.showRepository = showRepository;
+            this.tvMazeService = tvMazeService;
         }
 
         // GET: Scrape
         public async Task<ActionResult> Index()
         {
-            var max = await showRepo.GetMaxShowId();
+            var max = await showRepository.GetMaxShowId();
             this.ViewBag.Max = max;
 
             return View();
@@ -32,10 +37,9 @@ namespace RtlTvMazeScraper.Controllers
             else
             {
                 // perform scrape
-                var svc = new TvMazeService();
-                var list = await svc.ScrapeShowsByInitial(initial);
+                var list = await tvMazeService.ScrapeShowsByInitial(initial);
 
-                await showRepo.StoreShowList(list, id => svc.ScrapeCastMembers(id));
+                await showRepository.StoreShowList(list, id => tvMazeService.ScrapeCastMembers(id));
 
                 if (initial.StartsWith("z"))
                 {
@@ -56,13 +60,11 @@ namespace RtlTvMazeScraper.Controllers
             const string key = "noresult";
             if (start < 1) start = 1;
 
-            var svc = new TvMazeService();
-
-            var (count, list) = await svc.ScrapeById(start);
+            var (count, list) = await tvMazeService.ScrapeById(start);
 
             if (list.Any())
             {
-                await showRepo.StoreShowList(list, null);
+                await showRepository.StoreShowList(list, null);
                 TempData.Remove(key);
             }
             else

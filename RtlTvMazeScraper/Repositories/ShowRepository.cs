@@ -4,17 +4,18 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using RtlTvMazeScraper.Interfaces;
 using RtlTvMazeScraper.Models;
 
 namespace RtlTvMazeScraper.Repositories
 {
-    public class ShowRepository
+    public class ShowRepository : IShowRepository
     {
         private readonly string connstr;
 
-        public ShowRepository()
+        public ShowRepository(ISettingRepository settingRepository)
         {
-            this.connstr = ConfigurationManager.ConnectionStrings["ShowContext"].ConnectionString;
+            this.connstr = settingRepository.ConnectionString;
         }
 
         public async Task<List<Show>> GetShows(int startId, int count)
@@ -66,7 +67,7 @@ namespace RtlTvMazeScraper.Repositories
             return result;
         }
 
-        internal async Task<List<Show>> GetShowsWithCast(int page, int pagesize)
+        public async Task<List<Show>> GetShowsWithCast(int page, int pagesize)
         {
             var shows = await this.GetShowsByPage(page, pagesize);
 
@@ -76,7 +77,7 @@ namespace RtlTvMazeScraper.Repositories
             return shows;
         }
 
-        internal async Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow)
+        public async Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow)
         {
             // alleen als de ID niet bekend is, dan INSERT
             // mogelijk een callback om de cast op te halen?

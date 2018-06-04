@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Web;
+﻿using System.Configuration;
+using RtlTvMazeScraper.Interfaces;
 
 namespace RtlTvMazeScraper.Repositories
 {
-    public class SettingRepository
+    public class SettingRepository : ISettingRepository
     {
-        private readonly string connstr;
+        private string connstr;
 
-        public SettingRepository()
+        public string ConnectionString
         {
-            this.connstr = ConfigurationManager.ConnectionStrings["ShowContext"].ConnectionString;
+            get { return this.connstr ?? (this.connstr = ConfigurationManager.ConnectionStrings["ShowContext"].ConnectionString); }
         }
-
     }
 }
