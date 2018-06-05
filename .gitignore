@@ -151,6 +151,8 @@ publish/
 # in these scripts will be unencrypted
 PublishScripts/
 
+**/PublishProfiles/
+
 # NuGet Packages
 *.nupkg
 # The packages folder can be ignored because of Package Restore
@@ -259,4 +261,6 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
-RtlTvMazeScraper/
+
+RtlTvMazeScraper/Web.Release.config
+RtlTvMazeScraper/Web.Debug.config

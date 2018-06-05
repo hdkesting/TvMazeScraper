@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RtlTvMazeScraper", "RtlTvMazeScraper\RtlTvMazeScraper.csproj", "{D2A66879-1745-49FF-AD56-614F46909BB8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RtlTvMazeScraper.Core", "RtlTvMazeScraper.Core\RtlTvMazeScraper.Core.csproj", "{0E8DB6CD-63C0-4B9E-A85F-139B28713006}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RtlTvMazeScraper.Infrastructure", "RtlTvMazeScraper.Infrastructure\RtlTvMazeScraper.Infrastructure.csproj", "{0DA67C57-2B16-4E41-8DE8-816CEBA32A17}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{D2A66879-1745-49FF-AD56-614F46909BB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2A66879-1745-49FF-AD56-614F46909BB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2A66879-1745-49FF-AD56-614F46909BB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E8DB6CD-63C0-4B9E-A85F-139B28713006}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E8DB6CD-63C0-4B9E-A85F-139B28713006}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E8DB6CD-63C0-4B9E-A85F-139B28713006}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E8DB6CD-63C0-4B9E-A85F-139B28713006}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DA67C57-2B16-4E41-8DE8-816CEBA32A17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DA67C57-2B16-4E41-8DE8-816CEBA32A17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DA67C57-2B16-4E41-8DE8-816CEBA32A17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DA67C57-2B16-4E41-8DE8-816CEBA32A17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
