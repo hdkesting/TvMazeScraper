@@ -282,15 +282,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Interfaces\ISettingRepository.cs" />
-    <Compile Include="Interfaces\IShowRepository.cs" />
-    <Compile Include="Interfaces\ITvMazeService.cs" />
-    <Compile Include="Models\CastMember.cs" />
-    <Compile Include="Models\Show.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\SettingRepository.cs" />
-    <Compile Include="Repositories\ShowRepository.cs" />
-    <Compile Include="Services\TvMazeService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -340,6 +332,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Models\" />
+    <Folder Include="Repositories\" />
+    <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -357,6 +352,16 @@
   <ItemGroup>
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.0-beta007\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.0-beta007\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RtlTvMazeScraper.Core\RtlTvMazeScraper.Core.csproj">
+      <Project>{0e8db6cd-63c0-4b9e-a85f-139b28713006}</Project>
+      <Name>RtlTvMazeScraper.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RtlTvMazeScraper.Infrastructure\RtlTvMazeScraper.Infrastructure.csproj">
+      <Project>{0da67c57-2b16-4e41-8de8-816ceba32a17}</Project>
+      <Name>RtlTvMazeScraper.Infrastructure</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

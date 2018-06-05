@@ -9,9 +9,9 @@ namespace RtlTvMazeScraper
     using Autofac;
     using Autofac.Integration.Mvc;
     using Autofac.Integration.WebApi;
-    using RtlTvMazeScraper.Interfaces;
-    using RtlTvMazeScraper.Repositories;
-    using RtlTvMazeScraper.Services;
+    using RtlTvMazeScraper.Core.Interfaces;
+    using RtlTvMazeScraper.Core.Services;
+    using RtlTvMazeScraper.Infrastructure.Repositories.Local;
 
     /// <summary>
     /// Configuration for the Autofac DI Container.

@@ -7,7 +7,7 @@ namespace RtlTvMazeScraper.Controllers
     using System.Linq;
     using System.Threading.Tasks;
     using System.Web.Mvc;
-    using RtlTvMazeScraper.Interfaces;
+    using RtlTvMazeScraper.Core.Interfaces;
 
     /// <summary>
     /// A controller that performs the scraping of the TvMaze site.
@@ -56,7 +56,7 @@ namespace RtlTvMazeScraper.Controllers
             }
             else
             {
-                initial = initial.ToLowerInvariant();
+                initial = initial.Substring(0, 1).ToLowerInvariant();
                 if (initial.CompareTo("a") < 0)
                 {
                     initial = "a";

@@ -6,7 +6,7 @@ namespace RtlTvMazeScraper.Controllers
 {
     using System.Threading.Tasks;
     using System.Web.Mvc;
-    using RtlTvMazeScraper.Interfaces;
+    using RtlTvMazeScraper.Core.Interfaces;
 
     /// <summary>
     /// The default controller.

@@ -2,7 +2,7 @@
 // Copyright (c) Hans Kesting. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Services
+namespace RtlTvMazeScraper.Core.Services
 {
     using System;
     using System.Collections.Generic;
@@ -10,8 +10,8 @@ namespace RtlTvMazeScraper.Services
     using System.Net.Http;
     using System.Threading.Tasks;
     using Newtonsoft.Json.Linq;
-    using RtlTvMazeScraper.Interfaces;
-    using RtlTvMazeScraper.Models;
+    using RtlTvMazeScraper.Core.Interfaces;
+    using RtlTvMazeScraper.Core.Models;
 
     /// <summary>
     /// The service that reads TV Maze.

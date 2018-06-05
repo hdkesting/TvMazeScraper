@@ -2,11 +2,11 @@
 // Copyright (c) Hans Kesting. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Interfaces
+namespace RtlTvMazeScraper.Core.Interfaces
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using RtlTvMazeScraper.Models;
+    using RtlTvMazeScraper.Core.Models;
 
     /// <summary>
     /// A service to read from TV Maze.

@@ -2,7 +2,7 @@
 // Copyright (c) Hans Kesting. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Interfaces
+namespace RtlTvMazeScraper.Core.Interfaces
 {
     /// <summary>
     /// Repository of settings.

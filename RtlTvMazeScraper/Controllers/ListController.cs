@@ -7,7 +7,7 @@ namespace RtlTvMazeScraper.Controllers
     using System.Threading.Tasks;
     using System.Web.Http;
     using Newtonsoft.Json.Linq;
-    using RtlTvMazeScraper.Interfaces;
+    using RtlTvMazeScraper.Core.Interfaces;
 
     /// <summary>
     /// A (WebAPI) controller to show lists of shows.
