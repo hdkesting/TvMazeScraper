@@ -1,10 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using RtlTvMazeScraper.Models;
+﻿// <copyright file="IShowRepository.cs" company="Hans Kesting">
+// Copyright (c) Hans Kesting. All rights reserved.
+// </copyright>
 
 namespace RtlTvMazeScraper.Interfaces
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using RtlTvMazeScraper.Models;
+
+    /// <summary>
+    /// Repository to read shows.
+    /// </summary>
     public interface IShowRepository
     {
         /// <summary>
@@ -12,7 +19,7 @@ namespace RtlTvMazeScraper.Interfaces
         /// </summary>
         /// <param name="startId">The id to start at.</param>
         /// <param name="count">The number of shows to download.</param>
-        /// <returns></returns>
+        /// <returns>A list of shows.</returns>
         Task<List<Show>> GetShows(int startId, int count);
 
         /// <summary>
@@ -26,13 +33,13 @@ namespace RtlTvMazeScraper.Interfaces
         /// </summary>
         /// <param name="page">The page number (0-based).</param>
         /// <param name="pagesize">The size of the page.</param>
-        /// <returns></returns>
+        /// <returns>A list of shows.</returns>
         Task<List<Show>> GetShowsWithCast(int page, int pagesize);
 
         /// <summary>
         /// Gets the maximum show identifier.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The highest ID.</returns>
         Task<int> GetMaxShowId();
 
         /// <summary>
@@ -40,7 +47,7 @@ namespace RtlTvMazeScraper.Interfaces
         /// </summary>
         /// <param name="list">The list.</param>
         /// <param name="getCastOfShow">A function to get the cast of one show.</param>
-        /// <returns></returns>
+        /// <returns>A Task.</returns>
         Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow);
     }
 }

@@ -1,16 +1,26 @@
-﻿using System.Web.Http;
-using System.Web.Mvc;
-using Autofac;
-using Autofac.Integration.Mvc;
-using Autofac.Integration.WebApi;
-using RtlTvMazeScraper.Interfaces;
-using RtlTvMazeScraper.Repositories;
-using RtlTvMazeScraper.Services;
+﻿// <copyright file="AutofacConfig.cs" company="Hans Kesting">
+// Copyright (c) Hans Kesting. All rights reserved.
+// </copyright>
 
 namespace RtlTvMazeScraper
 {
+    using System.Web.Http;
+    using System.Web.Mvc;
+    using Autofac;
+    using Autofac.Integration.Mvc;
+    using Autofac.Integration.WebApi;
+    using RtlTvMazeScraper.Interfaces;
+    using RtlTvMazeScraper.Repositories;
+    using RtlTvMazeScraper.Services;
+
+    /// <summary>
+    /// Configuration for the Autofac DI Container.
+    /// </summary>
     public static class AutofacConfig
     {
+        /// <summary>
+        /// Registers this instance.
+        /// </summary>
         public static void Register()
         {
             var builder = new ContainerBuilder();

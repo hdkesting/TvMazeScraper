@@ -1,22 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using RtlTvMazeScraper.Interfaces;
-using RtlTvMazeScraper.Models;
+﻿// <copyright file="TvMazeService.cs" company="Hans Kesting">
+// Copyright (c) Hans Kesting. All rights reserved.
+// </copyright>
 
 namespace RtlTvMazeScraper.Services
 {
-    public class TvMazeService: ITvMazeService
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using Newtonsoft.Json.Linq;
+    using RtlTvMazeScraper.Interfaces;
+    using RtlTvMazeScraper.Models;
+
+    /// <summary>
+    /// The service that reads TV Maze.
+    /// </summary>
+    /// <seealso cref="RtlTvMazeScraper.Interfaces.ITvMazeService" />
+    public class TvMazeService : ITvMazeService
     {
+        private readonly string hostname;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TvMazeService"/> class.
+        /// </summary>
+        /// <param name="settingRepository">The setting repository.</param>
+        public TvMazeService(
+            ISettingRepository settingRepository)
+        {
+            this.hostname = settingRepository.TvMazeHost;
+        }
+
+        /// <summary>
+        /// Scrapes the shows by their initial.
+        /// </summary>
+        /// <param name="initial">The initial.</param>
+        /// <returns>
+        /// A list of shows.
+        /// </returns>
         public async Task<List<Show>> ScrapeShowsByInitial(string initial)
         {
             var delay = TimeSpan.FromSeconds(5);
             while (true)
             {
-                var (status, json) = await this.PerformRequest("http://api.tvmaze.com/search/shows?q=" + initial);
+                var (status, json) = await this.PerformRequest($"{this.hostname}/search/shows?q={initial}");
 
                 if (status != (HttpStatusCode)429)
                 {
@@ -35,7 +62,7 @@ namespace RtlTvMazeScraper.Services
                         var show = new Show()
                         {
                             Id = (int)jshow["id"],
-                            Name = (string)jshow["name"]
+                            Name = (string)jshow["name"],
                         };
 
                         result.Add(show);
@@ -50,12 +77,19 @@ namespace RtlTvMazeScraper.Services
             }
         }
 
+        /// <summary>
+        /// Scrapes the cast members for a particular show.
+        /// </summary>
+        /// <param name="showid">The showid.</param>
+        /// <returns>
+        /// A list of cast members.
+        /// </returns>
         public async Task<List<CastMember>> ScrapeCastMembers(int showid)
         {
             var delay = TimeSpan.FromSeconds(5);
             while (true)
             {
-                var (status, json) = await this.PerformRequest($"http://api.tvmaze.com/shows/{showid}/cast");
+                var (status, json) = await this.PerformRequest($"{this.hostname}/shows/{showid}/cast");
 
                 if (status != (HttpStatusCode)429)
                 {
@@ -95,6 +129,13 @@ namespace RtlTvMazeScraper.Services
             }
         }
 
+        /// <summary>
+        /// Scrapes shows by their identifier.
+        /// </summary>
+        /// <param name="start">The start.</param>
+        /// <returns>
+        /// A tuple: number of shows tried, list of shows found.
+        /// </returns>
         public async Task<(int count, List<Show> shows)> ScrapeById(int start)
         {
             const int MAX = 40;
@@ -104,7 +145,7 @@ namespace RtlTvMazeScraper.Services
 
             while (count < MAX)
             {
-                var (status, json) = await this.PerformRequest($"http://api.tvmaze.com/shows/{(start + count)}?embed=cast");
+                var (status, json) = await this.PerformRequest($"{this.hostname}/shows/{start + count}?embed=cast");
 
                 if (status == (HttpStatusCode)429)
                 {
@@ -118,7 +159,7 @@ namespace RtlTvMazeScraper.Services
                     var show = new Show
                     {
                         Id = (int)jshow["id"],
-                        Name = (string)jshow["name"]
+                        Name = (string)jshow["name"],
                     };
 
                     var jcast = (JArray)jshow["_embedded"]["cast"];
@@ -162,7 +203,7 @@ namespace RtlTvMazeScraper.Services
                 }
                 else
                 {
-                    return (response.StatusCode, "");
+                    return (response.StatusCode, string.Empty);
                 }
             }
         }

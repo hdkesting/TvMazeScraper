@@ -1,23 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
-using RtlTvMazeScraper.Interfaces;
-using RtlTvMazeScraper.Models;
+﻿// <copyright file="ShowRepository.cs" company="Hans Kesting">
+// Copyright (c) Hans Kesting. All rights reserved.
+// </copyright>
 
 namespace RtlTvMazeScraper.Repositories
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data.SqlClient;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using RtlTvMazeScraper.Interfaces;
+    using RtlTvMazeScraper.Models;
+
+    /// <summary>
+    /// A repository for locally stored shows.
+    /// </summary>
+    /// <seealso cref="RtlTvMazeScraper.Interfaces.IShowRepository" />
     public class ShowRepository : IShowRepository
     {
         private readonly string connstr;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShowRepository"/> class.
+        /// </summary>
+        /// <param name="settingRepository">The setting repository.</param>
         public ShowRepository(ISettingRepository settingRepository)
         {
             this.connstr = settingRepository.ConnectionString;
         }
 
+        /// <summary>
+        /// Gets the list of shows.
+        /// </summary>
+        /// <param name="startId">The id to start at.</param>
+        /// <param name="count">The number of shows to download.</param>
+        /// <returns>
+        /// A list of shows.
+        /// </returns>
         public async Task<List<Show>> GetShows(int startId, int count)
         {
             var result = new List<Show>();
@@ -37,7 +56,7 @@ namespace RtlTvMazeScraper.Repositories
                         var show = new Show()
                         {
                             Id = showreader.GetInt32(0),
-                            Name = showreader.GetString(1)
+                            Name = showreader.GetString(1),
                         };
 
                         result.Add(show);
@@ -57,7 +76,7 @@ namespace RtlTvMazeScraper.Repositories
                         {
                             Id = castreader.GetInt32(0),
                             Name = castreader.GetString(1),
-                            Birthdate = castreader.IsDBNull(2) ? default(DateTime?) : castreader.GetDateTime(2)
+                            Birthdate = castreader.IsDBNull(2) ? default(DateTime?) : castreader.GetDateTime(2),
                         };
                         show.Cast.Add(member);
                     }
@@ -67,6 +86,14 @@ namespace RtlTvMazeScraper.Repositories
             return result;
         }
 
+        /// <summary>
+        /// Gets the shows including cast.
+        /// </summary>
+        /// <param name="page">The page number (0-based).</param>
+        /// <param name="pagesize">The size of the page.</param>
+        /// <returns>
+        /// A list of shows.
+        /// </returns>
         public async Task<List<Show>> GetShowsWithCast(int page, int pagesize)
         {
             var shows = await this.GetShowsByPage(page, pagesize);
@@ -77,24 +104,29 @@ namespace RtlTvMazeScraper.Repositories
             return shows;
         }
 
+        /// <summary>
+        /// Stores the show list.
+        /// </summary>
+        /// <param name="list">The list.</param>
+        /// <param name="getCastOfShow">A function to get the cast of one show.</param>
+        /// <returns>
+        /// A Task.
+        /// </returns>
         public async Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow)
         {
-            // alleen als de ID niet bekend is, dan INSERT
-            // mogelijk een callback om de cast op te halen?
-
             foreach (var show in list)
             {
-                var existing = await GetShowById(show.Id);
+                var existing = await this.GetShowById(show.Id);
 
                 if (existing == null)
                 {
-                    await AddShow(show);
+                    await this.AddShow(show);
                 }
                 else if (existing.Name != show.Name)
                 {
-                    await UpdateShowName(show);
+                    await this.UpdateShowName(show);
                 }
-                // else: already stored
+                //// else: already stored
 
                 List<CastMember> cast;
                 if (getCastOfShow == null || show.Cast.Any())
@@ -106,10 +138,16 @@ namespace RtlTvMazeScraper.Repositories
                     cast = await getCastOfShow(show.Id);
                 }
 
-                await StoreCastList(show.Id, cast);
+                await this.StoreCastList(show.Id, cast);
             }
         }
 
+        /// <summary>
+        /// Gets the counts of shows and cast.
+        /// </summary>
+        /// <returns>
+        /// A tuple having counts of shows and castmembers.
+        /// </returns>
         public async Task<(int shows, int members)> GetCounts()
         {
             using (SqlConnection conn = new SqlConnection(this.connstr))
@@ -127,6 +165,12 @@ namespace RtlTvMazeScraper.Repositories
             }
         }
 
+        /// <summary>
+        /// Gets the maximum show identifier.
+        /// </summary>
+        /// <returns>
+        /// The highest ID.
+        /// </returns>
         public async Task<int> GetMaxShowId()
         {
             using (SqlConnection conn = new SqlConnection(this.connstr))
@@ -141,6 +185,11 @@ namespace RtlTvMazeScraper.Repositories
             }
         }
 
+        /// <summary>
+        /// Gets the cast of show.
+        /// </summary>
+        /// <param name="showId">The show identifier.</param>
+        /// <returns>A list of cast members.</returns>
         public async Task<List<CastMember>> GetCastOfShow(int showId)
         {
             using (SqlConnection conn = new SqlConnection(this.connstr))
@@ -159,7 +208,7 @@ namespace RtlTvMazeScraper.Repositories
                     {
                         Id = reader.GetInt32(0),
                         Name = reader.GetString(1),
-                        Birthdate = reader.IsDBNull(2) ? default(DateTime?) : reader.GetDateTime(2)
+                        Birthdate = reader.IsDBNull(2) ? default(DateTime?) : reader.GetDateTime(2),
                     };
                     cast.Add(member);
                 }
@@ -171,8 +220,8 @@ namespace RtlTvMazeScraper.Repositories
         /// <summary>
         /// Add the cast to the supplied shows.
         /// </summary>
-        /// <param name="shows"></param>
-        /// <returns></returns>
+        /// <param name="shows">The shows to read the cast for.</param>
+        /// <returns>A Task.</returns>
         private async Task ReadCast(List<Show> shows)
         {
             int minShowId = shows.Select(s => s.Id).Min();
@@ -182,11 +231,13 @@ namespace RtlTvMazeScraper.Repositories
             {
                 conn.Open();
 
-                SqlCommand cmd = new SqlCommand(@"
+                SqlCommand cmd = new SqlCommand(
+                    @"
 SELECT ShowId, MemberId, Name, Birthdate 
 FROM CastMembers 
 WHERE showId BETWEEN @min and @max
-ORDER BY ShowId, Birthdate desc", conn);
+ORDER BY ShowId, Birthdate desc",
+                    conn);
                 cmd.Parameters.Add(new SqlParameter("min", System.Data.SqlDbType.Int) { Value = minShowId });
                 cmd.Parameters.Add(new SqlParameter("max", System.Data.SqlDbType.Int) { Value = maxShowId });
 
@@ -200,7 +251,7 @@ ORDER BY ShowId, Birthdate desc", conn);
                     {
                         Id = reader.GetInt32(1),
                         Name = reader.GetString(2),
-                        Birthdate = reader.IsDBNull(3) ? default(DateTime?) : reader.GetDateTime(3)
+                        Birthdate = reader.IsDBNull(3) ? default(DateTime?) : reader.GetDateTime(3),
                     };
                     allcast.Add((showId, member));
                 }
@@ -218,20 +269,22 @@ ORDER BY ShowId, Birthdate desc", conn);
         /// </summary>
         /// <param name="page">The page number (0-based).</param>
         /// <param name="pagesize">The page size.</param>
-        /// <returns></returns>
+        /// <returns>A list of shows.</returns>
         private async Task<List<Show>> GetShowsByPage(int page, int pagesize)
         {
             using (SqlConnection conn = new SqlConnection(this.connstr))
             {
                 conn.Open();
 
-                SqlCommand showCmd = new SqlCommand(@"
+                SqlCommand showCmd = new SqlCommand(
+                    @"
 SELECT Id, Name 
 FROM Shows
 ORDER BY Id
 OFFSET @start Rows
-FETCH NEXT @size ROWS ONLY", conn);
-                showCmd.Parameters.Add(new SqlParameter("start", System.Data.SqlDbType.Int) { Value = page * pagesize + 1 });
+FETCH NEXT @size ROWS ONLY",
+                    conn);
+                showCmd.Parameters.Add(new SqlParameter("start", System.Data.SqlDbType.Int) { Value = (page * pagesize) + 1 });
                 showCmd.Parameters.Add(new SqlParameter("size", System.Data.SqlDbType.Int) { Value = pagesize });
 
                 var result = new List<Show>();
@@ -242,7 +295,7 @@ FETCH NEXT @size ROWS ONLY", conn);
                     var show = new Show
                     {
                         Id = reader.GetInt32(0),
-                        Name = reader.GetString(1)
+                        Name = reader.GetString(1),
                     };
 
                     result.Add(show);
@@ -250,28 +303,27 @@ FETCH NEXT @size ROWS ONLY", conn);
 
                 return result;
             }
-
         }
 
         private async Task StoreCastList(int showId, List<CastMember> cast)
         {
-            var existingCast = await GetCastOfShow(showId);
+            var existingCast = await this.GetCastOfShow(showId);
             foreach (var member in cast)
             {
                 var existingMember = existingCast.FirstOrDefault(m => m.Id == member.Id);
 
                 if (existingMember == null)
                 {
-                    await AddCastMember(showId, member);
+                    await this.AddCastMember(showId, member);
                     existingCast.Add(member);
                 }
                 else if (existingMember.Name != member.Name || existingMember.Birthdate != member.Birthdate)
                 {
-                    await UpdateCastMember(showId, member);
+                    await this.UpdateCastMember(showId, member);
                     existingMember.Name = member.Name;
                     existingMember.Birthdate = member.Birthdate;
                 }
-                // else: already stored
+                //// else: already stored
             }
         }
 
@@ -289,7 +341,7 @@ FETCH NEXT @size ROWS ONLY", conn);
                 {
                     Value = member.Birthdate.HasValue
                         ? (object)member.Birthdate.Value.Date
-                        : DBNull.Value
+                        : DBNull.Value,
                 });
 
                 await showCmd.ExecuteNonQueryAsync();
@@ -302,18 +354,20 @@ FETCH NEXT @size ROWS ONLY", conn);
             {
                 conn.Open();
 
-                SqlCommand showCmd = new SqlCommand(@"
+                SqlCommand showCmd = new SqlCommand(
+                    @"
 UPDATE CastMembers 
 SET Name=@name,
     Birthdate=@birthdate
 WHERE ShowId=@showId
-  AND MemberId=@memberId", conn);
+  AND MemberId=@memberId",
+                    conn);
                 showCmd.Parameters.Add(new SqlParameter("name", System.Data.SqlDbType.NVarChar, 256) { Value = member.Name });
                 showCmd.Parameters.Add(new SqlParameter("birthdate", System.Data.SqlDbType.Date)
                 {
                     Value = member.Birthdate.HasValue
                         ? (object)member.Birthdate.Value.Date
-                        : DBNull.Value
+                        : DBNull.Value,
                 });
                 showCmd.Parameters.Add(new SqlParameter("showId", System.Data.SqlDbType.Int) { Value = showId });
                 showCmd.Parameters.Add(new SqlParameter("memberId", System.Data.SqlDbType.Int) { Value = member.Id });
@@ -333,7 +387,6 @@ WHERE ShowId=@showId
                 showCmd.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = show.Id });
 
                 await showCmd.ExecuteNonQueryAsync();
-
             }
         }
 
@@ -361,7 +414,7 @@ WHERE ShowId=@showId
                 showCmd.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = id });
                 var name = (await showCmd.ExecuteScalarAsync()) as string;
 
-                if (!String.IsNullOrEmpty(name))
+                if (!string.IsNullOrEmpty(name))
                 {
                     return new Show { Id = id, Name = name };
                 }

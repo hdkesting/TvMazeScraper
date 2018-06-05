@@ -1,40 +1,63 @@
-﻿using System.Threading.Tasks;
-using System.Web.Mvc;
-using RtlTvMazeScraper.Interfaces;
-using RtlTvMazeScraper.Repositories;
+﻿// <copyright file="HomeController.cs" company="Hans Kesting">
+// Copyright (c) Hans Kesting. All rights reserved.
+// </copyright>
 
 namespace RtlTvMazeScraper.Controllers
 {
+    using System.Threading.Tasks;
+    using System.Web.Mvc;
+    using RtlTvMazeScraper.Interfaces;
+
+    /// <summary>
+    /// The default controller.
+    /// </summary>
+    /// <seealso cref="System.Web.Mvc.Controller" />
     public class HomeController : Controller
     {
         private readonly IShowRepository showRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HomeController"/> class.
+        /// </summary>
+        /// <param name="showRepository">The show repository.</param>
         public HomeController(IShowRepository showRepository)
         {
             this.showRepository = showRepository;
         }
 
+        /// <summary>
+        /// The default action.
+        /// </summary>
+        /// <returns>A view.</returns>
         public async Task<ActionResult> Index()
         {
-            var (shows, members) = await showRepository.GetCounts();
+            var (shows, members) = await this.showRepository.GetCounts();
 
-            ViewBag.Shows = shows;
-            ViewBag.Members = members;
-            return View();
+            this.ViewBag.Shows = shows;
+            this.ViewBag.Members = members;
+            return this.View();
         }
 
+        /// <summary>
+        /// Shows the (dummy) "about" page.
+        /// </summary>
+        /// <returns>A View.</returns>
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
+            this.ViewBag.Message = "Your application description page.";
 
-            return View();
+            return this.View();
         }
 
+        /// <summary>
+        /// Shows the (dummy) "Contact" page.
+        /// </summary>
+        /// <returns>A View.</returns>
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            this.ViewBag.Message = "Your contact page.";
 
-            return View();
+            return this.View();
         }
     }
 }

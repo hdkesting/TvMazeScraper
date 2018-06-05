@@ -1,11 +1,23 @@
-﻿using System.Web;
-using System.Web.Optimization;
+﻿// <copyright file="BundleConfig.cs" company="Hans Kesting">
+// Copyright (c) Hans Kesting. All rights reserved.
+// </copyright>
 
 namespace RtlTvMazeScraper
 {
+    using System.Web.Optimization;
+
+    /// <summary>
+    /// Bundling configuration (javascript, css).
+    /// </summary>
     public class BundleConfig
     {
-        // For more information on bundling, visit https://go.microsoft.com/fwlink/?LinkId=301862
+        /// <summary>
+        /// Registers the bundles.
+        /// </summary>
+        /// <remarks>
+        /// For more information on bundling, visit https://go.microsoft.com/fwlink/?LinkId=301862.
+        /// </remarks>
+        /// <param name="bundles">The bundles.</param>
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
