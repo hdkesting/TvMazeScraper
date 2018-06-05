@@ -14,15 +14,15 @@ namespace RtlTvMazeScraper.Controllers
     /// <seealso cref="System.Web.Mvc.Controller" />
     public class HomeController : Controller
     {
-        private readonly IShowRepository showRepository;
+        private readonly IShowService showService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HomeController"/> class.
+        /// Initializes a new instance of the <see cref="HomeController" /> class.
         /// </summary>
-        /// <param name="showRepository">The show repository.</param>
-        public HomeController(IShowRepository showRepository)
+        /// <param name="showService">The show service.</param>
+        public HomeController(IShowService showService)
         {
-            this.showRepository = showRepository;
+            this.showService = showService;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace RtlTvMazeScraper.Controllers
         /// <returns>A view.</returns>
         public async Task<ActionResult> Index()
         {
-            var (shows, members) = await this.showRepository.GetCounts();
+            var (shows, members) = await this.showService.GetCounts();
 
             this.ViewBag.Shows = shows;
             this.ViewBag.Members = members;
@@ -44,7 +44,7 @@ namespace RtlTvMazeScraper.Controllers
         /// <returns>A View.</returns>
         public ActionResult About()
         {
-            this.ViewBag.Message = "Your application description page.";
+            this.ViewBag.Message = "A sample scraper for TV Maze.";
 
             return this.View();
         }
@@ -55,7 +55,7 @@ namespace RtlTvMazeScraper.Controllers
         /// <returns>A View.</returns>
         public ActionResult Contact()
         {
-            this.ViewBag.Message = "Your contact page.";
+            this.ViewBag.Message = "hans_kesting@epam.com";
 
             return this.View();
         }

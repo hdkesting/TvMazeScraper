@@ -15,15 +15,15 @@ namespace RtlTvMazeScraper.Controllers
     /// <seealso cref="System.Web.Http.ApiController" />
     public class ListController : ApiController
     {
-        private readonly IShowRepository showRepository;
+        private readonly IShowService showService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ListController"/> class.
+        /// Initializes a new instance of the <see cref="ListController" /> class.
         /// </summary>
-        /// <param name="showRepository">The show repository.</param>
-        public ListController(IShowRepository showRepository)
+        /// <param name="showService">The show service.</param>
+        public ListController(IShowService showService)
         {
-            this.showRepository = showRepository;
+            this.showService = showService;
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace RtlTvMazeScraper.Controllers
                 pagesize = 2;
             }
 
-            var shows = await this.showRepository.GetShowsWithCast(page, pagesize);
+            var shows = await this.showService.GetShowsWithCast(page, pagesize);
 
             JArray result = new JArray();
 

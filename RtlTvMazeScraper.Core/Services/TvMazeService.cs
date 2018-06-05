@@ -20,61 +20,55 @@ namespace RtlTvMazeScraper.Core.Services
     public class TvMazeService : ITvMazeService
     {
         private readonly string hostname;
+        private readonly IApiRepository apiRepository;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TvMazeService"/> class.
+        /// Initializes a new instance of the <see cref="TvMazeService" /> class.
         /// </summary>
         /// <param name="settingRepository">The setting repository.</param>
+        /// <param name="apiRepository">The API repository.</param>
         public TvMazeService(
-            ISettingRepository settingRepository)
+            ISettingRepository settingRepository,
+            IApiRepository apiRepository)
         {
             this.hostname = settingRepository.TvMazeHost;
+            this.apiRepository = apiRepository;
         }
 
         /// <summary>
         /// Scrapes the shows by their initial.
         /// </summary>
-        /// <param name="initial">The initial.</param>
+        /// <param name="searchWord">The search word.</param>
         /// <returns>
         /// A list of shows.
         /// </returns>
-        public async Task<List<Show>> ScrapeShowsByInitial(string initial)
+        public async Task<List<Show>> ScrapeShowsBySearch(string searchWord)
         {
-            var delay = TimeSpan.FromSeconds(5);
-            while (true)
+            var (status, json) = await this.apiRepository.RequestJson($"{this.hostname}/search/shows?q={searchWord}", retryOnBusy: true);
+
+            if (status != HttpStatusCode.OK)
             {
-                var (status, json) = await this.PerformRequest($"{this.hostname}/search/shows?q={initial}");
-
-                if (status != (HttpStatusCode)429)
-                {
-                    if (status != HttpStatusCode.OK)
-                    {
-                        return null;
-                    }
-
-                    var result = new List<Show>();
-
-                    // read json
-                    var array = JArray.Parse(json);
-                    foreach (var showcontainer in array)
-                    {
-                        var jshow = (JObject)showcontainer["show"];
-                        var show = new Show()
-                        {
-                            Id = (int)jshow["id"],
-                            Name = (string)jshow["name"],
-                        };
-
-                        result.Add(show);
-                    }
-
-                    return result;
-                }
-
-                // pause for retry
-                await Task.Delay(delay);
-                delay = delay.Add(delay);
+                // some error or 429
+                return null;
             }
+
+            var result = new List<Show>();
+
+            // read json
+            var array = JArray.Parse(json);
+            foreach (var showcontainer in array)
+            {
+                var jshow = (JObject)showcontainer["show"];
+                var show = new Show()
+                {
+                    Id = (int)jshow["id"],
+                    Name = (string)jshow["name"],
+                };
+
+                result.Add(show);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -86,47 +80,36 @@ namespace RtlTvMazeScraper.Core.Services
         /// </returns>
         public async Task<List<CastMember>> ScrapeCastMembers(int showid)
         {
-            var delay = TimeSpan.FromSeconds(5);
-            while (true)
+            var (status, json) = await this.apiRepository.RequestJson($"{this.hostname}/shows/{showid}/cast", retryOnBusy: true);
+
+            if (status != HttpStatusCode.OK)
             {
-                var (status, json) = await this.PerformRequest($"{this.hostname}/shows/{showid}/cast");
+                return null;
+            }
 
-                if (status != (HttpStatusCode)429)
+            var result = new List<CastMember>();
+
+            // read json
+            var array = JArray.Parse(json);
+            foreach (var role in array)
+            {
+                var person = (JObject)role["person"];
+                var member = new CastMember()
                 {
-                    if (status != HttpStatusCode.OK)
-                    {
-                        return null;
-                    }
+                    Id = (int)person["id"],
+                    Name = (string)person["name"],
+                };
 
-                    var result = new List<CastMember>();
-
-                    // read json
-                    var array = JArray.Parse(json);
-                    foreach (var role in array)
-                    {
-                        var person = (JObject)role["person"];
-                        var member = new CastMember()
-                        {
-                            Id = (int)person["id"],
-                            Name = (string)person["name"],
-                        };
-
-                        var bd = person["birthday"];
-                        if (bd.Type == JTokenType.Date)
-                        {
-                            member.Birthdate = (DateTime?)bd;
-                        }
-
-                        result.Add(member);
-                    }
-
-                    return result;
+                var bd = person["birthday"];
+                if (bd.Type == JTokenType.Date)
+                {
+                    member.Birthdate = (DateTime?)bd;
                 }
 
-                // pause for retry
-                await Task.Delay(delay);
-                delay = delay.Add(delay);
+                result.Add(member);
             }
+
+            return result;
         }
 
         /// <summary>
@@ -145,7 +128,7 @@ namespace RtlTvMazeScraper.Core.Services
 
             while (count < MAX)
             {
-                var (status, json) = await this.PerformRequest($"{this.hostname}/shows/{start + count}?embed=cast");
+                var (status, json) = await this.apiRepository.RequestJson($"{this.hostname}/shows/{start + count}?embed=cast", false);
 
                 if (status == (HttpStatusCode)429)
                 {
@@ -188,24 +171,6 @@ namespace RtlTvMazeScraper.Core.Services
             }
 
             return (count, list);
-        }
-
-        private async Task<(HttpStatusCode status, string json)> PerformRequest(string url)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                var response = await httpClient.GetAsync(url);
-
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var text = await response.Content.ReadAsStringAsync();
-                    return (response.StatusCode, text);
-                }
-                else
-                {
-                    return (response.StatusCode, string.Empty);
-                }
-            }
         }
     }
 }

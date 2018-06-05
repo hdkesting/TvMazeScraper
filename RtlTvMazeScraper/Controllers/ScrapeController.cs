@@ -15,19 +15,19 @@ namespace RtlTvMazeScraper.Controllers
     /// <seealso cref="System.Web.Mvc.Controller" />
     public class ScrapeController : Controller
     {
-        private readonly IShowRepository showRepository;
+        private readonly IShowService showService;
         private readonly ITvMazeService tvMazeService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ScrapeController"/> class.
+        /// Initializes a new instance of the <see cref="ScrapeController" /> class.
         /// </summary>
-        /// <param name="showRepository">The show repository.</param>
+        /// <param name="showService">The show service.</param>
         /// <param name="tvMazeService">The tv maze service.</param>
         public ScrapeController(
-            IShowRepository showRepository,
+            IShowService showService,
             ITvMazeService tvMazeService)
         {
-            this.showRepository = showRepository;
+            this.showService = showService;
             this.tvMazeService = tvMazeService;
         }
 
@@ -37,7 +37,7 @@ namespace RtlTvMazeScraper.Controllers
         /// <returns>A View.</returns>
         public async Task<ActionResult> Index()
         {
-            var max = await this.showRepository.GetMaxShowId();
+            var max = await this.showService.GetMaxShowId();
             this.ViewBag.Max = max;
 
             return this.View();
@@ -67,9 +67,9 @@ namespace RtlTvMazeScraper.Controllers
                 }
 
                 // perform scrape
-                var list = await this.tvMazeService.ScrapeShowsByInitial(initial);
+                var list = await this.tvMazeService.ScrapeShowsBySearch(initial);
 
-                await this.showRepository.StoreShowList(list, id => this.tvMazeService.ScrapeCastMembers(id));
+                await this.showService.StoreShowList(list, id => this.tvMazeService.ScrapeCastMembers(id));
 
                 if (initial.StartsWith("z"))
                 {
@@ -103,7 +103,7 @@ namespace RtlTvMazeScraper.Controllers
 
             if (list.Any())
             {
-                await this.showRepository.StoreShowList(list, null);
+                await this.showService.StoreShowList(list, null);
                 this.TempData.Remove(key);
             }
             else

@@ -16,9 +16,11 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <summary>
         /// Scrapes the shows by their initial.
         /// </summary>
-        /// <param name="initial">The initial.</param>
-        /// <returns>A list of shows.</returns>
-        Task<List<Show>> ScrapeShowsByInitial(string initial);
+        /// <param name="searchWord">The search word.</param>
+        /// <returns>
+        /// A list of shows.
+        /// </returns>
+        Task<List<Show>> ScrapeShowsBySearch(string searchWord);
 
         /// <summary>
         /// Scrapes the cast members for a particular show.
