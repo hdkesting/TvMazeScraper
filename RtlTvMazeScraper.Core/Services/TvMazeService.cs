@@ -6,8 +6,8 @@ namespace RtlTvMazeScraper.Core.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Net;
-    using System.Net.Http;
     using System.Threading.Tasks;
     using Newtonsoft.Json.Linq;
     using RtlTvMazeScraper.Core.Interfaces;
@@ -104,6 +104,13 @@ namespace RtlTvMazeScraper.Core.Services
                 if (bd.Type == JTokenType.Date)
                 {
                     member.Birthdate = (DateTime?)bd;
+                }
+                else if (bd.Type == JTokenType.String)
+                {
+                    if (DateTime.TryParseExact(bd.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
+                    {
+                        member.Birthdate = dt.Date;
+                    }
                 }
 
                 result.Add(member);
