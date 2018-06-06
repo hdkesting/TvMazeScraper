@@ -6,6 +6,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
 {
     using System;
     using System.Collections.Generic;
+    using System.Data.Entity;
     using System.Data.SqlClient;
     using System.Linq;
     using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
     public class ShowRepository : IShowRepository
     {
         private readonly string connstr;
+        private readonly Data.ShowContext showContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShowRepository"/> class.
@@ -27,6 +29,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         public ShowRepository(ISettingRepository settingRepository)
         {
             this.connstr = settingRepository.ConnectionString;
+            this.showContext = new Data.ShowContext();
         }
 
         /// <summary>
@@ -150,19 +153,10 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// </returns>
         public async Task<(int shows, int members)> GetCounts()
         {
-            using (SqlConnection conn = new SqlConnection(this.connstr))
-            {
-                conn.Open();
+            var numberOfShows = await this.showContext.Shows.CountAsync();
+            var numberOfMembers = await this.showContext.CastMembers.CountAsync();
 
-                SqlCommand showCmd = new SqlCommand("SELECT count(1) FROM Shows", conn);
-
-                var shows = (await showCmd.ExecuteScalarAsync()) as int?;
-
-                showCmd = new SqlCommand("SELECT count(1) FROM CastMembers", conn);
-                var members = (await showCmd.ExecuteScalarAsync()) as int?;
-
-                return (shows.GetValueOrDefault(), members.GetValueOrDefault());
-            }
+            return (numberOfShows, numberOfMembers);
         }
 
         /// <summary>

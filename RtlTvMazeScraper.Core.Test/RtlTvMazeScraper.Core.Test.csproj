@@ -38,6 +38,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="FluentAssertions, Version=5.3.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentAssertions.5.3.2\lib\net47\FluentAssertions.dll</HintPath>
     </Reference>
@@ -48,6 +54,7 @@
       <HintPath>..\packages\MSTest.TestFramework.1.3.1\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -56,18 +63,24 @@
     <Compile Include="Mock\MockApiRepository.cs" />
     <Compile Include="Mock\MockSettingsRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShowServiceTest.cs" />
     <Compile Include="TvMazeServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Mock\Data\TvMazeSearchByA.json" />
     <EmbeddedResource Include="Mock\Data\TvMazeATeamCast.json" />
     <EmbeddedResource Include="Mock\Data\TvMazeATeamWithCast.json" />
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RtlTvMazeScraper.Core\RtlTvMazeScraper.Core.csproj">
       <Project>{0e8db6cd-63c0-4b9e-a85f-139b28713006}</Project>
       <Name>RtlTvMazeScraper.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RtlTvMazeScraper.Infrastructure\RtlTvMazeScraper.Infrastructure.csproj">
+      <Project>{0da67c57-2b16-4e41-8de8-816ceba32a17}</Project>
+      <Name>RtlTvMazeScraper.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

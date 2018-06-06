@@ -33,6 +33,6 @@ namespace RtlTvMazeScraper.Core.Models
         /// <value>
         /// The cast.
         /// </value>
-        public List<CastMember> Cast { get; } = new List<CastMember>();
+        public virtual List<CastMember> Cast { get; } = new List<CastMember>();
     }
 }
