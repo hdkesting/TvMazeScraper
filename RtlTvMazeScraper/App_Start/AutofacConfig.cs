@@ -12,6 +12,7 @@ namespace RtlTvMazeScraper
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Services;
     using RtlTvMazeScraper.Infrastructure.Repositories.Local;
+    using RtlTvMazeScraper.Infrastructure.Repositories.Remote;
 
     /// <summary>
     /// Configuration for the Autofac DI Container.
@@ -30,8 +31,10 @@ namespace RtlTvMazeScraper
 
             builder.RegisterType<SettingRepository>().As<ISettingRepository>();
             builder.RegisterType<ShowRepository>().As<IShowRepository>();
+            builder.RegisterType<ApiRepository>().As<IApiRepository>();
 
             builder.RegisterType<TvMazeService>().As<ITvMazeService>();
+            builder.RegisterType<ShowService>().As<IShowService>();
 
             var container = builder.Build();
 

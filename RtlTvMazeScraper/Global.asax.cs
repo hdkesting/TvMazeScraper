@@ -9,7 +9,7 @@ namespace RtlTvMazeScraper
     using System.Web.Optimization;
     using System.Web.Routing;
 
-#pragma warning disable SA1649 // File name should match first type name
+#pragma warning disable SA1649
     /// <summary>
     /// The MVC application.
     /// </summary>

@@ -20,6 +20,8 @@ namespace RtlTvMazeScraper.Core.Services
     /// <seealso cref="RtlTvMazeScraper.Interfaces.ITvMazeService" />
     public class TvMazeService : ITvMazeService
     {
+        private const int DefaultMaximumShows = 40;
+
         private readonly string hostname;
         private readonly IApiRepository apiRepository;
 
@@ -39,10 +41,13 @@ namespace RtlTvMazeScraper.Core.Services
         /// <summary>
         /// Gets or sets the maximum number of shows to scrape per invocation.
         /// </summary>
+        /// <remarks>
+        /// Mostly useful in unittesting.
+        /// </remarks>
         /// <value>
         /// The maximum number of shows to scrape.
         /// </value>
-        public int MaxNumberOfShowsToScrape { get; set; } = 40;
+        public int MaxNumberOfShowsToScrape { get; set; } = DefaultMaximumShows;
 
         /// <summary>
         /// Scrapes the shows by their initial.

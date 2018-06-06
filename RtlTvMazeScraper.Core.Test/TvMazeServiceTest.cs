@@ -7,7 +7,6 @@ namespace RtlTvMazeScraper.Core.Test
 {
     using System;
     using System.Linq;
-    using System.Reflection;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -55,8 +54,10 @@ namespace RtlTvMazeScraper.Core.Test
         public async Task TestReadShowAndCast_WithOverload()
         {
             ISettingRepository settingRepo = new Mock.MockSettingsRepository();
-            var apiRepo = new Mock.MockApiRepository();
-            apiRepo.StatusToReturn = (System.Net.HttpStatusCode)429;
+            var apiRepo = new Mock.MockApiRepository
+            {
+                StatusToReturn = (System.Net.HttpStatusCode)429
+            };
 
             var svc = new TvMazeService(settingRepo, apiRepo);
             var (count, shows) = await svc.ScrapeById(999_999);
@@ -68,11 +69,15 @@ namespace RtlTvMazeScraper.Core.Test
         public async Task TestReadShowAndCast_NothingFound()
         {
             ISettingRepository settingRepo = new Mock.MockSettingsRepository();
-            var apiRepo = new Mock.MockApiRepository();
-            apiRepo.StatusToReturn = System.Net.HttpStatusCode.NotFound;
+            var apiRepo = new Mock.MockApiRepository
+            {
+                StatusToReturn = System.Net.HttpStatusCode.NotFound
+            };
 
-            var svc = new TvMazeService(settingRepo, apiRepo);
-            svc.MaxNumberOfShowsToScrape = 10;
+            var svc = new TvMazeService(settingRepo, apiRepo)
+            {
+                MaxNumberOfShowsToScrape = 10
+            };
 
             var (count, shows) = await svc.ScrapeById(999_999);
 
@@ -87,8 +92,10 @@ namespace RtlTvMazeScraper.Core.Test
             var apiRepo = new Mock.MockApiRepository();
             apiRepo.ReadContent(this.GetType().Assembly.GetManifestResourceStream(this.GetType(), "Mock.Data.TvMazeATeamWithCast.json"));
 
-            var svc = new TvMazeService(settingRepo, apiRepo);
-            svc.MaxNumberOfShowsToScrape = 1;
+            var svc = new TvMazeService(settingRepo, apiRepo)
+            {
+                MaxNumberOfShowsToScrape = 1
+            };
             var (count, shows) = await svc.ScrapeById(1058);
 
             shows.Count.Should().Be(1);
