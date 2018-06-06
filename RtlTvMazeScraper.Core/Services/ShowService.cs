@@ -58,9 +58,18 @@ namespace RtlTvMazeScraper.Core.Services
         /// <returns>
         /// A tuple having counts of shows and castmembers.
         /// </returns>
-        public Task<(int shows, int members)> GetCounts()
+        public async Task<(int shows, int members)> GetCounts()
         {
-            return this.showRepository.GetCounts();
+            try
+            {
+                return await this.showRepository.GetCounts();
+            }
+            catch (Exception ex)
+            {
+                // TODO log exception
+                System.Diagnostics.Debug.WriteLine(ex);
+                return (-1, -1);
+            }
         }
 
         /// <summary>

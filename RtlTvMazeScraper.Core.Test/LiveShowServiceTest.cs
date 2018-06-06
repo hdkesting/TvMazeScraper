@@ -27,7 +27,6 @@ namespace RtlTvMazeScraper.Core.Test
             var showRepo = new ShowRepository(settingsRepo);
             var showService = new ShowService(showRepo);
 
-
             var (shows, members) = await showService.GetCounts();
 
             shows.Should().BeGreaterThan(0);

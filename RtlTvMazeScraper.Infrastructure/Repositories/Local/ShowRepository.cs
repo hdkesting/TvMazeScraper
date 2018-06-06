@@ -153,6 +153,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// </returns>
         public async Task<(int shows, int members)> GetCounts()
         {
+            // alas, EF doesn't support running these in parallel.
             var numberOfShows = await this.showContext.Shows.CountAsync();
             var numberOfMembers = await this.showContext.CastMembers.CountAsync();
 
