@@ -61,6 +61,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Mock\Data\TvMazeSearchByA.json" />
     <EmbeddedResource Include="Mock\Data\TvMazeATeamCast.json" />
+    <EmbeddedResource Include="Mock\Data\TvMazeATeamWithCast.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

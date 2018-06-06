@@ -16,6 +16,7 @@ namespace RtlTvMazeScraper.Core.Services
     /// <summary>
     /// The service that reads TV Maze.
     /// </summary>
+    /// <seealso cref="RtlTvMazeScraper.Core.Interfaces.ITvMazeService" />
     /// <seealso cref="RtlTvMazeScraper.Interfaces.ITvMazeService" />
     public class TvMazeService : ITvMazeService
     {
@@ -34,6 +35,14 @@ namespace RtlTvMazeScraper.Core.Services
             this.hostname = settingRepository.TvMazeHost;
             this.apiRepository = apiRepository;
         }
+
+        /// <summary>
+        /// Gets or sets the maximum number of shows to scrape per invocation.
+        /// </summary>
+        /// <value>
+        /// The maximum number of shows to scrape.
+        /// </value>
+        public int MaxNumberOfShowsToScrape { get; set; } = 40;
 
         /// <summary>
         /// Scrapes the shows by their initial.
@@ -101,17 +110,7 @@ namespace RtlTvMazeScraper.Core.Services
                 };
 
                 var bd = person["birthday"];
-                if (bd.Type == JTokenType.Date)
-                {
-                    member.Birthdate = (DateTime?)bd;
-                }
-                else if (bd.Type == JTokenType.String)
-                {
-                    if (DateTime.TryParseExact(bd.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
-                    {
-                        member.Birthdate = dt.Date;
-                    }
-                }
+                member.Birthdate = this.GetDate(bd);
 
                 result.Add(member);
             }
@@ -128,12 +127,11 @@ namespace RtlTvMazeScraper.Core.Services
         /// </returns>
         public async Task<(int count, List<Show> shows)> ScrapeById(int start)
         {
-            const int MAX = 40;
             int count = 0;
 
             var list = new List<Show>();
 
-            while (count < MAX)
+            while (count < this.MaxNumberOfShowsToScrape)
             {
                 var (status, json) = await this.apiRepository.RequestJson($"{this.hostname}/shows/{start + count}?embed=cast", false);
 
@@ -163,10 +161,7 @@ namespace RtlTvMazeScraper.Core.Services
                         };
 
                         var bd = person["birthday"];
-                        if (bd.Type == JTokenType.Date)
-                        {
-                            member.Birthdate = (DateTime?)bd;
-                        }
+                        member.Birthdate = this.GetDate(bd);
 
                         show.Cast.Add(member);
                     }
@@ -178,6 +173,23 @@ namespace RtlTvMazeScraper.Core.Services
             }
 
             return (count, list);
+        }
+
+        private DateTime? GetDate(JToken dayValue)
+        {
+            if (dayValue.Type == JTokenType.Date)
+            {
+                return (DateTime?)dayValue;
+            }
+            else if (dayValue.Type == JTokenType.String)
+            {
+                if (DateTime.TryParseExact(dayValue.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
+                {
+                    return dt.Date;
+                }
+            }
+
+            return null;
         }
     }
 }

@@ -1,0 +1,257 @@
+﻿{
+  "id": 1058,
+  "url": "http://www.tvmaze.com/shows/1058/the-a-team",
+  "name": "The A-Team",
+  "type": "Scripted",
+  "language": "English",
+  "genres": [ "Action", "Adventure" ],
+  "status": "Ended",
+  "runtime": 60,
+  "premiered": "1983-01-23",
+  "officialSite": null,
+  "schedule": {
+    "time": "20:00",
+    "days": [ "Tuesday" ]
+  },
+  "rating": { "average": 7.4 },
+  "weight": 81,
+  "network": {
+    "id": 1,
+    "name": "NBC",
+    "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+    }
+  },
+  "webChannel": null,
+  "externals": {
+    "tvrage": 5516,
+    "thetvdb": 77904,
+    "imdb": "tt0084967"
+  },
+  "image": {
+    "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/6/17013.jpg",
+    "original": "http://static.tvmaze.com/uploads/images/original_untouched/6/17013.jpg"
+  },
+  "summary": "<p><b>The A-Team</b> is an American action-adventure television series, running from 1983 to 1987, about a fictional group of ex–United States Army Special Forces.</p>",
+  "updated": 1511998568,
+  "_links": {
+    "self": { "href": "http://api.tvmaze.com/shows/1058" },
+    "previousepisode": { "href": "http://api.tvmaze.com/episodes/101835" }
+  },
+  "_embedded": {
+    "cast": [
+      {
+        "person": {
+          "id": 34059,
+          "url": "http://www.tvmaze.com/people/34059/dwight-schultz",
+          "name": "Dwight Schultz",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "birthday": "1947-11-24",
+          "deathday": null,
+          "gender": "Male",
+          "image": {
+            "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/33/83650.jpg",
+            "original": "http://static.tvmaze.com/uploads/images/original_untouched/33/83650.jpg"
+          },
+          "_links": { "self": { "href": "http://api.tvmaze.com/people/34059" } }
+        },
+        "character": {
+          "id": 91043,
+          "url": "http://www.tvmaze.com/characters/91043/the-a-team-capt-hm-howling-mad-murdock",
+          "name": "Capt. H.M. \"Howling Mad\" Murdock",
+          "image": {
+            "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/6/17016.jpg",
+            "original": "http://static.tvmaze.com/uploads/images/original_untouched/6/17016.jpg"
+          },
+          "_links": { "self": { "href": "http://api.tvmaze.com/characters/91043" } }
+        }
+      },
+      {
+        "person": {
+          "id": 52357,
+          "url": "http://www.tvmaze.com/people/52357/george-peppard",
+          "name": "George Peppard",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "birthday": "1928-10-01",
+          "deathday": "1994-05-08",
+          "gender": "Male",
+          "image": {
+            "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/20/50079.jpg",
+            "original": "http://static.tvmaze.com/uploads/images/original_untouched/20/50079.jpg"
+          },
+          "_links": { "self": { "href": "http://api.tvmaze.com/people/52357" } }
+        },
+        "character": {
+          "id": 91041,
+          "url": "http://www.tvmaze.com/characters/91041/the-a-team-col-john-hannibal-smith",
+          "name": "Col. John \"Hannibal\" Smith",
+          "image": {
+            "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/6/17014.jpg",
+            "original": "http://static.tvmaze.com/uploads/images/original_untouched/6/17014.jpg"
+          },
+          "_links": { "self": { "href": "http://api.tvmaze.com/characters/91041" } }
+        }
+      },
+      {
+        "person": {
+          "id": 52358,
+          "url": "http://www.tvmaze.com/people/52358/dirk-benedict",
+          "name": "Dirk Benedict",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "birthday": "1945-03-01",
+          "deathday": null,
+          "gender": "Male",
+          "image": {
+            "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/10/25683.jpg",
+            "original": "http://static.tvmaze.com/uploads/images/original_untouched/10/25683.jpg"
+          },
+          "_links": { "self": { "href": "http://api.tvmaze.com/people/52358" } }
+        },
+        "character": {
+          "id": 91042,
+          "url": "http://www.tvmaze.com/characters/91042/the-a-team-lt-templeton-faceman-peck",
+          "name": "Lt. Templeton \"Faceman\" Peck",
+          "image": {
+            "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/6/17015.jpg",
+            "original": "http://static.tvmaze.com/uploads/images/original_untouched/6/17015.jpg"
+          },
+          "_links": { "self": { "href": "http://api.tvmaze.com/characters/91042" } }
+        }
+      },
+      {
+        "person": {
+          "id": 68358,
+          "url": "http://www.tvmaze.com/people/68358/mr-t",
+          "name": "Mr. T",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "birthday": "1952-05-21",
+          "deathday": null,
+          "gender": "Male",
+          "image": {
+            "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/12/30047.jpg",
+            "original": "http://static.tvmaze.com/uploads/images/original_untouched/12/30047.jpg"
+          },
+          "_links": { "self": { "href": "http://api.tvmaze.com/people/68358" } }
+        },
+        "character": {
+          "id": 219255,
+          "url": "http://www.tvmaze.com/characters/219255/the-a-team-bosco-albert-ba-baracus",
+          "name": "Bosco Albert \"B.A.\" Baracus",
+          "image": {
+            "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/58/147359.jpg",
+            "original": "http://static.tvmaze.com/uploads/images/original_untouched/58/147359.jpg"
+          },
+          "_links": { "self": { "href": "http://api.tvmaze.com/characters/219255" } }
+        }
+      },
+      {
+        "person": {
+          "id": 45274,
+          "url": "http://www.tvmaze.com/people/45274/melinda-culea",
+          "name": "Melinda Culea",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "birthday": "1955-05-05",
+          "deathday": null,
+          "gender": "Female",
+          "image": {
+            "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/36/90957.jpg",
+            "original": "http://static.tvmaze.com/uploads/images/original_untouched/36/90957.jpg"
+          },
+          "_links": { "self": { "href": "http://api.tvmaze.com/people/45274" } }
+        },
+        "character": {
+          "id": 91044,
+          "url": "http://www.tvmaze.com/characters/91044/the-a-team-amy-amanda-triple-a-allen",
+          "name": "Amy Amanda \"Triple A\" Allen",
+          "image": {
+            "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/58/147360.jpg",
+            "original": "http://static.tvmaze.com/uploads/images/original_untouched/58/147360.jpg"
+          },
+          "_links": { "self": { "href": "http://api.tvmaze.com/characters/91044" } }
+        }
+      },
+      {
+        "person": {
+          "id": 23029,
+          "url": "http://www.tvmaze.com/people/23029/robert-vaughn",
+          "name": "Robert Vaughn",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "birthday": "1932-11-22",
+          "deathday": "2016-11-11",
+          "gender": "Male",
+          "image": {
+            "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/10/26502.jpg",
+            "original": "http://static.tvmaze.com/uploads/images/original_untouched/10/26502.jpg"
+          },
+          "_links": { "self": { "href": "http://api.tvmaze.com/people/23029" } }
+        },
+        "character": {
+          "id": 91046,
+          "url": "http://www.tvmaze.com/characters/91046/the-a-team-general-hunt-stockwell",
+          "name": "General Hunt Stockwell",
+          "image": {
+            "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/58/147365.jpg",
+            "original": "http://static.tvmaze.com/uploads/images/original_untouched/58/147365.jpg"
+          },
+          "_links": { "self": { "href": "http://api.tvmaze.com/characters/91046" } }
+        }
+      },
+      {
+        "person": {
+          "id": 52068,
+          "url": "http://www.tvmaze.com/people/52068/eddie-velez",
+          "name": "Eddie Velez",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "birthday": null,
+          "deathday": null,
+          "gender": "Male",
+          "image": {
+            "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/10/25695.jpg",
+            "original": "http://static.tvmaze.com/uploads/images/original_untouched/10/25695.jpg"
+          },
+          "_links": { "self": { "href": "http://api.tvmaze.com/people/52068" } }
+        },
+        "character": {
+          "id": 91045,
+          "url": "http://www.tvmaze.com/characters/91045/the-a-team-frankie-dishpan-santana",
+          "name": "Frankie \"Dishpan\" Santana",
+          "image": {
+            "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/58/147364.jpg",
+            "original": "http://static.tvmaze.com/uploads/images/original_untouched/58/147364.jpg"
+          },
+          "_links": { "self": { "href": "http://api.tvmaze.com/characters/91045" } }
+        }
+      }
+    ]
+  }
+}
