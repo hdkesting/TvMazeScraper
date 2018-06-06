@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Data\ShowContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\Local\LogDebugRepository.cs" />
     <Compile Include="Repositories\Local\SettingRepository.cs" />
     <Compile Include="Repositories\Local\ShowRepository.cs" />
     <Compile Include="Repositories\Remote\ApiRepository.cs" />

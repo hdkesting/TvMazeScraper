@@ -53,12 +53,12 @@ namespace RtlTvMazeScraper.Controllers
             foreach (var show in shows)
             {
                 var cast = new JArray();
-                foreach (var member in show.Cast)
+                foreach (var member in show.CastMembers)
                 {
                     var cm = new JObject(
-                        new JProperty("id", member.Id),
+                        new JProperty("id", member.MemberId),
                         new JProperty("name", member.Name),
-                        new JProperty("birthday", member.Birthdate));
+                        new JProperty("birthday", member.Birthdate.HasValue ? member.Birthdate.Value.ToString("yyyy-MM-dd") : null));
                     cast.Add(cm);
                 }
 

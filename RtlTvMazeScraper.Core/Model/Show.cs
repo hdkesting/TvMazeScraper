@@ -5,6 +5,7 @@
 namespace RtlTvMazeScraper.Core.Models
 {
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
 
     /// <summary>
     /// A show.
@@ -17,6 +18,7 @@ namespace RtlTvMazeScraper.Core.Models
         /// <value>
         /// The identifier.
         /// </value>
+        [Key]
         public int Id { get; set; }
 
         /// <summary>
@@ -33,6 +35,6 @@ namespace RtlTvMazeScraper.Core.Models
         /// <value>
         /// The cast.
         /// </value>
-        public virtual List<CastMember> Cast { get; } = new List<CastMember>();
+        public virtual List<CastMember> CastMembers { get; } = new List<CastMember>();
     }
 }

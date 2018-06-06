@@ -66,7 +66,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                     }
                 }
 
-                SqlCommand castCmd = new SqlCommand("SELECT MemberId, Name, Birthdate FROM CastMembers WHERE ShowId = @show", conn);
+                SqlCommand castCmd = new SqlCommand("SELECT MemberId, ShowId, Name, Birthdate FROM CastMembers WHERE ShowId = @show", conn);
                 var showId = new SqlParameter("show", System.Data.SqlDbType.Int);
                 castCmd.Parameters.Add(showId);
 
@@ -77,11 +77,12 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                     {
                         var member = new CastMember
                         {
-                            Id = castreader.GetInt32(0),
-                            Name = castreader.GetString(1),
-                            Birthdate = castreader.IsDBNull(2) ? default(DateTime?) : castreader.GetDateTime(2),
+                            MemberId = castreader.GetInt32(0),
+                            ShowId = castreader.GetInt32(1),
+                            Name = castreader.GetString(2),
+                            Birthdate = castreader.IsDBNull(3) ? default(DateTime?) : castreader.GetDateTime(3),
                         };
-                        show.Cast.Add(member);
+                        show.CastMembers.Add(member);
                     }
                 }
             }
@@ -99,12 +100,12 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// </returns>
         public async Task<List<Show>> GetShowsWithCast(int page, int pagesize)
         {
-            var shows = await this.GetShowsByPage(page, pagesize);
-
-            // get cast for these shows
-            await this.ReadCast(shows);
-
-            return shows;
+            return await this.showContext.Shows
+                .Include(s => s.CastMembers)
+                .OrderBy(s => s.Id)
+                .Skip(page * pagesize)
+                .Take(pagesize)
+                .ToListAsync();
         }
 
         /// <summary>
@@ -132,9 +133,9 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                 //// else: already stored
 
                 List<CastMember> cast;
-                if (getCastOfShow == null || show.Cast.Any())
+                if (getCastOfShow == null || show.CastMembers.Any())
                 {
-                    cast = show.Cast;
+                    cast = show.CastMembers;
                 }
                 else
                 {
@@ -201,7 +202,8 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                 {
                     var member = new CastMember
                     {
-                        Id = reader.GetInt32(0),
+                        MemberId = reader.GetInt32(0),
+                        ShowId = showId,
                         Name = reader.GetString(1),
                         Birthdate = reader.IsDBNull(2) ? default(DateTime?) : reader.GetDateTime(2),
                     };
@@ -244,7 +246,8 @@ ORDER BY ShowId, Birthdate desc",
                     var showId = reader.GetInt32(0);
                     var member = new CastMember
                     {
-                        Id = reader.GetInt32(1),
+                        MemberId = reader.GetInt32(1),
+                        ShowId = showId,
                         Name = reader.GetString(2),
                         Birthdate = reader.IsDBNull(3) ? default(DateTime?) : reader.GetDateTime(3),
                     };
@@ -254,7 +257,7 @@ ORDER BY ShowId, Birthdate desc",
                 foreach (var show in shows)
                 {
                     var cast = allcast.Where(c => c.show == show.Id).Select(c => c.member).ToList();
-                    show.Cast.AddRange(cast);
+                    show.CastMembers.AddRange(cast);
                 }
             }
         }
@@ -305,7 +308,7 @@ FETCH NEXT @size ROWS ONLY",
             var existingCast = await this.GetCastOfShow(showId);
             foreach (var member in cast)
             {
-                var existingMember = existingCast.FirstOrDefault(m => m.Id == member.Id);
+                var existingMember = existingCast.FirstOrDefault(m => m.MemberId == member.MemberId);
 
                 if (existingMember == null)
                 {
@@ -330,7 +333,7 @@ FETCH NEXT @size ROWS ONLY",
 
                 SqlCommand showCmd = new SqlCommand("INSERT INTO CastMembers (ShowId, MemberId, Name, Birthdate) VALUES (@showId, @memberId, @name, @birthdate)", conn);
                 showCmd.Parameters.Add(new SqlParameter("showId", System.Data.SqlDbType.Int) { Value = showId });
-                showCmd.Parameters.Add(new SqlParameter("memberId", System.Data.SqlDbType.Int) { Value = member.Id });
+                showCmd.Parameters.Add(new SqlParameter("memberId", System.Data.SqlDbType.Int) { Value = member.MemberId });
                 showCmd.Parameters.Add(new SqlParameter("name", System.Data.SqlDbType.NVarChar, 256) { Value = member.Name });
                 showCmd.Parameters.Add(new SqlParameter("birthdate", System.Data.SqlDbType.Date)
                 {
@@ -365,7 +368,7 @@ WHERE ShowId=@showId
                         : DBNull.Value,
                 });
                 showCmd.Parameters.Add(new SqlParameter("showId", System.Data.SqlDbType.Int) { Value = showId });
-                showCmd.Parameters.Add(new SqlParameter("memberId", System.Data.SqlDbType.Int) { Value = member.Id });
+                showCmd.Parameters.Add(new SqlParameter("memberId", System.Data.SqlDbType.Int) { Value = member.MemberId });
 
                 await showCmd.ExecuteNonQueryAsync();
             }

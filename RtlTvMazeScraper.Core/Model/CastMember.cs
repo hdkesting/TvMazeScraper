@@ -5,6 +5,8 @@
 namespace RtlTvMazeScraper.Core.Models
 {
     using System;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
     /// A cast member.
@@ -12,12 +14,24 @@ namespace RtlTvMazeScraper.Core.Models
     public class CastMember
     {
         /// <summary>
-        /// Gets or sets the identifier.
+        /// Gets or sets the member identifier.
         /// </summary>
         /// <value>
         /// The identifier.
         /// </value>
-        public int Id { get; set; }
+        [Key]
+        [Column(Order = 2)]
+        public int MemberId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the show identifier.
+        /// </summary>
+        /// <value>
+        /// The show identifier.
+        /// </value>
+        [Key]
+        [Column(Order = 1)]
+        public int ShowId { get; set; }
 
         /// <summary>
         /// Gets or sets the name.

@@ -16,14 +16,17 @@ namespace RtlTvMazeScraper.Core.Services
     public class ShowService : IShowService
     {
         private readonly IShowRepository showRepository;
+        private readonly ILogRepository logRepository;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShowService"/> class.
+        /// Initializes a new instance of the <see cref="ShowService" /> class.
         /// </summary>
         /// <param name="showRepository">The show repository.</param>
-        public ShowService(IShowRepository showRepository)
+        /// <param name="logRepository">The log repository.</param>
+        public ShowService(IShowRepository showRepository, ILogRepository logRepository)
         {
             this.showRepository = showRepository;
+            this.logRepository = logRepository;
         }
 
         /// <summary>
@@ -47,9 +50,17 @@ namespace RtlTvMazeScraper.Core.Services
         /// <returns>
         /// A list of shows.
         /// </returns>
-        public Task<List<Show>> GetShowsWithCast(int page, int pagesize)
+        public async Task<List<Show>> GetShowsWithCast(int page, int pagesize)
         {
-            return this.GetShowsWithCast(page, pagesize);
+            try
+            {
+                return await this.showRepository.GetShowsWithCast(page, pagesize);
+            }
+            catch (Exception ex)
+            {
+                this.logRepository.Log(Support.LogLevel.Error, "Failure to get shows.", ex);
+                return new List<Show>();
+            }
         }
 
         /// <summary>

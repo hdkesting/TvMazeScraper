@@ -28,7 +28,7 @@ namespace RtlTvMazeScraper.Core.Test
 
             result.Should().NotBeNull();
             result.Count.Should().Be(10, because: "there are 10 shows in the sample.");
-            result.Where(s => s.Cast.Any()).Count().Should().Be(0, because: "there is no cast in this show data.");
+            result.Where(s => s.CastMembers.Any()).Count().Should().Be(0, because: "there is no cast in this show data.");
             result.Select(m => m.Id).Distinct().Count().Should().Be(10, because: "ID is unique");
         }
 
@@ -45,8 +45,8 @@ namespace RtlTvMazeScraper.Core.Test
             result.Should().NotBeNull();
             result.Count.Should().Be(7, because: "there are 7 members in the sample.");
             result.Where(m => m.Birthdate.HasValue).Count().Should().Be(6, because: "I set one birthdate to null (as happens).");
-            result.Where(m => m.Id <= 0).Any().Should().Be(false, because: "everyone has a positive id number.");
-            result.Select(m => m.Id).Distinct().Count().Should().Be(7, because: "ID is unique");
+            result.Where(m => m.MemberId <= 0).Any().Should().Be(false, because: "everyone has a positive id number.");
+            result.Select(m => m.MemberId).Distinct().Count().Should().Be(7, because: "ID is unique");
             result.Where(m => m.Name == null).Any().Should().Be(false, because: "everyone has a name defined.");
         }
 
@@ -99,8 +99,8 @@ namespace RtlTvMazeScraper.Core.Test
             var (count, shows) = await svc.ScrapeById(1058);
 
             shows.Count.Should().Be(1);
-            shows[0].Cast.Count.Should().Be(7);
-            shows[0].Cast.Where(m => m.Birthdate.HasValue).Count().Should().Be(6);
+            shows[0].CastMembers.Count.Should().Be(7);
+            shows[0].CastMembers.Where(m => m.Birthdate.HasValue).Count().Should().Be(6);
         }
     }
 }

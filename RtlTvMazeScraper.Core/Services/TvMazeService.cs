@@ -110,7 +110,8 @@ namespace RtlTvMazeScraper.Core.Services
                 var person = (JObject)role["person"];
                 var member = new CastMember()
                 {
-                    Id = (int)person["id"],
+                    MemberId = (int)person["id"],
+                    ShowId = showid,
                     Name = (string)person["name"],
                 };
 
@@ -140,7 +141,7 @@ namespace RtlTvMazeScraper.Core.Services
             {
                 var (status, json) = await this.apiRepository.RequestJson($"{this.hostname}/shows/{start + count}?embed=cast", false);
 
-                if (status == (HttpStatusCode)429)
+                if (status == Support.Constants.ServerTooBusy)
                 {
                     // too much, so back off
                     break;
@@ -161,14 +162,15 @@ namespace RtlTvMazeScraper.Core.Services
                         var person = (JObject)container["person"];
                         var member = new CastMember
                         {
-                            Id = (int)person["id"],
+                            MemberId = (int)person["id"],
+                            ShowId = show.Id,
                             Name = (string)person["name"],
                         };
 
                         var bd = person["birthday"];
                         member.Birthdate = this.GetDate(bd);
 
-                        show.Cast.Add(member);
+                        show.CastMembers.Add(member);
                     }
 
                     list.Add(show);

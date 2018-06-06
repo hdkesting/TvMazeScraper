@@ -15,7 +15,6 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
     /// </summary>
     public class ApiRepository : IApiRepository
     {
-        private const HttpStatusCode Busy = (HttpStatusCode)429;
         private const int MaxRetryCount = 5;
         private static readonly TimeSpan DelayIncrease = TimeSpan.FromSeconds(5);
 
@@ -36,7 +35,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
                 {
                     var response = await httpClient.GetAsync(url);
 
-                    if (response.StatusCode == Busy)
+                    if (response.StatusCode == Core.Support.Constants.ServerTooBusy)
                     {
                         if (!retryOnBusy)
                         {
@@ -58,7 +57,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
                     if (retrycount > MaxRetryCount)
                     {
                         // give up after several failed tries
-                        return (Busy, null);
+                        return (Core.Support.Constants.ServerTooBusy, null);
                     }
 
                     delay += DelayIncrease;
