@@ -4,6 +4,7 @@
 
 namespace RtlTvMazeScraper.Controllers
 {
+    using System.Linq;
     using System.Threading.Tasks;
     using System.Web.Http;
     using Newtonsoft.Json.Linq;
@@ -53,7 +54,9 @@ namespace RtlTvMazeScraper.Controllers
             foreach (var show in shows)
             {
                 var cast = new JArray();
-                foreach (var member in show.CastMembers)
+
+                // order cast by birthdate, descending. As per requirement.
+                foreach (var member in show.CastMembers.OrderByDescending(m => m.Birthdate))
                 {
                     var cm = new JObject(
                         new JProperty("id", member.MemberId),
