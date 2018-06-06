@@ -51,6 +51,7 @@
     <Compile Include="Interfaces\IShowService.cs" />
     <Compile Include="Interfaces\ITvMazeService.cs" />
     <Compile Include="Model\CastMember.cs" />
+    <Compile Include="Model\CastMemberEqualityComparer.cs" />
     <Compile Include="Model\Show.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ShowService.cs" />

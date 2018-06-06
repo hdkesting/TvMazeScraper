@@ -11,6 +11,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
     using System.Linq;
     using System.Threading.Tasks;
     using RtlTvMazeScraper.Core.Interfaces;
+    using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Models;
 
     /// <summary>
@@ -21,73 +22,36 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
     {
         private readonly string connstr;
         private readonly Data.ShowContext showContext;
+        private readonly ILogRepository logRepository;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShowRepository"/> class.
+        /// Initializes a new instance of the <see cref="ShowRepository" /> class.
         /// </summary>
         /// <param name="settingRepository">The setting repository.</param>
-        public ShowRepository(ISettingRepository settingRepository)
+        /// <param name="logRepository">The log repository.</param>
+        public ShowRepository(ISettingRepository settingRepository, ILogRepository logRepository)
         {
             this.connstr = settingRepository.ConnectionString;
             this.showContext = new Data.ShowContext();
+            this.logRepository = logRepository;
         }
 
         /// <summary>
-        /// Gets the list of shows.
+        /// Gets the list of shows (including cast).
         /// </summary>
         /// <param name="startId">The id to start at.</param>
         /// <param name="count">The number of shows to download.</param>
         /// <returns>
-        /// A list of shows.
+        /// A list of shows with cast.
         /// </returns>
         public async Task<List<Show>> GetShows(int startId, int count)
         {
-            var result = new List<Show>();
-
-            using (SqlConnection conn = new SqlConnection(this.connstr))
-            {
-                SqlCommand showCmd = new SqlCommand("SELECT id, name FROM Shows WHERE id BETWEEN @start and @end", conn);
-                showCmd.Parameters.Add(new SqlParameter("start", System.Data.SqlDbType.Int) { Value = startId });
-                showCmd.Parameters.Add(new SqlParameter("end", System.Data.SqlDbType.Int) { Value = startId + count - 1 });
-
-                conn.Open();
-
-                using (var showreader = await showCmd.ExecuteReaderAsync())
-                {
-                    while (showreader.Read())
-                    {
-                        var show = new Show()
-                        {
-                            Id = showreader.GetInt32(0),
-                            Name = showreader.GetString(1),
-                        };
-
-                        result.Add(show);
-                    }
-                }
-
-                SqlCommand castCmd = new SqlCommand("SELECT MemberId, ShowId, Name, Birthdate FROM CastMembers WHERE ShowId = @show", conn);
-                var showId = new SqlParameter("show", System.Data.SqlDbType.Int);
-                castCmd.Parameters.Add(showId);
-
-                foreach (var show in result)
-                {
-                    showId.Value = show.Id;
-                    using (var castreader = await castCmd.ExecuteReaderAsync())
-                    {
-                        var member = new CastMember
-                        {
-                            MemberId = castreader.GetInt32(0),
-                            ShowId = castreader.GetInt32(1),
-                            Name = castreader.GetString(2),
-                            Birthdate = castreader.IsDBNull(3) ? default(DateTime?) : castreader.GetDateTime(3),
-                        };
-                        show.CastMembers.Add(member);
-                    }
-                }
-            }
-
-            return result;
+            return await this.showContext.Shows
+                .Include(s => s.CastMembers)
+                .Where(s => s.Id >= startId)
+                .OrderBy(s => s.Id)
+                .Take(count)
+                .ToListAsync();
         }
 
         /// <summary>
@@ -96,7 +60,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// <param name="page">The page number (0-based).</param>
         /// <param name="pagesize">The size of the page.</param>
         /// <returns>
-        /// A list of shows.
+        /// A list of shows with cast.
         /// </returns>
         public async Task<List<Show>> GetShowsWithCast(int page, int pagesize)
         {
@@ -118,31 +82,40 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// </returns>
         public async Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow)
         {
+            var memberEqualityComparer = new CastMemberEqualityComparer();
+
             foreach (var show in list)
             {
-                var existing = await this.GetShowById(show.Id);
+                try
+                {
+                    if (!show.CastMembers.Any() && getCastOfShow != null)
+                    {
+                        show.CastMembers.AddRange(await getCastOfShow(show.Id));
+                    }
 
-                if (existing == null)
-                {
-                    await this.AddShow(show);
-                }
-                else if (existing.Name != show.Name)
-                {
-                    await this.UpdateShowName(show);
-                }
-                //// else: already stored
+                    // there are duplicate "persons" in the cast (when they have different roles)
+                    var realcast = show.CastMembers.Distinct(memberEqualityComparer).ToList();
+                    if (realcast.Count < show.CastMembers.Count)
+                    {
+                        show.CastMembers.Clear();
+                        show.CastMembers.AddRange(realcast);
+                    }
 
-                List<CastMember> cast;
-                if (getCastOfShow == null || show.CastMembers.Any())
-                {
-                    cast = show.CastMembers;
-                }
-                else
-                {
-                    cast = await getCastOfShow(show.Id);
-                }
+                    var existing = await this.GetShowById(show.Id);
 
-                await this.StoreCastList(show.Id, cast);
+                    if (existing == null)
+                    {
+                        await this.AddShow(show);
+                    }
+                    else
+                    {
+                        await this.UpdateShow(show, existing);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.logRepository.Log(Core.Support.LogLevel.Error, $"Error storing show #{show.Id}.", ex);
+                }
             }
         }
 
@@ -167,18 +140,11 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// <returns>
         /// The highest ID.
         /// </returns>
-        public async Task<int> GetMaxShowId()
+        public Task<int> GetMaxShowId()
         {
-            using (SqlConnection conn = new SqlConnection(this.connstr))
-            {
-                conn.Open();
-
-                SqlCommand showCmd = new SqlCommand("SELECT max(id) FROM Shows", conn);
-
-                var max = (await showCmd.ExecuteScalarAsync()) as int?;
-
-                return max.GetValueOrDefault();
-            }
+            return this.showContext.Shows
+                .Select(s => s.Id)
+                .MaxAsync();
         }
 
         /// <summary>
@@ -186,239 +152,53 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// </summary>
         /// <param name="showId">The show identifier.</param>
         /// <returns>A list of cast members.</returns>
-        public async Task<List<CastMember>> GetCastOfShow(int showId)
+        public Task<List<CastMember>> GetCastOfShow(int showId)
         {
-            using (SqlConnection conn = new SqlConnection(this.connstr))
-            {
-                conn.Open();
-
-                SqlCommand cmd = new SqlCommand("SELECT memberId, name, birthdate FROM CastMembers WHERE showId=@showId", conn);
-                cmd.Parameters.Add(new SqlParameter("showId", System.Data.SqlDbType.Int) { Value = showId });
-
-                var reader = await cmd.ExecuteReaderAsync();
-
-                var cast = new List<CastMember>();
-                while (reader.Read())
-                {
-                    var member = new CastMember
-                    {
-                        MemberId = reader.GetInt32(0),
-                        ShowId = showId,
-                        Name = reader.GetString(1),
-                        Birthdate = reader.IsDBNull(2) ? default(DateTime?) : reader.GetDateTime(2),
-                    };
-                    cast.Add(member);
-                }
-
-                return cast;
-            }
+            return this.showContext.CastMembers
+                .Where(cm => cm.ShowId == showId)
+                .ToListAsync();
         }
 
         /// <summary>
-        /// Add the cast to the supplied shows.
+        /// Gets the show by identifier.
         /// </summary>
-        /// <param name="shows">The shows to read the cast for.</param>
-        /// <returns>A Task.</returns>
-        private async Task ReadCast(List<Show> shows)
+        /// <param name="id">The identifier.</param>
+        /// <returns>One Show (if found).</returns>
+        public Task<Show> GetShowById(int id)
         {
-            int minShowId = shows.Select(s => s.Id).Min();
-            int maxShowId = shows.Select(s => s.Id).Max();
-
-            using (SqlConnection conn = new SqlConnection(this.connstr))
-            {
-                conn.Open();
-
-                SqlCommand cmd = new SqlCommand(
-                    @"
-SELECT ShowId, MemberId, Name, Birthdate 
-FROM CastMembers 
-WHERE showId BETWEEN @min and @max
-ORDER BY ShowId, Birthdate desc",
-                    conn);
-                cmd.Parameters.Add(new SqlParameter("min", System.Data.SqlDbType.Int) { Value = minShowId });
-                cmd.Parameters.Add(new SqlParameter("max", System.Data.SqlDbType.Int) { Value = maxShowId });
-
-                var reader = await cmd.ExecuteReaderAsync();
-
-                var allcast = new List<(int show, CastMember member)>();
-                while (reader.Read())
-                {
-                    var showId = reader.GetInt32(0);
-                    var member = new CastMember
-                    {
-                        MemberId = reader.GetInt32(1),
-                        ShowId = showId,
-                        Name = reader.GetString(2),
-                        Birthdate = reader.IsDBNull(3) ? default(DateTime?) : reader.GetDateTime(3),
-                    };
-                    allcast.Add((showId, member));
-                }
-
-                foreach (var show in shows)
-                {
-                    var cast = allcast.Where(c => c.show == show.Id).Select(c => c.member).ToList();
-                    show.CastMembers.AddRange(cast);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the shows by page.
-        /// </summary>
-        /// <param name="page">The page number (0-based).</param>
-        /// <param name="pagesize">The page size.</param>
-        /// <returns>A list of shows.</returns>
-        private async Task<List<Show>> GetShowsByPage(int page, int pagesize)
-        {
-            using (SqlConnection conn = new SqlConnection(this.connstr))
-            {
-                conn.Open();
-
-                SqlCommand showCmd = new SqlCommand(
-                    @"
-SELECT Id, Name 
-FROM Shows
-ORDER BY Id
-OFFSET @start Rows
-FETCH NEXT @size ROWS ONLY",
-                    conn);
-                showCmd.Parameters.Add(new SqlParameter("start", System.Data.SqlDbType.Int) { Value = (page * pagesize) + 1 });
-                showCmd.Parameters.Add(new SqlParameter("size", System.Data.SqlDbType.Int) { Value = pagesize });
-
-                var result = new List<Show>();
-                var reader = await showCmd.ExecuteReaderAsync();
-
-                while (reader.Read())
-                {
-                    var show = new Show
-                    {
-                        Id = reader.GetInt32(0),
-                        Name = reader.GetString(1),
-                    };
-
-                    result.Add(show);
-                }
-
-                return result;
-            }
-        }
-
-        private async Task StoreCastList(int showId, List<CastMember> cast)
-        {
-            var existingCast = await this.GetCastOfShow(showId);
-            foreach (var member in cast)
-            {
-                var existingMember = existingCast.FirstOrDefault(m => m.MemberId == member.MemberId);
-
-                if (existingMember == null)
-                {
-                    await this.AddCastMember(showId, member);
-                    existingCast.Add(member);
-                }
-                else if (existingMember.Name != member.Name || existingMember.Birthdate != member.Birthdate)
-                {
-                    await this.UpdateCastMember(showId, member);
-                    existingMember.Name = member.Name;
-                    existingMember.Birthdate = member.Birthdate;
-                }
-                //// else: already stored
-            }
-        }
-
-        private async Task AddCastMember(int showId, CastMember member)
-        {
-            using (SqlConnection conn = new SqlConnection(this.connstr))
-            {
-                conn.Open();
-
-                SqlCommand showCmd = new SqlCommand("INSERT INTO CastMembers (ShowId, MemberId, Name, Birthdate) VALUES (@showId, @memberId, @name, @birthdate)", conn);
-                showCmd.Parameters.Add(new SqlParameter("showId", System.Data.SqlDbType.Int) { Value = showId });
-                showCmd.Parameters.Add(new SqlParameter("memberId", System.Data.SqlDbType.Int) { Value = member.MemberId });
-                showCmd.Parameters.Add(new SqlParameter("name", System.Data.SqlDbType.NVarChar, 256) { Value = member.Name });
-                showCmd.Parameters.Add(new SqlParameter("birthdate", System.Data.SqlDbType.Date)
-                {
-                    Value = member.Birthdate.HasValue
-                        ? (object)member.Birthdate.Value.Date
-                        : DBNull.Value,
-                });
-
-                await showCmd.ExecuteNonQueryAsync();
-            }
-        }
-
-        private async Task UpdateCastMember(int showId, CastMember member)
-        {
-            using (SqlConnection conn = new SqlConnection(this.connstr))
-            {
-                conn.Open();
-
-                SqlCommand showCmd = new SqlCommand(
-                    @"
-UPDATE CastMembers 
-SET Name=@name,
-    Birthdate=@birthdate
-WHERE ShowId=@showId
-  AND MemberId=@memberId",
-                    conn);
-                showCmd.Parameters.Add(new SqlParameter("name", System.Data.SqlDbType.NVarChar, 256) { Value = member.Name });
-                showCmd.Parameters.Add(new SqlParameter("birthdate", System.Data.SqlDbType.Date)
-                {
-                    Value = member.Birthdate.HasValue
-                        ? (object)member.Birthdate.Value.Date
-                        : DBNull.Value,
-                });
-                showCmd.Parameters.Add(new SqlParameter("showId", System.Data.SqlDbType.Int) { Value = showId });
-                showCmd.Parameters.Add(new SqlParameter("memberId", System.Data.SqlDbType.Int) { Value = member.MemberId });
-
-                await showCmd.ExecuteNonQueryAsync();
-            }
-        }
-
-        private async Task UpdateShowName(Show show)
-        {
-            using (SqlConnection conn = new SqlConnection(this.connstr))
-            {
-                conn.Open();
-
-                SqlCommand showCmd = new SqlCommand("UPDATE Shows SET Name=@Name WHERE ID=@Id", conn);
-                showCmd.Parameters.Add(new SqlParameter("Name", System.Data.SqlDbType.NVarChar) { Value = show.Name });
-                showCmd.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = show.Id });
-
-                await showCmd.ExecuteNonQueryAsync();
-            }
+            return this.showContext.Shows
+                .Include(s => s.CastMembers)
+                .FirstOrDefaultAsync(s => s.Id == id);
         }
 
         private async Task AddShow(Show show)
         {
-            using (SqlConnection conn = new SqlConnection(this.connstr))
-            {
-                conn.Open();
-
-                SqlCommand showCmd = new SqlCommand("INSERT INTO Shows (Id, Name) VALUES (@Id, @Name)", conn);
-                showCmd.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = show.Id });
-                showCmd.Parameters.Add(new SqlParameter("Name", System.Data.SqlDbType.NVarChar) { Value = show.Name });
-
-                await showCmd.ExecuteNonQueryAsync();
-            }
+            this.showContext.Shows.Add(show);
+            await this.showContext.SaveChangesAsync();
         }
 
-        private async Task<Show> GetShowById(int id)
+        private async Task UpdateShow(Show newShow, Show storedShow)
         {
-            using (SqlConnection conn = new SqlConnection(this.connstr))
+            storedShow.Name = newShow.Name;
+
+            foreach (var newMember in newShow.CastMembers)
             {
-                conn.Open();
+                var storedMember = storedShow.CastMembers.FirstOrDefault(m => m.MemberId == newMember.MemberId);
 
-                SqlCommand showCmd = new SqlCommand("SELECT Name FROM Shows WHERE id=@Id", conn);
-                showCmd.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = id });
-                var name = (await showCmd.ExecuteScalarAsync()) as string;
-
-                if (!string.IsNullOrEmpty(name))
+                if (storedMember == null)
                 {
-                    return new Show { Id = id, Name = name };
+                    storedShow.CastMembers.Add(newMember);
+                }
+                else
+                {
+                    storedMember.Name = newMember.Name;
+                    storedMember.Birthdate = newMember.Birthdate;
                 }
             }
 
-            return null;
+            storedShow.CastMembers.RemoveAll(m => !newShow.CastMembers.Any(m2 => m2.MemberId == m.MemberId));
+
+            await this.showContext.SaveChangesAsync();
         }
     }
 }

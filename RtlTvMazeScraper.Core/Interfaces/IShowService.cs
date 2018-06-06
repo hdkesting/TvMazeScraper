@@ -59,5 +59,12 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// A Task.
         /// </returns>
         Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow);
+
+        /// <summary>
+        /// Gets the show by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>One Show (if found).</returns>
+        Task<Show> GetShowById(int id);
     }
 }

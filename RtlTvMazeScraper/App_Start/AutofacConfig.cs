@@ -32,7 +32,7 @@ namespace RtlTvMazeScraper
             builder.RegisterType<SettingRepository>().As<ISettingRepository>();
             builder.RegisterType<ShowRepository>().As<IShowRepository>();
             builder.RegisterType<ApiRepository>().As<IApiRepository>();
-            builder.RegisterType<LogDebugRepository>().As<ILogRepository>();
+            builder.RegisterType<LogFileRepository>().As<ILogRepository>().SingleInstance();
 
             builder.RegisterType<TvMazeService>().As<ITvMazeService>();
             builder.RegisterType<ShowService>().As<IShowService>();

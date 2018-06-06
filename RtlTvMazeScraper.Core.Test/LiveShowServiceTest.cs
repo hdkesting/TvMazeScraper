@@ -27,8 +27,8 @@ namespace RtlTvMazeScraper.Core.Test
         public void Initialize()
         {
             var settingsRepo = new SettingRepository();
-            var showRepo = new ShowRepository(settingsRepo);
             var logRepo = new LogDebugRepository();
+            var showRepo = new ShowRepository(settingsRepo, logRepo);
             this.showService = new ShowService(showRepo, logRepo);
         }
 
@@ -69,5 +69,22 @@ namespace RtlTvMazeScraper.Core.Test
             shows3.Where(s3 => shows0.Any(s0 => s0.Id == s3.Id)).Count().Should().Be(0, because: "Ï requested a *different* page");
         }
 
+        [TestMethod]
+        public async Task GetMaxShowId()
+        {
+            var max = await this.showService.GetMaxShowId();
+
+            max.Should().BeGreaterThan(1000, because: "there are at least this mamy shows stored.");
+        }
+
+        [TestMethod]
+        public async Task GetSingleShow()
+        {
+            var show = await this.showService.GetShowById(1058);
+
+            show.Should().NotBeNull();
+            show.Id.Should().BeGreaterThan(0);
+            show.CastMembers.Count.Should().BeGreaterThan(0);
+        }
     }
 }

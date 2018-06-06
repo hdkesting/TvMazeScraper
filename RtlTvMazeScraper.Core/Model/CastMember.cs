@@ -20,6 +20,7 @@ namespace RtlTvMazeScraper.Core.Models
         /// The identifier.
         /// </value>
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column(Order = 2)]
         public int MemberId { get; set; }
 
@@ -30,6 +31,7 @@ namespace RtlTvMazeScraper.Core.Models
         /// The show identifier.
         /// </value>
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column(Order = 1)]
         public int ShowId { get; set; }
 

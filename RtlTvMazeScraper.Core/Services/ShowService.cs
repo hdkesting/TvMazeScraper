@@ -32,14 +32,22 @@ namespace RtlTvMazeScraper.Core.Services
         /// <summary>
         /// Gets the list of shows.
         /// </summary>
-        /// <param name="startId">The id to start at.</param>
+        /// <param name="startId">The (show-)id to start at.</param>
         /// <param name="count">The number of shows to download.</param>
         /// <returns>
         /// A list of shows.
         /// </returns>
-        public Task<List<Show>> GetShows(int startId, int count)
+        public async Task<List<Show>> GetShows(int startId, int count)
         {
-            return this.showRepository.GetShows(startId, count);
+            try
+            {
+                return await this.showRepository.GetShows(startId, count);
+            }
+            catch (Exception ex)
+            {
+                this.logRepository.Log(Support.LogLevel.Error, $"Failure to get shows from #{startId}.", ex);
+                return new List<Show>();
+            }
         }
 
         /// <summary>
@@ -58,7 +66,7 @@ namespace RtlTvMazeScraper.Core.Services
             }
             catch (Exception ex)
             {
-                this.logRepository.Log(Support.LogLevel.Error, "Failure to get shows.", ex);
+                this.logRepository.Log(Support.LogLevel.Error, $"Failure to get page {page} of shows.", ex);
                 return new List<Show>();
             }
         }
@@ -77,8 +85,7 @@ namespace RtlTvMazeScraper.Core.Services
             }
             catch (Exception ex)
             {
-                // TODO log exception
-                System.Diagnostics.Debug.WriteLine(ex);
+                this.logRepository.Log(Support.LogLevel.Error, "Failure to get counts.", ex);
                 return (-1, -1);
             }
         }
@@ -89,9 +96,17 @@ namespace RtlTvMazeScraper.Core.Services
         /// <returns>
         /// The highest ID.
         /// </returns>
-        public Task<int> GetMaxShowId()
+        public async Task<int> GetMaxShowId()
         {
-            return this.showRepository.GetMaxShowId();
+            try
+            {
+                return await this.showRepository.GetMaxShowId();
+            }
+            catch (Exception ex)
+            {
+                this.logRepository.Log(Support.LogLevel.Error, "Failure to get max id.", ex);
+                return -1;
+            }
         }
 
         /// <summary>
@@ -102,9 +117,34 @@ namespace RtlTvMazeScraper.Core.Services
         /// <returns>
         /// A Task.
         /// </returns>
-        public Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow)
+        public async Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow)
         {
-            return this.showRepository.StoreShowList(list, getCastOfShow);
+            try
+            {
+                await this.showRepository.StoreShowList(list, getCastOfShow);
+            }
+            catch (Exception ex)
+            {
+                this.logRepository.Log(Support.LogLevel.Error, "Failure to store shows.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Gets the show by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>One Show (if found).</returns>
+        public async Task<Show> GetShowById(int id)
+        {
+            try
+            {
+                return await this.showRepository.GetShowById(id);
+            }
+            catch (Exception ex)
+            {
+                this.logRepository.Log(Support.LogLevel.Error, $"Couldn't get show #{id}.", ex);
+                return null;
+            }
         }
     }
 }
