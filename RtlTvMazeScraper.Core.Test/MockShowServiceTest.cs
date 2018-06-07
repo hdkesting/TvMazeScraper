@@ -5,6 +5,7 @@
 namespace RtlTvMazeScraper.Core.Test
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -31,11 +32,12 @@ namespace RtlTvMazeScraper.Core.Test
         public async Task TestItemCount()
         {
             // arrange
-            this.mockContext.Shows.Add(new Model.Show { Id = 42, Name = "HitchHikers Guid To The Galaxy" });
+            this.mockContext.Shows.Add(new Model.Show { Id = 42, Name = "HitchHikers Guide to the Galaxy" });
             this.mockContext.Shows.Add(new Model.Show { Id = 12, Name = "Some other show" });
             this.mockContext.CastMembers.Add(new Model.CastMember { MemberId = 1, ShowId = 42, Name = "Ford Prefect", Birthdate = new DateTime(1500, 1, 1) });
             this.mockContext.CastMembers.Add(new Model.CastMember { MemberId = 2, ShowId = 42, Name = "Arthur Dent", Birthdate = new DateTime(1960, 12, 31) });
             this.mockContext.CastMembers.Add(new Model.CastMember { MemberId = 5, ShowId = 12, Name = "Someone", Birthdate = new DateTime(1980, 12, 31) });
+            this.mockContext.SaveChanges();
 
             // act
             var counts = await this.showService.GetCounts();
@@ -44,5 +46,27 @@ namespace RtlTvMazeScraper.Core.Test
             counts.ShowCount.Should().Be(2, because: "I added 2.");
             counts.MemberCount.Should().Be(3, because: "I added 3.");
         }
+
+        [TestMethod]
+        public async Task GetShowsWithCast()
+        {
+            // arrange
+            this.mockContext.Shows.Add(new Model.Show { Id = 42, Name = "HitchHikers Guide to the Galaxy" });
+            this.mockContext.Shows.Add(new Model.Show { Id = 12, Name = "Some other show" });
+            this.mockContext.CastMembers.Add(new Model.CastMember { MemberId = 1, ShowId = 42, Name = "Ford Prefect", Birthdate = new DateTime(1500, 1, 1) });
+            this.mockContext.CastMembers.Add(new Model.CastMember { MemberId = 2, ShowId = 42, Name = "Arthur Dent", Birthdate = new DateTime(1960, 12, 31) });
+            this.mockContext.CastMembers.Add(new Model.CastMember { MemberId = 5, ShowId = 12, Name = "Someone", Birthdate = new DateTime(1980, 12, 31) });
+            this.mockContext.SaveChanges();
+
+            // act
+            var shows = await this.showService.GetShowsWithCast(0, 10);
+
+            // assert
+            shows.Should().NotBeNull();
+            shows.Count.Should().Be(2, because: "I added 2 shows.");
+
+            shows.Where(s => s.CastMembers.Any()).Count().Should().Be(2, because: "Both shows have cast.");
+        }
+
     }
 }
