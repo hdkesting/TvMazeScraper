@@ -5,19 +5,19 @@
 namespace RtlTvMazeScraper.Core.Model
 {
     using System.Collections.Generic;
-    using RtlTvMazeScraper.Core.Model;
 
     /// <summary>
     /// Equality comparer for <see cref="CastMember"/>.
     /// </summary>
-    /// <seealso cref="System.Collections.Generic.IEqualityComparer{RtlTvMazeScraper.Core.Models.CastMember}" />
+    /// <seealso cref="IEqualityComparer{T}" />
+    /// <seealso cref="CastMember" />
     public class CastMemberEqualityComparer : IEqualityComparer<CastMember>
     {
         /// <summary>
         /// Determines whether the specified objects are equal.
         /// </summary>
-        /// <param name="x">The first object of type <paramref name="T" /> to compare.</param>
-        /// <param name="y">The second object of type <paramref name="T" /> to compare.</param>
+        /// <param name="x">The first <see cref="CastMember"/> to compare.</param>
+        /// <param name="y">The second <see cref="CastMember"/> to compare.</param>
         /// <returns>
         ///   <see langword="true" /> if the specified objects are equal; otherwise, <see langword="false" />.
         /// </returns>

@@ -10,7 +10,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
     /// <summary>
     /// A repository for settings.
     /// </summary>
-    /// <seealso cref="RtlTvMazeScraper.Interfaces.ISettingRepository" />
+    /// <seealso cref="ISettingRepository" />
     public class SettingRepository : ISettingRepository
     {
         private string connstr;
