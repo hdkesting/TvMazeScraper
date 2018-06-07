@@ -19,7 +19,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
     public class ShowRepository : IShowRepository
     {
         private readonly string connstr;
-        private readonly Data.ShowContext showContext;
+        private readonly IShowContext showContext;
         private readonly ILogRepository logRepository;
 
         /// <summary>
@@ -27,10 +27,14 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// </summary>
         /// <param name="settingRepository">The setting repository.</param>
         /// <param name="logRepository">The log repository.</param>
-        public ShowRepository(ISettingRepository settingRepository, ILogRepository logRepository)
+        /// <param name="showContext">The show context.</param>
+        public ShowRepository(
+            ISettingRepository settingRepository,
+            ILogRepository logRepository,
+            IShowContext showContext)
         {
             this.connstr = settingRepository.ConnectionString;
-            this.showContext = new Data.ShowContext();
+            this.showContext = showContext;
             this.logRepository = logRepository;
         }
 

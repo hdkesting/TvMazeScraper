@@ -19,16 +19,18 @@ namespace RtlTvMazeScraper.Core.Test
     /// The service just passes the requests through to the repository, so when I mock that repository, there is nothing left to test.
     /// </remarks>
     [TestClass]
-    public class LiveShowServiceTest
+    public sealed class LiveShowServiceTest : IDisposable
     {
         private ShowService showService;
+        private Infrastructure.Data.ShowContext liveShowContext;
 
         [TestInitialize]
         public void Initialize()
         {
             var settingsRepo = new SettingRepository();
             var logRepo = new LogDebugRepository();
-            var showRepo = new ShowRepository(settingsRepo, logRepo);
+            this.liveShowContext = new Infrastructure.Data.ShowContext();
+            var showRepo = new ShowRepository(settingsRepo, logRepo, this.liveShowContext);
             this.showService = new ShowService(showRepo, logRepo);
         }
 
@@ -85,6 +87,14 @@ namespace RtlTvMazeScraper.Core.Test
             show.Should().NotBeNull();
             show.Id.Should().BeGreaterThan(0);
             show.CastMembers.Count.Should().BeGreaterThan(0);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.liveShowContext?.Dispose();
         }
     }
 }

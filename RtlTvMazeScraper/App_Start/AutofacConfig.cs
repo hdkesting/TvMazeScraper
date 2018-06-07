@@ -11,6 +11,7 @@ namespace RtlTvMazeScraper
     using Autofac.Integration.WebApi;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Services;
+    using RtlTvMazeScraper.Infrastructure.Data;
     using RtlTvMazeScraper.Infrastructure.Repositories.Local;
     using RtlTvMazeScraper.Infrastructure.Repositories.Remote;
 
@@ -26,8 +27,7 @@ namespace RtlTvMazeScraper
         {
             var builder = new ContainerBuilder();
 
-            builder.RegisterControllers(typeof(MvcApplication).Assembly);
-            builder.RegisterApiControllers(typeof(MvcApplication).Assembly);
+            builder.RegisterType<ShowContext>().As<IShowContext>();
 
             builder.RegisterType<SettingRepository>().As<ISettingRepository>();
             builder.RegisterType<ShowRepository>().As<IShowRepository>();
@@ -36,6 +36,9 @@ namespace RtlTvMazeScraper
 
             builder.RegisterType<TvMazeService>().As<ITvMazeService>();
             builder.RegisterType<ShowService>().As<IShowService>();
+
+            builder.RegisterControllers(typeof(MvcApplication).Assembly);
+            builder.RegisterApiControllers(typeof(MvcApplication).Assembly);
 
             var container = builder.Build();
 

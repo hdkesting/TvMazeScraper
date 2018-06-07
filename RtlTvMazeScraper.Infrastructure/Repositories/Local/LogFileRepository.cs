@@ -42,13 +42,14 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         {
             StringBuilder output = new StringBuilder();
 
+            output.Append($"{DateTime.Now.ToString("HH:mm:ss.f")} {logLevel} [{methodName}] - {message}");
             if (exception == null)
             {
-                output.AppendLine($"{logLevel} [{methodName}] - {message}.");
+                output.AppendLine(".");
             }
             else
             {
-                output.AppendLine($"{logLevel} [{methodName}] - {message}:");
+                output.AppendLine(":");
 
                 while (exception != null)
                 {
