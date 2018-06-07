@@ -8,6 +8,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using RtlTvMazeScraper.Core.Model;
+    using RtlTvMazeScraper.Core.Transfer;
 
     /// <summary>
     /// Service to access shows.
@@ -40,7 +41,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <returns>
         /// A tuple having counts of shows and castmembers.
         /// </returns>
-        Task<(int shows, int members)> GetCounts();
+        Task<StorageCount> GetCounts();
 
         /// <summary>
         /// Gets the maximum show identifier.

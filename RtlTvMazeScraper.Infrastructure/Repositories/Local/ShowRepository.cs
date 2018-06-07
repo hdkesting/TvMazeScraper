@@ -11,6 +11,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
     using System.Threading.Tasks;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Model;
+    using RtlTvMazeScraper.Core.Transfer;
 
     /// <summary>
     /// A repository for locally stored shows.
@@ -127,13 +128,13 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// <returns>
         /// A tuple having counts of shows and castmembers.
         /// </returns>
-        public async Task<(int shows, int members)> GetCounts()
+        public async Task<StorageCount> GetCounts()
         {
             // alas, EF doesn't support running these in parallel.
             var numberOfShows = await this.showContext.Shows.CountAsync();
             var numberOfMembers = await this.showContext.CastMembers.CountAsync();
 
-            return (numberOfShows, numberOfMembers);
+            return new StorageCount(numberOfShows, numberOfMembers);
         }
 
         /// <summary>

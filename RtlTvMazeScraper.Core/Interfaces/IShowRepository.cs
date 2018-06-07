@@ -8,6 +8,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using RtlTvMazeScraper.Core.Model;
+    using RtlTvMazeScraper.Core.Transfer;
 
     /// <summary>
     /// Repository to read shows.
@@ -26,7 +27,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// Gets the counts of shows and cast.
         /// </summary>
         /// <returns>A tuple having counts of shows and castmembers.</returns>
-        Task<(int shows, int members)> GetCounts();
+        Task<StorageCount> GetCounts();
 
         /// <summary>
         /// Gets the shows including cast.

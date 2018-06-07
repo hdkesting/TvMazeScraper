@@ -7,6 +7,7 @@ namespace RtlTvMazeScraper.Core.Test.Mock
     using System.IO;
     using System.Net;
     using System.Threading.Tasks;
+    using RtlTvMazeScraper.Core.Transfer;
 
     public class MockApiRepository : Interfaces.IApiRepository
     {
@@ -36,16 +37,16 @@ namespace RtlTvMazeScraper.Core.Test.Mock
         }
 
         /// <summary>
-        /// Requests the json from the specified URL.
+        /// Requests the json from the content that was set.
         /// </summary>
         /// <param name="url">The URL.</param>
-        /// <param name="retryOnBusy">if set to <c>true</c>, retry on a 429 result after a progressive delay (not applicable in test environment).</param>
+        /// <param name="retryOnBusy">Ignored.</param>
         /// <returns>
         /// The response status and the json (if any).
         /// </returns>
-        public Task<(HttpStatusCode status, string json)> RequestJson(string url, bool retryOnBusy)
+        public Task<ApiResponse> RequestJson(string url, bool retryOnBusy)
         {
-            return Task.FromResult((this.StatusToReturn, this.contentToReturn));
+            return Task.FromResult(new ApiResponse(this.StatusToReturn, this.contentToReturn));
         }
     }
 }

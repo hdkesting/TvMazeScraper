@@ -9,6 +9,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
     using System.Net.Http;
     using System.Threading.Tasks;
     using RtlTvMazeScraper.Core.Interfaces;
+    using RtlTvMazeScraper.Core.Transfer;
 
     /// <summary>
     /// A respository to access a remote webAPI endpoint.
@@ -24,7 +25,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
         /// <param name="url">The URL.</param>
         /// <param name="retryOnBusy">if set to <c>true</c>, retry on a 429 result after a progressive delay.</param>
         /// <returns>The response status and the json (if any).</returns>
-        public async Task<(HttpStatusCode status, string json)> RequestJson(string url, bool retryOnBusy)
+        public async Task<ApiResponse> RequestJson(string url, bool retryOnBusy)
         {
             TimeSpan delay = TimeSpan.Zero;
             int retrycount = 0;
@@ -39,17 +40,17 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
                     {
                         if (!retryOnBusy)
                         {
-                            return (response.StatusCode, string.Empty);
+                            return new ApiResponse(response.StatusCode, string.Empty);
                         }
                     }
                     else if (response.StatusCode == HttpStatusCode.OK)
                     {
                         var text = await response.Content.ReadAsStringAsync();
-                        return (response.StatusCode, text);
+                        return new ApiResponse(response.StatusCode, text);
                     }
                     else
                     {
-                        return (response.StatusCode, string.Empty);
+                        return new ApiResponse(response.StatusCode, string.Empty);
                     }
 
                     retrycount++;
@@ -57,7 +58,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
                     if (retrycount > MaxRetryCount)
                     {
                         // give up after several failed tries
-                        return (Core.Support.Constants.ServerTooBusy, null);
+                        return new ApiResponse(Core.Support.Constants.ServerTooBusy, null);
                     }
 
                     delay += DelayIncrease;

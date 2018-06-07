@@ -40,10 +40,10 @@ namespace RtlTvMazeScraper.Core.Test
         [TestMethod]
         public async Task TestLiveItemCount()
         {
-            var (shows, members) = await this.showService.GetCounts();
+            var counts = await this.showService.GetCounts();
 
-            shows.Should().BeGreaterThan(0, because: "I expect hundreds.");
-            members.Should().BeGreaterThan(0, because: "I expect multiple per show.");
+            counts.ShowCount.Should().BeGreaterThan(0, because: "I expect hundreds.");
+            counts.MemberCount.Should().BeGreaterThan(0, because: "I expect multiple per show.");
         }
 
         [TestMethod]

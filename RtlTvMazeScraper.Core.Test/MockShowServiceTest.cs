@@ -38,11 +38,11 @@ namespace RtlTvMazeScraper.Core.Test
             this.mockContext.CastMembers.Add(new Model.CastMember { MemberId = 5, ShowId = 12, Name = "Someone", Birthdate = new DateTime(1980, 12, 31) });
 
             // act
-            var (shows, members) = await this.showService.GetCounts();
+            var counts = await this.showService.GetCounts();
 
             // assert
-            shows.Should().Be(2, because: "I added 2.");
-            members.Should().Be(3, because: "I added 3.");
+            counts.ShowCount.Should().Be(2, because: "I added 2.");
+            counts.MemberCount.Should().Be(3, because: "I added 3.");
         }
     }
 }

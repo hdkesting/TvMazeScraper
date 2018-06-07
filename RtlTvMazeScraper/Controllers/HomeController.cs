@@ -31,10 +31,10 @@ namespace RtlTvMazeScraper.Controllers
         /// <returns>A view.</returns>
         public async Task<ActionResult> Index()
         {
-            var (shows, members) = await this.showService.GetCounts();
+            var counts = await this.showService.GetCounts();
 
-            this.ViewBag.Shows = shows;
-            this.ViewBag.Members = members;
+            this.ViewBag.Shows = counts.ShowCount;
+            this.ViewBag.Members = counts.MemberCount;
             return this.View();
         }
 

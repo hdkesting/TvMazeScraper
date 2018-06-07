@@ -9,6 +9,7 @@ namespace RtlTvMazeScraper.Core.Services
     using System.Threading.Tasks;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Model;
+    using RtlTvMazeScraper.Core.Transfer;
 
     /// <summary>
     /// Service to access shows.
@@ -77,7 +78,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// <returns>
         /// A tuple having counts of shows and castmembers.
         /// </returns>
-        public async Task<(int shows, int members)> GetCounts()
+        public async Task<StorageCount> GetCounts()
         {
             try
             {
@@ -86,7 +87,7 @@ namespace RtlTvMazeScraper.Core.Services
             catch (Exception ex)
             {
                 this.logRepository.Log(Support.LogLevel.Error, "Failure to get counts.", ex);
-                return (-1, -1);
+                return new StorageCount();
             }
         }
 
