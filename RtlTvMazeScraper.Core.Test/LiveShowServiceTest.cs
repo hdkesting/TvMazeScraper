@@ -19,6 +19,9 @@ namespace RtlTvMazeScraper.Core.Test
     /// The service just passes the requests through to the repository, so when I mock that repository, there is nothing left to test.
     /// </remarks>
     [TestClass]
+#if !DEBUG
+    [Ignore]
+#endif
     public sealed class LiveShowServiceTest : IDisposable
     {
         private ShowService showService;

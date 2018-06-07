@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LiveShowServiceTest.cs" />
+    <Compile Include="MockShowServiceTest.cs" />
     <Compile Include="Mock\MockApiRepository.cs" />
     <Compile Include="Mock\MockDbSet.cs" />
     <Compile Include="Mock\MockSettingsRepository.cs" />
