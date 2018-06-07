@@ -12,6 +12,7 @@ namespace RtlTvMazeScraper.Core.Services
     using Newtonsoft.Json.Linq;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Model;
+    using RtlTvMazeScraper.Core.Transfer;
 
     /// <summary>
     /// The service that reads TV Maze.
@@ -130,7 +131,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// <returns>
         /// A tuple: number of shows tried, list of shows found.
         /// </returns>
-        public async Task<(int count, List<Show> shows)> ScrapeById(int start)
+        public async Task<ScrapeBatchResult> ScrapeById(int start)
         {
             int count = 0;
 
@@ -178,7 +179,7 @@ namespace RtlTvMazeScraper.Core.Services
                 count++;
             }
 
-            return (count, list);
+            return new ScrapeBatchResult(count, list);
         }
 
         private DateTime? GetDate(JToken dayValue)

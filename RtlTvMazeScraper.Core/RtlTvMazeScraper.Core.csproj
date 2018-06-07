@@ -69,6 +69,7 @@
     <Compile Include="Support\Constants.cs" />
     <Compile Include="Support\LogLevel.cs" />
     <Compile Include="Transfer\ApiResponse.cs" />
+    <Compile Include="Transfer\ScrapeBatchResult.cs" />
     <Compile Include="Transfer\StorageCount.cs" />
   </ItemGroup>
   <ItemGroup>

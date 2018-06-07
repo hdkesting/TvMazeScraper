@@ -7,6 +7,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using RtlTvMazeScraper.Core.Model;
+    using RtlTvMazeScraper.Core.Transfer;
 
     /// <summary>
     /// A service to read from TV Maze.
@@ -34,6 +35,6 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// </summary>
         /// <param name="start">The start.</param>
         /// <returns>A tuple: number of shows tried, list of shows found.</returns>
-        Task<(int count, List<Show> shows)> ScrapeById(int start);
+        Task<ScrapeBatchResult> ScrapeById(int start);
     }
 }
