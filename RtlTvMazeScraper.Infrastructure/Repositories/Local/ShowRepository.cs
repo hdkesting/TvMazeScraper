@@ -7,12 +7,10 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
     using System;
     using System.Collections.Generic;
     using System.Data.Entity;
-    using System.Data.SqlClient;
     using System.Linq;
     using System.Threading.Tasks;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Model;
-    using RtlTvMazeScraper.Core.Models;
 
     /// <summary>
     /// A repository for locally stored shows.

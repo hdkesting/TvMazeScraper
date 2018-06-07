@@ -2,7 +2,7 @@
 // Copyright (c) Hans Kesting. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Models
+namespace RtlTvMazeScraper.Core.Model
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;

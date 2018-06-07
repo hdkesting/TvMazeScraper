@@ -5,7 +5,7 @@
 namespace RtlTvMazeScraper.Core.Model
 {
     using System.Collections.Generic;
-    using RtlTvMazeScraper.Core.Models;
+    using RtlTvMazeScraper.Core.Model;
 
     /// <summary>
     /// Equality comparer for <see cref="CastMember"/>.

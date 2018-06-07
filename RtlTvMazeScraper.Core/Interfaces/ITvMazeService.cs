@@ -6,7 +6,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using RtlTvMazeScraper.Core.Models;
+    using RtlTvMazeScraper.Core.Model;
 
     /// <summary>
     /// A service to read from TV Maze.

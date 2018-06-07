@@ -5,13 +5,14 @@
 namespace RtlTvMazeScraper.Infrastructure.Data
 {
     using System.Data.Entity;
-    using RtlTvMazeScraper.Core.Models;
+    using RtlTvMazeScraper.Core.Interfaces;
+    using RtlTvMazeScraper.Core.Model;
 
     /// <summary>
     /// The DB context for the show database.
     /// </summary>
     /// <seealso cref="System.Data.Entity.DbContext" />
-    public class ShowContext : DbContext
+    public class ShowContext : DbContext, IShowContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ShowContext"/> class and specifies a connection string to use.

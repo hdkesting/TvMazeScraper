@@ -7,7 +7,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using RtlTvMazeScraper.Core.Models;
+    using RtlTvMazeScraper.Core.Model;
 
     /// <summary>
     /// Service to access shows.

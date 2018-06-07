@@ -11,7 +11,7 @@ namespace RtlTvMazeScraper.Core.Services
     using System.Threading.Tasks;
     using Newtonsoft.Json.Linq;
     using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Models;
+    using RtlTvMazeScraper.Core.Model;
 
     /// <summary>
     /// The service that reads TV Maze.
