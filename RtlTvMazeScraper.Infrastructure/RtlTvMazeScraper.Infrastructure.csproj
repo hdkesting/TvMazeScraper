@@ -68,7 +68,10 @@
       <Name>RtlTvMazeScraper.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="DbScripts\01 Create table Shows.sql" />
+    <None Include="DbScripts\02 Create table CastMembers.sql" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
