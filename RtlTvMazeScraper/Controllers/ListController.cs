@@ -4,11 +4,13 @@
 
 namespace RtlTvMazeScraper.Controllers
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Web.Http;
     using Newtonsoft.Json.Linq;
     using RtlTvMazeScraper.Core.Interfaces;
+    using RtlTvMazeScraper.Support;
 
     /// <summary>
     /// A (WebAPI) controller to show lists of shows.
@@ -28,13 +30,12 @@ namespace RtlTvMazeScraper.Controllers
         }
 
         /// <summary>
-        /// Gets one page of the shows.
+        /// Gets one page of the shows as <see cref="JArray"/>.
         /// </summary>
         /// <param name="page">The page.</param>
         /// <param name="pagesize">The pagesize.</param>
         /// <returns>A JSON result.</returns>
         [HttpGet]
-        [Route("~/list")]
         public async Task<JArray> GetShows(int page = 0, int pagesize = 20)
         {
             if (page < 0)
@@ -73,6 +74,35 @@ namespace RtlTvMazeScraper.Controllers
                 result.Add(showObj);
             }
 
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the shows as JSON-serializable objects.
+        /// </summary>
+        /// <remarks>
+        /// Note that some configuration is done in WebApiConfig.cs.
+        /// </remarks>
+        /// <param name="page">The page.</param>
+        /// <param name="pagesize">The pagesize.</param>
+        /// <returns>A JSON-serializable list.</returns>
+        [HttpGet]
+        [Route("~/list")]
+        public async Task<List<ShowForJson>> GetShows2(int page = 0, int pagesize = 20)
+        {
+            if (page < 0)
+            {
+                page = 0;
+            }
+
+            if (pagesize < 2)
+            {
+                pagesize = 2;
+            }
+
+            var dbshows = await this.showService.GetShowsWithCast(page, pagesize);
+
+            var result = Support.Converter.Convert(dbshows);
             return result;
         }
     }

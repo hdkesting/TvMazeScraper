@@ -5,6 +5,7 @@
 namespace RtlTvMazeScraper
 {
     using System.Web.Http;
+    using Newtonsoft.Json.Serialization;
 
     /// <summary>
     /// Configuration for WebAPI.
@@ -26,6 +27,12 @@ namespace RtlTvMazeScraper
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional });
+
+            // return only JSON when automatically serializing.
+            config.Formatters.Remove(config.Formatters.XmlFormatter);
+
+            // camelCase the names
+            config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }
     }
 }
