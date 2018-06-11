@@ -19,5 +19,6 @@
 </blockquote>
 
 <script type="text/javascript">
+    // client-side pause before scraping the next batch
     setTimeout(function () { location.href = "@Url.Action("ScrapeAlpha", new { initial = ViewBag.Initial })" }, 5000);
 </script>

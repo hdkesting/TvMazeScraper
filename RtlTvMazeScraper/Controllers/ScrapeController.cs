@@ -87,9 +87,12 @@ namespace RtlTvMazeScraper.Controllers
         }
 
         /// <summary>
-        /// Scrapes one batch from the specified start.
+        /// Scrapes one batch from the specified start ID (defaults to 1).
         /// </summary>
-        /// <param name="start">The start.</param>
+        /// <remarks>
+        /// After tree failed attempts (=no results for a batch of IDs), the scraping is stopped (by a redirect back to Home).
+        /// </remarks>
+        /// <param name="start">The start ID.</param>
         /// <returns>A view or redirect.</returns>
         public async Task<ActionResult> Scrape(int start = 1)
         {

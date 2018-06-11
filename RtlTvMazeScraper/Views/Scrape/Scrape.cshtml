@@ -17,5 +17,6 @@
 </blockquote>
 
 <script type="text/javascript">
+    // client-side pause before scraping the next batch
     setTimeout(function () { location.href = "@Url.Action("Scrape", new { start = ViewBag.Start })" }, 7000);
 </script>

@@ -30,10 +30,13 @@ namespace RtlTvMazeScraper.Controllers
         }
 
         /// <summary>
-        /// Gets one page of the shows as <see cref="JArray"/>.
+        /// Gets one page of the shows as <see cref="JArray"/> (which will be sent as JSON to the browser).
         /// </summary>
-        /// <param name="page">The page.</param>
-        /// <param name="pagesize">The pagesize.</param>
+        /// <remarks>
+        /// This method build a JSON string "by hand".
+        /// </remarks>
+        /// <param name="page">The page number (0-based).</param>
+        /// <param name="pagesize">The size of the page.</param>
         /// <returns>A JSON result.</returns>
         [HttpGet]
         public async Task<JArray> GetShows(int page = 0, int pagesize = 20)
@@ -82,6 +85,7 @@ namespace RtlTvMazeScraper.Controllers
         /// </summary>
         /// <remarks>
         /// Note that some configuration is done in WebApiConfig.cs.
+        /// The list is sent as JSON to the browser, because XML serialization is switched off.
         /// </remarks>
         /// <param name="page">The page.</param>
         /// <param name="pagesize">The pagesize.</param>
