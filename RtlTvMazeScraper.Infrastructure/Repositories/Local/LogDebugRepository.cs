@@ -27,14 +27,10 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// <param name="methodName">Name of the method (automatically filled).</param>
         public void Log(LogLevel logLevel, string message, Exception exception = null, [CallerMemberName] string methodName = null)
         {
-            if (exception == null)
-            {
-                System.Diagnostics.Debug.WriteLine($"{logLevel} [{methodName}] - {message}.");
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine($"{logLevel} [{methodName}] - {message}:");
+            System.Diagnostics.Debug.Write($"{DateTime.Now.ToString("mm:ss.f")} {logLevel} [{methodName}] - {message}");
 
+            if (exception != null)
+            {
                 while (exception != null)
                 {
                     System.Diagnostics.Debug.WriteLine(exception);

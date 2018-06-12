@@ -36,6 +36,7 @@ namespace RtlTvMazeScraper
 
             builder.RegisterType<TvMazeService>().As<ITvMazeService>();
             builder.RegisterType<ShowService>().As<IShowService>();
+            builder.RegisterType<LogService>();
 
             builder.RegisterControllers(typeof(MvcApplication).Assembly);
             builder.RegisterApiControllers(typeof(MvcApplication).Assembly);

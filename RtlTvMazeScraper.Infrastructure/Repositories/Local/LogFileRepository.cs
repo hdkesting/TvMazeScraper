@@ -18,7 +18,6 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
     public class LogFileRepository : ILogRepository
     {
         private const string LogPath = @"C:\Temp\Scraper";
-        private static readonly object Padlock = new object();
         private readonly string filename;
 
         /// <summary>
@@ -28,7 +27,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         {
             var now = DateTime.Now;
             Directory.CreateDirectory(LogPath);
-            this.filename = Path.Combine(LogPath, $"Logfile_{now: yyyy-MM-dd-HH-mm-ss}.txt");
+            this.filename = Path.Combine(LogPath, $"Logfile_{now: yyyy-MM-dd_HH-mm-ss}.txt");
         }
 
         /// <summary>
@@ -43,14 +42,8 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
             StringBuilder output = new StringBuilder();
 
             output.Append($"{DateTime.Now.ToString("HH:mm:ss.f")} {logLevel} [{methodName}] - {message}");
-            if (exception == null)
+            if (exception != null)
             {
-                output.AppendLine(".");
-            }
-            else
-            {
-                output.AppendLine(":");
-
                 while (exception != null)
                 {
                     output.AppendLine(exception.ToString());
@@ -60,9 +53,9 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                 output.AppendLine("====");
             }
 
-            lock (Padlock)
+            using (var sw = TextWriter.Synchronized(File.AppendText(this.filename)))
             {
-                File.AppendAllText(this.filename, output.ToString());
+                sw.WriteLine(output.ToString());
             }
         }
     }

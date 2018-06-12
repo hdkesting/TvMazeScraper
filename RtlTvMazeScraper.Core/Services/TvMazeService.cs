@@ -24,18 +24,22 @@ namespace RtlTvMazeScraper.Core.Services
 
         private readonly string hostname;
         private readonly IApiRepository apiRepository;
+        private readonly ILogRepository logRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TvMazeService" /> class.
         /// </summary>
         /// <param name="settingRepository">The setting repository.</param>
         /// <param name="apiRepository">The API repository.</param>
+        /// <param name="logRepository">The log repository.</param>
         public TvMazeService(
             ISettingRepository settingRepository,
-            IApiRepository apiRepository)
+            IApiRepository apiRepository,
+            ILogRepository logRepository)
         {
             this.hostname = settingRepository.TvMazeHost;
             this.apiRepository = apiRepository;
+            this.logRepository = logRepository;
         }
 
         /// <summary>
@@ -63,6 +67,7 @@ namespace RtlTvMazeScraper.Core.Services
             if (status != HttpStatusCode.OK)
             {
                 // some error or 429
+                this.logRepository.Log(Support.LogLevel.Warning, $"Scraping shows for '{searchWord}' returned status {status}.");
                 return null;
             }
 
@@ -82,6 +87,7 @@ namespace RtlTvMazeScraper.Core.Services
                 result.Add(show);
             }
 
+            this.logRepository.Log(Support.LogLevel.Information, $"Scraping for '{searchWord}' returned {result.Count} shows.");
             return result;
         }
 
@@ -98,6 +104,7 @@ namespace RtlTvMazeScraper.Core.Services
 
             if (status != HttpStatusCode.OK)
             {
+                this.logRepository.Log(Support.LogLevel.Warning, $"Scraping cast for #{showid} returned status {status}.");
                 return null;
             }
 
@@ -121,6 +128,7 @@ namespace RtlTvMazeScraper.Core.Services
                 result.Add(member);
             }
 
+            this.logRepository.Log(Support.LogLevel.Information, $"Found {result.Count} cast members for show #{showid}.");
             return result;
         }
 
@@ -144,6 +152,7 @@ namespace RtlTvMazeScraper.Core.Services
                 if (status == Support.Constants.ServerTooBusy)
                 {
                     // too much, so back off
+                    this.logRepository.Log(Support.LogLevel.Debug, $"Server too busy to scrape #{start + count}, backing off.");
                     break;
                 }
 
@@ -179,6 +188,7 @@ namespace RtlTvMazeScraper.Core.Services
                 count++;
             }
 
+            this.logRepository.Log(Support.LogLevel.Information, $"Scraping shows from {start} returned {list.Count} results out of {count} tried.");
             return new ScrapeBatchResult(count, list);
         }
 

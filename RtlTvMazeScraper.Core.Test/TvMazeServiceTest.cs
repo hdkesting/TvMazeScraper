@@ -20,10 +20,11 @@ namespace RtlTvMazeScraper.Core.Test
         public async Task TestSearchByInitial()
         {
             ISettingRepository settingRepo = new Mock.MockSettingsRepository();
+            ILogRepository logRepo = new Infrastructure.Repositories.Local.LogDebugRepository();
             var apiRepo = new Mock.MockApiRepository();
             apiRepo.ReadContent(this.GetType().Assembly.GetManifestResourceStream(this.GetType(), "Mock.Data.TvMazeSearchByA.json"));
 
-            var svc = new TvMazeService(settingRepo, apiRepo);
+            var svc = new TvMazeService(settingRepo, apiRepo, logRepo);
             var result = await svc.ScrapeShowsBySearch("a");
 
             result.Should().NotBeNull();
@@ -36,10 +37,11 @@ namespace RtlTvMazeScraper.Core.Test
         public async Task TestReadCast()
         {
             ISettingRepository settingRepo = new Mock.MockSettingsRepository();
+            ILogRepository logRepo = new Infrastructure.Repositories.Local.LogDebugRepository();
             var apiRepo = new Mock.MockApiRepository();
             apiRepo.ReadContent(this.GetType().Assembly.GetManifestResourceStream(this.GetType(), "Mock.Data.TvMazeATeamCast.json"));
 
-            var svc = new TvMazeService(settingRepo, apiRepo);
+            var svc = new TvMazeService(settingRepo, apiRepo, logRepo);
             var result = await svc.ScrapeCastMembers(1058);
 
             result.Should().NotBeNull();
@@ -54,12 +56,13 @@ namespace RtlTvMazeScraper.Core.Test
         public async Task TestReadShowAndCast_WithOverload()
         {
             ISettingRepository settingRepo = new Mock.MockSettingsRepository();
+            ILogRepository logRepo = new Infrastructure.Repositories.Local.LogDebugRepository();
             var apiRepo = new Mock.MockApiRepository
             {
                 StatusToReturn = (System.Net.HttpStatusCode)429
             };
 
-            var svc = new TvMazeService(settingRepo, apiRepo);
+            var svc = new TvMazeService(settingRepo, apiRepo, logRepo);
             var (count, shows) = await svc.ScrapeById(999_999);
 
             count.Should().Be(0);
@@ -69,12 +72,13 @@ namespace RtlTvMazeScraper.Core.Test
         public async Task TestReadShowAndCast_NothingFound()
         {
             ISettingRepository settingRepo = new Mock.MockSettingsRepository();
+            ILogRepository logRepo = new Infrastructure.Repositories.Local.LogDebugRepository();
             var apiRepo = new Mock.MockApiRepository
             {
                 StatusToReturn = System.Net.HttpStatusCode.NotFound
             };
 
-            var svc = new TvMazeService(settingRepo, apiRepo)
+            var svc = new TvMazeService(settingRepo, apiRepo, logRepo)
             {
                 MaxNumberOfShowsToScrape = 10
             };
@@ -89,10 +93,11 @@ namespace RtlTvMazeScraper.Core.Test
         public async Task TestReadShowAndCast_Success()
         {
             ISettingRepository settingRepo = new Mock.MockSettingsRepository();
+            ILogRepository logRepo = new Infrastructure.Repositories.Local.LogDebugRepository();
             var apiRepo = new Mock.MockApiRepository();
             apiRepo.ReadContent(this.GetType().Assembly.GetManifestResourceStream(this.GetType(), "Mock.Data.TvMazeATeamWithCast.json"));
 
-            var svc = new TvMazeService(settingRepo, apiRepo)
+            var svc = new TvMazeService(settingRepo, apiRepo, logRepo)
             {
                 MaxNumberOfShowsToScrape = 1
             };

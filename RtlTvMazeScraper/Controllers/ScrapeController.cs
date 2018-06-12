@@ -8,6 +8,7 @@ namespace RtlTvMazeScraper.Controllers
     using System.Threading.Tasks;
     using System.Web.Mvc;
     using RtlTvMazeScraper.Core.Interfaces;
+    using RtlTvMazeScraper.Core.Services;
 
     /// <summary>
     /// A controller that performs the scraping of the TvMaze site.
@@ -17,18 +18,22 @@ namespace RtlTvMazeScraper.Controllers
     {
         private readonly IShowService showService;
         private readonly ITvMazeService tvMazeService;
+        private readonly LogService logService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScrapeController" /> class.
         /// </summary>
         /// <param name="showService">The show service.</param>
         /// <param name="tvMazeService">The tv maze service.</param>
+        /// <param name="logService">The log service.</param>
         public ScrapeController(
             IShowService showService,
-            ITvMazeService tvMazeService)
+            ITvMazeService tvMazeService,
+            LogService logService)
         {
             this.showService = showService;
             this.tvMazeService = tvMazeService;
+            this.logService = logService;
         }
 
         /// <summary>
@@ -118,15 +123,18 @@ namespace RtlTvMazeScraper.Controllers
                     if (failcount > 3)
                     {
                         // apparently no more shows to load
+                        this.logService.LogInformation($"Failed {failcount} times to get a batch of data - aborting.");
                         return this.RedirectToAction(nameof(HomeController.Index), "Home");
                     }
                 }
 
                 failcount++;
                 this.TempData[key] = failcount;
+                this.logService.LogInformation($"Failed {failcount} times to get a batch of data.");
             }
 
             this.ViewBag.Start = start + count;
+            this.logService.LogDebug($"Pausing to start scraping from {this.ViewBag.Start}.");
             return this.View();
         }
     }
