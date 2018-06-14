@@ -5,7 +5,6 @@
 namespace RtlTvMazeScraper.Controllers
 {
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using System.Web.Http;
     using Newtonsoft.Json.Linq;
@@ -53,31 +52,7 @@ namespace RtlTvMazeScraper.Controllers
 
             var shows = await this.showService.GetShowsWithCast(page, pagesize);
 
-            JArray result = new JArray();
-
-            foreach (var show in shows)
-            {
-                var cast = new JArray();
-
-                // order cast by birthdate, descending. As per requirement.
-                foreach (var member in show.CastMembers.OrderByDescending(m => m.Birthdate))
-                {
-                    var cm = new JObject(
-                        new JProperty("id", member.MemberId),
-                        new JProperty("name", member.Name),
-                        new JProperty("birthday", member.Birthdate.HasValue ? member.Birthdate.Value.ToString("yyyy-MM-dd") : null));
-                    cast.Add(cm);
-                }
-
-                var showObj = new JObject(
-                    new JProperty("id", show.Id),
-                    new JProperty("name", show.Name),
-                    new JProperty("cast", cast));
-
-                result.Add(showObj);
-            }
-
-            return result;
+            return Converter.ShowsToJArray(shows);
         }
 
         /// <summary>
