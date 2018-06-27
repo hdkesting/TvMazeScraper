@@ -79,6 +79,10 @@ namespace RtlTvMazeScraper.UI
                 app.UseDeveloperExceptionPage();
             }
 
+            // static files
+            ////app.UseDefaultFiles();
+            ////app.UseStaticFiles(new StaticFileOptions { OnPrepareResponse = this.PrepareCompressedResponse });
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
