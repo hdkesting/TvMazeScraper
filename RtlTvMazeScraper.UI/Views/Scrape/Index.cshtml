@@ -1,0 +1,13 @@
+﻿@model int
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Start or resume scraping</h2>
+
+<ul>
+    <li><a href="@Url.Action("Scrape")">Start scraping from ID 1</a></li>
+    <li><a href="@Url.Action("Scrape",new { start = Model })">Start scraping from ID @Model</a></li>
+    <li><a href="@Url.Action("ScrapeAlpha")">Use alphabet to perform an initial sampling scrape</a></li>
+</ul>

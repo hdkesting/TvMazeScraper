@@ -1,0 +1,32 @@
+﻿@model RtlTvMazeScraper.UI.ViewModels.ScrapeAlphaViewModel
+
+
+
+@{
+    ViewBag.Title = "Scrape by initial";
+}
+
+<h2>Scrape by initial letter</h2>
+
+<p>Pausing to scrape by initial <em>@Model.NextInitial</em></p>
+
+@if (!string.IsNullOrWhiteSpace(Model.PreviousInitial))
+{
+    <p>The previous scrape for '@Model.PreviousInitial' found @Model.PreviousCount shows.</p>
+}
+
+<blockquote>
+    <h2>Explanation</h2>
+    <p>
+        Try and read a batch of shows by a search for a letter, which cycles once through the alphabet. This way an initial scraping is performed quickly.
+        After each batch is read (and stored locally) there is a short pause before reading the next one to prevent overloading the remote system.
+    </p>
+    <p>
+        The scraping will stop automatically after processing the "z".
+    </p>
+</blockquote>
+
+<script type="text/javascript">
+    // client-side pause before scraping the next batch
+    setTimeout(function () { location.href = "@Url.Action("ScrapeAlpha", new { initial = Model.NextInitial })" }, 5000);
+</script>
