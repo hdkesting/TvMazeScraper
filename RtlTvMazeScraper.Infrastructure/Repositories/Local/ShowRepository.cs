@@ -1,14 +1,15 @@
-﻿// <copyright file="ShowRepository.cs" company="Hans Kesting">
-// Copyright (c) Hans Kesting. All rights reserved.
+﻿// <copyright file="ShowRepository.cs" company="Hans Keﬆing">
+// Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
 namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.Entity;
     using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Transfer;
@@ -19,24 +20,20 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
     /// <seealso cref="IShowRepository" />
     public class ShowRepository : IShowRepository
     {
-        private readonly string connstr;
+        private readonly ILogger<ShowRepository> logger;
         private readonly IShowContext showContext;
-        private readonly ILogRepository logRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShowRepository" /> class.
         /// </summary>
-        /// <param name="settingRepository">The setting repository.</param>
-        /// <param name="logRepository">The log repository.</param>
+        /// <param name="logger">The logger.</param>
         /// <param name="showContext">The show context.</param>
         public ShowRepository(
-            ISettingRepository settingRepository,
-            ILogRepository logRepository,
+            ILogger<ShowRepository> logger,
             IShowContext showContext)
         {
-            this.connstr = settingRepository.ConnectionString;
+            this.logger = logger;
             this.showContext = showContext;
-            this.logRepository = logRepository;
         }
 
         /// <summary>
@@ -117,7 +114,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                 }
                 catch (Exception ex)
                 {
-                    this.logRepository.Log(Core.Support.LogLevel.Error, $"Error storing show #{show.Id}.", ex);
+                    this.logger.LogError(ex, "Error storing show #{showId}.", show.Id);
                 }
             }
         }

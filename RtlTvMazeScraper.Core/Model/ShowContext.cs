@@ -1,12 +1,11 @@
-﻿// <copyright file="ShowContext.cs" company="Hans Kesting">
-// Copyright (c) Hans Kesting. All rights reserved.
+﻿// <copyright file="ShowContext.cs" company="Hans Keﬆing">
+// Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Infrastructure.Data
+namespace RtlTvMazeScraper.Core.Model
 {
-    using System.Data.Entity;
+    using Microsoft.EntityFrameworkCore;
     using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Model;
 
     /// <summary>
     /// The DB context for the show database.
@@ -15,10 +14,11 @@ namespace RtlTvMazeScraper.Infrastructure.Data
     public class ShowContext : DbContext, IShowContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShowContext"/> class and specifies a connection string to use.
+        /// Initializes a new instance of the <see cref="ShowContext"/> class.
         /// </summary>
-        public ShowContext()
-            : base("ShowContext")
+        /// <param name="options">The options.</param>
+        public ShowContext(DbContextOptions<ShowContext> options)
+            : base(options)
         {
         }
 

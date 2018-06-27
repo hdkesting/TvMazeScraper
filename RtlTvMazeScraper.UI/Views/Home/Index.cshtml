@@ -1,0 +1,34 @@
+﻿@model RtlTvMazeScraper.Core.Transfer.StorageCount
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>TVMaze scraper</h1>
+    <p class="lead">This application gets tv shows and cast from TVMaze.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Getting started</h2>
+        <p>
+            (re)load the shows from TVMaze.
+        </p>
+        <p>
+            <a href="@Url.Action("Index", "Scrape")">Start scraper</a>
+        </p>
+    </div>
+    <div class="col-md-4">
+        <h2>Get shows</h2>
+        <p>
+            Get the JSON. Adjust the page (0-based pagenumber) and the pagesize (number of shows per page) in the URL.
+        </p>
+        <p>
+            Currently available: @Model.ShowCount.ToString("N0") shows with a total of @Model.MemberCount.ToString("N0") cast members.
+        </p>
+        <p>
+            <a href="@Url.Action("Index", "List", new { page = 0, pagesize=20 })">List shows as JSON</a>.
+        </p>
+    </div>
+</div>

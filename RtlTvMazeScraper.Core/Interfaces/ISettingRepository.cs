@@ -1,5 +1,5 @@
-﻿// <copyright file="ISettingRepository.cs" company="Hans Kesting">
-// Copyright (c) Hans Kesting. All rights reserved.
+﻿// <copyright file="ISettingRepository.cs" company="Hans Keﬆing">
+// Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
 namespace RtlTvMazeScraper.Core.Interfaces
@@ -9,14 +9,6 @@ namespace RtlTvMazeScraper.Core.Interfaces
     /// </summary>
     public interface ISettingRepository
     {
-        /// <summary>
-        /// Gets the connection string to the local database.
-        /// </summary>
-        /// <value>
-        /// The connection string.
-        /// </value>
-        string ConnectionString { get; }
-
         /// <summary>
         /// Gets the url for TV Maze.
         /// </summary>

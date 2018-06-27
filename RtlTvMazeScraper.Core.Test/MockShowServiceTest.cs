@@ -1,5 +1,5 @@
-﻿// <copyright file="MockShowServiceTest.cs" company="Hans Kesting">
-// Copyright (c) Hans Kesting. All rights reserved.
+﻿// <copyright file="MockShowServiceTest.cs" company="Hans Keﬆing">
+// Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
 namespace RtlTvMazeScraper.Core.Test
@@ -8,36 +8,52 @@ namespace RtlTvMazeScraper.Core.Test
     using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Services;
     using RtlTvMazeScraper.Infrastructure.Repositories.Local;
 
+    /// <summary>
+    /// Tests the <see cref="ShowService"/> against an in-memory database.
+    /// </summary>
     [TestClass]
     public class MockShowServiceTest
     {
+        private ShowContext context;
         private ShowService showService;
-        private Mock.MockShowContext mockContext;
 
+        /// <summary>
+        /// Initializes this test instance.
+        /// </summary>
         [TestInitialize]
         public void Initialize()
         {
-            var settingsRepo = new SettingRepository();
-            var logRepo = new LogDebugRepository();
-            this.mockContext = new Mock.MockShowContext();
-            var showRepo = new ShowRepository(settingsRepo, logRepo, this.mockContext);
-            this.showService = new ShowService(showRepo, logRepo);
+            var options = new DbContextOptionsBuilder<ShowContext>()
+                                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                                 .Options;
+            this.context = new ShowContext(options);
+            var repologger = new Mock.DebugLogger<ShowRepository>();
+            var showRepo = new ShowRepository(repologger, this.context);
+
+            var svclogger = new Mock.DebugLogger<ShowService>();
+            this.showService = new ShowService(showRepo, svclogger);
         }
 
+        /// <summary>
+        /// Tests the item count.
+        /// </summary>
+        /// <returns>A Task.</returns>
         [TestMethod]
         public async Task TestItemCount()
         {
             // arrange
-            this.mockContext.Shows.Add(new Model.Show { Id = 42, Name = "HitchHikers Guide to the Galaxy" });
-            this.mockContext.Shows.Add(new Model.Show { Id = 12, Name = "Some other show" });
-            this.mockContext.CastMembers.Add(new Model.CastMember { MemberId = 1, ShowId = 42, Name = "Ford Prefect", Birthdate = new DateTime(1500, 1, 1) });
-            this.mockContext.CastMembers.Add(new Model.CastMember { MemberId = 2, ShowId = 42, Name = "Arthur Dent", Birthdate = new DateTime(1960, 12, 31) });
-            this.mockContext.CastMembers.Add(new Model.CastMember { MemberId = 5, ShowId = 12, Name = "Someone", Birthdate = new DateTime(1980, 12, 31) });
-            this.mockContext.SaveChanges();
+            this.context.Shows.Add(new Model.Show { Id = 42, Name = "HitchHikers Guide to the Galaxy" });
+            this.context.Shows.Add(new Model.Show { Id = 12, Name = "Some other show" });
+            this.context.CastMembers.Add(new Model.CastMember { MemberId = 1, ShowId = 42, Name = "Ford Prefect", Birthdate = new DateTime(1500, 1, 1) });
+            this.context.CastMembers.Add(new Model.CastMember { MemberId = 2, ShowId = 42, Name = "Arthur Dent", Birthdate = new DateTime(1960, 12, 31) });
+            this.context.CastMembers.Add(new Model.CastMember { MemberId = 5, ShowId = 12, Name = "Someone", Birthdate = new DateTime(1980, 12, 31) });
+            this.context.SaveChanges();
 
             // act
             var counts = await this.showService.GetCounts();
@@ -47,16 +63,20 @@ namespace RtlTvMazeScraper.Core.Test
             counts.MemberCount.Should().Be(3, because: "I added 3.");
         }
 
+        /// <summary>
+        /// Gets the shows with cast.
+        /// </summary>
+        /// <returns>A Task.</returns>
         [TestMethod]
         public async Task GetShowsWithCast()
         {
             // arrange
-            this.mockContext.Shows.Add(new Model.Show { Id = 42, Name = "HitchHikers Guide to the Galaxy" });
-            this.mockContext.Shows.Add(new Model.Show { Id = 12, Name = "Some other show" });
-            this.mockContext.CastMembers.Add(new Model.CastMember { MemberId = 1, ShowId = 42, Name = "Ford Prefect", Birthdate = new DateTime(1500, 1, 1) });
-            this.mockContext.CastMembers.Add(new Model.CastMember { MemberId = 2, ShowId = 42, Name = "Arthur Dent", Birthdate = new DateTime(1960, 12, 31) });
-            this.mockContext.CastMembers.Add(new Model.CastMember { MemberId = 5, ShowId = 12, Name = "Someone", Birthdate = new DateTime(1980, 12, 31) });
-            this.mockContext.SaveChanges();
+            this.context.Shows.Add(new Model.Show { Id = 42, Name = "HitchHikers Guide to the Galaxy" });
+            this.context.Shows.Add(new Model.Show { Id = 12, Name = "Some other show" });
+            this.context.CastMembers.Add(new Model.CastMember { MemberId = 1, ShowId = 42, Name = "Ford Prefect", Birthdate = new DateTime(1500, 1, 1) });
+            this.context.CastMembers.Add(new Model.CastMember { MemberId = 2, ShowId = 42, Name = "Arthur Dent", Birthdate = new DateTime(1960, 12, 31) });
+            this.context.CastMembers.Add(new Model.CastMember { MemberId = 5, ShowId = 12, Name = "Someone", Birthdate = new DateTime(1980, 12, 31) });
+            this.context.SaveChanges();
 
             // act
             var shows = await this.showService.GetShowsWithCast(0, 10);
@@ -67,6 +87,5 @@ namespace RtlTvMazeScraper.Core.Test
 
             shows.Where(s => s.CastMembers.Any()).Count().Should().Be(2, because: "Both shows have cast.");
         }
-
     }
 }

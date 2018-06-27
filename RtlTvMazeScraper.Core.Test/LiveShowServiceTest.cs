@@ -1,14 +1,16 @@
-﻿// <copyright file="LiveShowServiceTest.cs" company="Hans Kesting">
-// Copyright (c) Hans Kesting. All rights reserved.
+﻿// <copyright file="LiveShowServiceTest.cs" company="Hans Keﬆing">
+// Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
 namespace RtlTvMazeScraper.Core.Test
 {
-    using System;
+    using System.Configuration;
     using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Services;
     using RtlTvMazeScraper.Infrastructure.Repositories.Local;
 
@@ -22,21 +24,33 @@ namespace RtlTvMazeScraper.Core.Test
 #if !DEBUG
     [Ignore]
 #endif
-    public sealed class LiveShowServiceTest : IDisposable
+    public sealed class LiveShowServiceTest
     {
         private ShowService showService;
-        private Infrastructure.Data.ShowContext liveShowContext;
 
+        /// <summary>
+        /// Initializes this test instance.
+        /// </summary>
         [TestInitialize]
         public void Initialize()
         {
-            var settingsRepo = new SettingRepository();
-            var logRepo = new LogDebugRepository();
-            this.liveShowContext = new Infrastructure.Data.ShowContext();
-            var showRepo = new ShowRepository(settingsRepo, logRepo, this.liveShowContext);
-            this.showService = new ShowService(showRepo, logRepo);
+            var connstr = ConfigurationManager.ConnectionStrings["ShowConnection"].ConnectionString;
+            var options = new DbContextOptionsBuilder<ShowContext>()
+                                 .UseSqlServer(connstr)
+                                 .Options;
+            var context = new ShowContext(options);
+
+            var repologger = new Mock.DebugLogger<ShowRepository>();
+            var showRepo = new ShowRepository(repologger, context);
+
+            var svclogger = new Mock.DebugLogger<ShowService>();
+            this.showService = new ShowService(showRepo, svclogger);
         }
 
+        /// <summary>
+        /// Tests the live item count.
+        /// </summary>
+        /// <returns>A Task.</returns>
         [TestMethod]
         public async Task TestLiveItemCount()
         {
@@ -46,6 +60,10 @@ namespace RtlTvMazeScraper.Core.Test
             counts.MemberCount.Should().BeGreaterThan(0, because: "I expect multiple per show.");
         }
 
+        /// <summary>
+        /// Gets the shows with cast.
+        /// </summary>
+        /// <returns>A Task.</returns>
         [TestMethod]
         public async Task GetShowsWithCast()
         {
@@ -57,6 +75,10 @@ namespace RtlTvMazeScraper.Core.Test
             shows.Where(s => s.CastMembers.Any()).Count().Should().BeGreaterThan(0, because: "I expect at least some to have a cast defined.");
         }
 
+        /// <summary>
+        /// Gets the shows with cast, checking paging.
+        /// </summary>
+        /// <returns>A Task.</returns>
         [TestMethod]
         public async Task GetShowsWithCast_CheckPaging()
         {
@@ -74,6 +96,10 @@ namespace RtlTvMazeScraper.Core.Test
             shows3.Where(s3 => shows0.Any(s0 => s0.Id == s3.Id)).Count().Should().Be(0, because: "Ï requested a *different* page");
         }
 
+        /// <summary>
+        /// Gets the maximum show identifier.
+        /// </summary>
+        /// <returns>A Task.</returns>
         [TestMethod]
         public async Task GetMaxShowId()
         {
@@ -82,6 +108,10 @@ namespace RtlTvMazeScraper.Core.Test
             max.Should().BeGreaterThan(1000, because: "there are at least this mamy shows stored.");
         }
 
+        /// <summary>
+        /// Gets the single show.
+        /// </summary>
+        /// <returns>A Task.</returns>
         [TestMethod]
         public async Task GetSingleShow()
         {
@@ -90,14 +120,6 @@ namespace RtlTvMazeScraper.Core.Test
             show.Should().NotBeNull();
             show.Id.Should().BeGreaterThan(0);
             show.CastMembers.Count.Should().BeGreaterThan(0);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            this.liveShowContext?.Dispose();
         }
     }
 }

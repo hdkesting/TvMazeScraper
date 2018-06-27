@@ -1,5 +1,5 @@
-﻿// <copyright file="TvMazeService.cs" company="Hans Kesting">
-// Copyright (c) Hans Kesting. All rights reserved.
+﻿// <copyright file="TvMazeService.cs" company="Hans Keﬆing">
+// Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
 namespace RtlTvMazeScraper.Core.Services
@@ -9,6 +9,7 @@ namespace RtlTvMazeScraper.Core.Services
     using System.Globalization;
     using System.Net;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json.Linq;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Model;
@@ -24,22 +25,22 @@ namespace RtlTvMazeScraper.Core.Services
 
         private readonly string hostname;
         private readonly IApiRepository apiRepository;
-        private readonly ILogRepository logRepository;
+        private readonly ILogger<TvMazeService> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TvMazeService" /> class.
         /// </summary>
         /// <param name="settingRepository">The setting repository.</param>
         /// <param name="apiRepository">The API repository.</param>
-        /// <param name="logRepository">The log repository.</param>
+        /// <param name="logger">The logger.</param>
         public TvMazeService(
             ISettingRepository settingRepository,
             IApiRepository apiRepository,
-            ILogRepository logRepository)
+            ILogger<TvMazeService> logger)
         {
             this.hostname = settingRepository.TvMazeHost;
             this.apiRepository = apiRepository;
-            this.logRepository = logRepository;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -67,7 +68,7 @@ namespace RtlTvMazeScraper.Core.Services
             if (status != HttpStatusCode.OK)
             {
                 // some error or 429
-                this.logRepository.Log(Support.LogLevel.Warning, $"Scraping shows for '{searchWord}' returned status {status}.");
+                this.logger.LogWarning("Scraping shows for '{searchWord}' returned status {status}.", searchWord, status);
                 return null;
             }
 
@@ -87,7 +88,7 @@ namespace RtlTvMazeScraper.Core.Services
                 result.Add(show);
             }
 
-            this.logRepository.Log(Support.LogLevel.Information, $"Scraping for '{searchWord}' returned {result.Count} shows.");
+            this.logger.LogInformation("Scraping for '{searchWord}' returned {resultCount} shows.", searchWord, result.Count);
             return result;
         }
 
@@ -104,7 +105,7 @@ namespace RtlTvMazeScraper.Core.Services
 
             if (status != HttpStatusCode.OK)
             {
-                this.logRepository.Log(Support.LogLevel.Warning, $"Scraping cast for #{showid} returned status {status}.");
+                this.logger.LogWarning("Scraping cast for #{showid} returned status {status}.", showid, status);
                 return null;
             }
 
@@ -128,7 +129,7 @@ namespace RtlTvMazeScraper.Core.Services
                 result.Add(member);
             }
 
-            this.logRepository.Log(Support.LogLevel.Information, $"Found {result.Count} cast members for show #{showid}.");
+            this.logger.LogInformation("Found {resultCount} cast members for show #{showid}.", result.Count, showid);
             return result;
         }
 
@@ -152,7 +153,7 @@ namespace RtlTvMazeScraper.Core.Services
                 if (status == Support.Constants.ServerTooBusy)
                 {
                     // too much, so back off
-                    this.logRepository.Log(Support.LogLevel.Debug, $"Server too busy to scrape #{start + count}, backing off.");
+                    this.logger.LogDebug("Server too busy to scrape #{showid}, backing off.", start + count);
                     break;
                 }
 
@@ -188,7 +189,7 @@ namespace RtlTvMazeScraper.Core.Services
                 count++;
             }
 
-            this.logRepository.Log(Support.LogLevel.Information, $"Scraping shows from {start} returned {list.Count} results out of {count} tried.");
+            this.logger.LogInformation("Scraping shows from {start} returned {returnedCount} results out of {requestedCount} tried.", start, list.Count, count);
             return new ScrapeBatchResult(count, list);
         }
 

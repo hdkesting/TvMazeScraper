@@ -1,11 +1,11 @@
-﻿// <copyright file="IShowContext.cs" company="Hans Kesting">
-// Copyright (c) Hans Kesting. All rights reserved.
+﻿// <copyright file="IShowContext.cs" company="Hans Keﬆing">
+// Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
 namespace RtlTvMazeScraper.Core.Interfaces
 {
-    using System.Data.Entity;
     using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
     using RtlTvMazeScraper.Core.Model;
 
     /// <summary>
@@ -38,7 +38,10 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <summary>
         /// Saves the changes asynchronously.
         /// </summary>
-        /// <returns>Number of changes.</returns>
-        Task<int> SaveChangesAsync();
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// Number of changes.
+        /// </returns>
+        Task<int> SaveChangesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     }
 }
