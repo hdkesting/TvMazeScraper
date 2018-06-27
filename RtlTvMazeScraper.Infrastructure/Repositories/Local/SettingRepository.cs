@@ -4,7 +4,6 @@
 
 namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
 {
-    using System.Configuration;
     using RtlTvMazeScraper.Core.Interfaces;
 
     /// <summary>
@@ -14,11 +13,11 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
     public class SettingRepository : ISettingRepository
     {
         /// <summary>
-        /// Gets the url for TV Maze.
+        /// Gets or sets the url for TV Maze.
         /// </summary>
         /// <value>
         /// The tv maze host.
         /// </value>
-        public string TvMazeHost => "TODO"; // ConfigurationManager.AppSettings["tvmaze"];
+        public string TvMazeHost { get; set; }
     }
 }

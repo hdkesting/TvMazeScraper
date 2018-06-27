@@ -5,8 +5,8 @@ A sample application that scrapes data about (TV) shows and their cast from TVMa
 This should showcase industry-standard practices in coding style.
 
 ## Background
-For a new metadata ingester we need a service that provides the cast of all the tv shows in the TVMaze database, so we can enrich our metadata system with this information. The TVMaze database provides a public REST API that you can query for this data.
-http://www.tvmaze.com/api
+For a new metadata ingester we need a service that provides the cast of all the tv shows in the TVMaze database, so we can enrich our metadata system with this information. The TVMaze database provides a public REST API that you can query for this data:
+http://www.tvmaze.com/api  
 This API requires no authentication but it is rate limited, so keep that in mind.
 
 ## Assignment
