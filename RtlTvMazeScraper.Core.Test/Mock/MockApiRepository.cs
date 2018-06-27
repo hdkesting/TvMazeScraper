@@ -1,5 +1,5 @@
-﻿// <copyright file="MockApiRepository.cs" company="Hans Kesting">
-// Copyright (c) Hans Kesting. All rights reserved.
+﻿// <copyright file="MockApiRepository.cs" company="Hans Keﬆing">
+// Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
 namespace RtlTvMazeScraper.Core.Test.Mock
@@ -9,6 +9,10 @@ namespace RtlTvMazeScraper.Core.Test.Mock
     using System.Threading.Tasks;
     using RtlTvMazeScraper.Core.Transfer;
 
+    /// <summary>
+    /// Mock version of TvMaze API repository, reading from a Stream (usually an embedded resource).
+    /// </summary>
+    /// <seealso cref="RtlTvMazeScraper.Core.Interfaces.IApiRepository" />
     public class MockApiRepository : Interfaces.IApiRepository
     {
         private string contentToReturn;

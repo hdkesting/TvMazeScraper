@@ -27,6 +27,7 @@ namespace RtlTvMazeScraper.Core.Test
     public sealed class LiveShowServiceTest
     {
         private ShowService showService;
+        private Mock.DebugLogger<ShowService> showServiceLogger;
 
         /// <summary>
         /// Initializes this test instance.
@@ -34,7 +35,8 @@ namespace RtlTvMazeScraper.Core.Test
         [TestInitialize]
         public void Initialize()
         {
-            var connstr = ConfigurationManager.ConnectionStrings["ShowConnection"].ConnectionString;
+            // var connstr = ConfigurationManager.ConnectionStrings["ShowConnection"].ConnectionString;
+            var connstr = @"Server=.\sqlexpress;Database=tvmaze;Trusted_Connection=True;Connection Timeout=30;Application Name=TvMazeScraperTest";
             var options = new DbContextOptionsBuilder<ShowContext>()
                                  .UseSqlServer(connstr)
                                  .Options;
@@ -43,8 +45,8 @@ namespace RtlTvMazeScraper.Core.Test
             var repologger = new Mock.DebugLogger<ShowRepository>();
             var showRepo = new ShowRepository(repologger, context);
 
-            var svclogger = new Mock.DebugLogger<ShowService>();
-            this.showService = new ShowService(showRepo, svclogger);
+            this.showServiceLogger = new Mock.DebugLogger<ShowService>();
+            this.showService = new ShowService(showRepo, this.showServiceLogger);
         }
 
         /// <summary>
@@ -56,6 +58,7 @@ namespace RtlTvMazeScraper.Core.Test
         {
             var counts = await this.showService.GetCounts();
 
+            this.showServiceLogger.ErrorCount.Should().Be(0, because: "I don't want errors.");
             counts.ShowCount.Should().BeGreaterThan(0, because: "I expect hundreds.");
             counts.MemberCount.Should().BeGreaterThan(0, because: "I expect multiple per show.");
         }
@@ -105,7 +108,7 @@ namespace RtlTvMazeScraper.Core.Test
         {
             var max = await this.showService.GetMaxShowId();
 
-            max.Should().BeGreaterThan(1000, because: "there are at least this mamy shows stored.");
+            max.Should().BeGreaterThan(1000, because: "there are at least this many shows stored.");
         }
 
         /// <summary>

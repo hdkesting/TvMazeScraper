@@ -5,8 +5,6 @@
 namespace RtlTvMazeScraper.Core.Test.Mock
 {
     using System;
-    using System.Collections.Generic;
-    using System.Text;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -16,6 +14,22 @@ namespace RtlTvMazeScraper.Core.Test.Mock
     /// <seealso cref="Microsoft.Extensions.Logging.ILogger{T}" />
     public class DebugLogger<T> : ILogger<T>
     {
+        /// <summary>
+        /// Gets the count of warnings encountered.
+        /// </summary>
+        /// <value>
+        /// The warn count.
+        /// </value>
+        public int WarnCount { get; private set; }
+
+        /// <summary>
+        /// Gets the count of errors encountered.
+        /// </summary>
+        /// <value>
+        /// The error count.
+        /// </value>
+        public int ErrorCount { get; private set; }
+
         /// <summary>
         /// Begins the scope.
         /// </summary>
@@ -51,8 +65,36 @@ namespace RtlTvMazeScraper.Core.Test.Mock
         /// <param name="formatter">The formatter.</param>
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            var msg = formatter(state, exception);
+            switch (logLevel)
+            {
+                case LogLevel.Warning:
+                    this.WarnCount++;
+                    break;
+
+                case LogLevel.Error:
+                case LogLevel.Critical:
+                    this.ErrorCount++;
+                    break;
+            }
+
+            var msg = formatter?.Invoke(state, exception);
             System.Diagnostics.Debug.WriteLine($"{typeof(T).Name} [{logLevel}] - {msg}.");
+
+            while (exception != null)
+            {
+                System.Diagnostics.Debug.WriteLine(exception);
+                System.Diagnostics.Debug.WriteLine(new string('-', 20));
+                exception = exception.InnerException;
+            }
+        }
+
+        /// <summary>
+        /// Resets the counts.
+        /// </summary>
+        public void ResetCounts()
+        {
+            this.WarnCount = 0;
+            this.ErrorCount = 0;
         }
     }
 }
