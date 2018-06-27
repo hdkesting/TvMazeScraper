@@ -23,32 +23,34 @@ We want the REST API to satisfy the following business requirements.
 The REST API should provide a JSON response when a call to a HTTP endpoint is made (it's up to you what URI).
 Example response:
 
-        [
-          {
-            "id": 1,
-            "name": "Game of Thrones",
-            "cast": [
-                {
-                  "id": 9,
-                  "name": "Dean Norris",
-                  "birthday": "1963-04-08"
-                },
-                {
-                  "id": 7,
-                  "name": "Mike Vogel",
-                  "birthday": "1979-07-17"
-                }
-              ]
-          },
-          {
-            "id": 4,
-            "name": "Big Bang Theory",
-            "cast": [
-                {
-                  "id": 6,
-                  "name": "Michael Emerson",
-                  "birthday": "1950-01-01"
-                }
-              ]
-          }
+```json
+[
+    {
+    "id": 1,
+    "name": "Game of Thrones",
+    "cast": [
+        {
+            "id": 9,
+            "name": "Dean Norris",
+            "birthday": "1963-04-08"
+        },
+        {
+            "id": 7,
+            "name": "Mike Vogel",
+            "birthday": "1979-07-17"
+        }
         ]
+    },
+    {
+    "id": 4,
+    "name": "Big Bang Theory",
+    "cast": [
+        {
+            "id": 6,
+            "name": "Michael Emerson",
+            "birthday": "1950-01-01"
+        }
+        ]
+    }
+]
+```
