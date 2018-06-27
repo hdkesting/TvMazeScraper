@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A650F416-0B35-46B4-A951-7C56AB26749B}"
 	ProjectSection(SolutionItems) = preProject
 		Documentation.md = Documentation.md
+		MyRuleSet.ruleset = MyRuleSet.ruleset
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -15,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RtlTvMazeScraper.Core", "Rt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RtlTvMazeScraper.Infrastructure", "RtlTvMazeScraper.Infrastructure\RtlTvMazeScraper.Infrastructure.csproj", "{271730F8-730E-43F0-B893-4726F6D811DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RtlTvMazeScraper.Core.Test", "RtlTvMazeScraper.Core.Test\RtlTvMazeScraper.Core.Test.csproj", "{2A16D067-52FF-439B-95DF-F2F7E8D7034B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RtlTvMazeScraper.Core.Test", "RtlTvMazeScraper.Core.Test\RtlTvMazeScraper.Core.Test.csproj", "{2A16D067-52FF-439B-95DF-F2F7E8D7034B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -63,7 +63,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// </returns>
         public async Task<List<Show>> ScrapeShowsBySearch(string searchWord)
         {
-            var (status, json) = await this.apiRepository.RequestJson($"{this.hostname}/search/shows?q={searchWord}", retryOnBusy: true);
+            var (status, json) = await this.apiRepository.RequestJson(new Uri($"{this.hostname}/search/shows?q={searchWord}"), retryOnBusy: true).ConfigureAwait(false);
 
             if (status != HttpStatusCode.OK)
             {
@@ -101,7 +101,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// </returns>
         public async Task<List<CastMember>> ScrapeCastMembers(int showid)
         {
-            var (status, json) = await this.apiRepository.RequestJson($"{this.hostname}/shows/{showid}/cast", retryOnBusy: true);
+            var (status, json) = await this.apiRepository.RequestJson(new Uri($"{this.hostname}/shows/{showid}/cast"), retryOnBusy: true).ConfigureAwait(false);
 
             if (status != HttpStatusCode.OK)
             {
@@ -148,7 +148,7 @@ namespace RtlTvMazeScraper.Core.Services
 
             while (count < this.MaxNumberOfShowsToScrape)
             {
-                var (status, json) = await this.apiRepository.RequestJson($"{this.hostname}/shows/{start + count}?embed=cast", false);
+                var (status, json) = await this.apiRepository.RequestJson(new Uri($"{this.hostname}/shows/{start + count}?embed=cast"), false).ConfigureAwait(false);
 
                 if (status == Support.Constants.ServerTooBusy)
                 {

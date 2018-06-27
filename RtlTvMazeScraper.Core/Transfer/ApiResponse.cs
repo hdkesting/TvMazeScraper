@@ -1,5 +1,5 @@
-﻿// <copyright file="ApiResponse.cs" company="Hans Kesting">
-// Copyright (c) Hans Kesting. All rights reserved.
+﻿// <copyright file="ApiResponse.cs" company="Hans Keﬆing">
+// Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
 namespace RtlTvMazeScraper.Core.Transfer
