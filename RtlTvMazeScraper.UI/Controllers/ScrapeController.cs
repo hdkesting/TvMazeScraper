@@ -54,7 +54,7 @@ namespace RtlTvMazeScraper.UI.Controllers
         /// </summary>
         /// <param name="initial">The initial to search for.</param>
         /// <returns>A View or a redirect.</returns>
-        public async Task<ActionResult> ScrapeAlpha(string initial)
+        public async Task<ActionResult> ScrapeAlpha(string initial = null)
         {
             const string firstInitial = "A";
             const string lastInitial = "Z";
