@@ -23,17 +23,19 @@ namespace RtlTvMazeScraper.Core.Model
         /// </returns>
         public bool Equals(CastMember x, CastMember y)
         {
-            if (x == null && y == null)
+            if (x is null && y is null)
             {
+                // both null - I consider that equal
                 return true;
             }
 
-            if (x == null || y == null)
+            if (x is null || y is null)
             {
+                // one is null, the other not - so not equal
                 return false;
             }
 
-            return x.MemberId == y.MemberId;
+            return x == y || (x.ShowId == y.ShowId && x.MemberId == y.MemberId);
         }
 
         /// <summary>
@@ -45,7 +47,7 @@ namespace RtlTvMazeScraper.Core.Model
         /// </returns>
         public int GetHashCode(CastMember obj)
         {
-            return (obj.ShowId * 1001) + obj.MemberId;
+            return (obj.ShowId * 1000_000) + obj.MemberId;
         }
     }
 }
