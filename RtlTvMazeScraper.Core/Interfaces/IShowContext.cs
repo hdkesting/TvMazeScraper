@@ -4,6 +4,7 @@
 
 namespace RtlTvMazeScraper.Core.Interfaces
 {
+    using System;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using RtlTvMazeScraper.Core.Model;
@@ -11,6 +12,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
     /// <summary>
     /// Interface for DbContext of shows.
     /// </summary>
+    [CLSCompliant(false)]
     public interface IShowContext
     {
         /// <summary>

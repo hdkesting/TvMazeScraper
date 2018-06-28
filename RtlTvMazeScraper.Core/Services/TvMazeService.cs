@@ -19,6 +19,7 @@ namespace RtlTvMazeScraper.Core.Services
     /// The service that reads TV Maze.
     /// </summary>
     /// <seealso cref="ITvMazeService" />
+    [CLSCompliant(false)]
     public class TvMazeService : ITvMazeService
     {
         private const int DefaultMaximumShows = 40;

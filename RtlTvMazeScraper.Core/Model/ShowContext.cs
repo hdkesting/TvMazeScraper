@@ -4,6 +4,7 @@
 
 namespace RtlTvMazeScraper.Core.Model
 {
+    using System;
     using Microsoft.EntityFrameworkCore;
     using RtlTvMazeScraper.Core.Interfaces;
 
@@ -11,6 +12,7 @@ namespace RtlTvMazeScraper.Core.Model
     /// The DB context for the show database.
     /// </summary>
     /// <seealso cref="Microsoft.EntityFrameworkCore.DbContext" />
+    [CLSCompliant(false)]
     public class ShowContext : DbContext, IShowContext
     {
         /// <summary>

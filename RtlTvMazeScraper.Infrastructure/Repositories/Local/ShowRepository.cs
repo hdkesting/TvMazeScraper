@@ -18,6 +18,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
     /// A repository for locally stored shows.
     /// </summary>
     /// <seealso cref="IShowRepository" />
+    [CLSCompliant(false)]
     public class ShowRepository : IShowRepository
     {
         private readonly ILogger<ShowRepository> logger;

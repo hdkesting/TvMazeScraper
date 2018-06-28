@@ -15,6 +15,7 @@ namespace RtlTvMazeScraper.Core.Services
     /// <summary>
     /// Service to access shows.
     /// </summary>
+    [CLSCompliant(false)]
     public class ShowService : IShowService
     {
         private readonly IShowRepository showRepository;

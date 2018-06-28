@@ -110,10 +110,7 @@ namespace RtlTvMazeScraper.UI
             // repositories
             services.AddTransient<IApiRepository, ApiRepository>();
             services.AddTransient<IShowRepository, ShowRepository>();
-            services.AddSingleton<ISettingRepository, SettingRepository>(sp => new SettingRepository
-            {
-                TvMazeHost = this.Configuration.GetSection("Config")["tvmaze"],
-            });
+            services.AddSingleton<ISettingRepository, SettingRepository>(sp => new SettingRepository(this.Configuration));
 
             // services
             services.AddTransient<IShowService, ShowService>();
