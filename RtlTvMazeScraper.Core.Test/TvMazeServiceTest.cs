@@ -31,7 +31,7 @@ namespace RtlTvMazeScraper.Core.Test
             var svclogger = new Mock.DebugLogger<TvMazeService>();
 
             var svc = new TvMazeService(settingRepo, apiRepo, svclogger);
-            var result = await svc.ScrapeShowsBySearch("a");
+            var result = await svc.ScrapeShowsBySearch("a").ConfigureAwait(false);
 
             result.Should().NotBeNull();
             result.Count.Should().Be(10, because: "there are 10 shows in the sample.");
@@ -52,7 +52,7 @@ namespace RtlTvMazeScraper.Core.Test
             var svclogger = new Mock.DebugLogger<TvMazeService>();
 
             var svc = new TvMazeService(settingRepo, apiRepo, svclogger);
-            var result = await svc.ScrapeCastMembers(1058);
+            var result = await svc.ScrapeCastMembers(1058).ConfigureAwait(false);
 
             result.Should().NotBeNull();
             result.Count.Should().Be(7, because: "there are 7 members in the sample.");
@@ -77,7 +77,7 @@ namespace RtlTvMazeScraper.Core.Test
             };
 
             var svc = new TvMazeService(settingRepo, apiRepo, svclogger);
-            var (count, shows) = await svc.ScrapeById(999_999);
+            var (count, shows) = await svc.ScrapeById(999_999).ConfigureAwait(false);
 
             count.Should().Be(0);
         }
@@ -101,7 +101,7 @@ namespace RtlTvMazeScraper.Core.Test
                 MaxNumberOfShowsToScrape = 10,
             };
 
-            var (count, shows) = await svc.ScrapeById(999_999);
+            var (count, shows) = await svc.ScrapeById(999_999).ConfigureAwait(false);
 
             count.Should().Be(10, because: "I set 10 as the number of tries.");
             shows.Count.Should().Be(0, because: "nothing was supposed to be found.");
@@ -123,7 +123,7 @@ namespace RtlTvMazeScraper.Core.Test
             {
                 MaxNumberOfShowsToScrape = 1,
             };
-            var (count, shows) = await svc.ScrapeById(1058);
+            var (count, shows) = await svc.ScrapeById(1058).ConfigureAwait(false);
 
             shows.Count.Should().Be(1);
             shows[0].CastMembers.Count.Should().Be(7);

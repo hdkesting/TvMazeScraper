@@ -38,7 +38,7 @@ namespace RtlTvMazeScraper.UI.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var counts = await this.showService.GetCounts();
+            var counts = await this.showService.GetCounts().ConfigureAwait(false);
 
             // argument binding is by position, not name
             // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-2.1&tabs=aspnetcore2x#log-message-template

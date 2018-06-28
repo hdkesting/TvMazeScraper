@@ -10,7 +10,7 @@ namespace RtlTvMazeScraper.UI
     /// <summary>
     /// The main application entry point.
     /// </summary>
-    public class Program
+    public static class Program
     {
         /// <summary>
         /// Defines the entry point of the application.

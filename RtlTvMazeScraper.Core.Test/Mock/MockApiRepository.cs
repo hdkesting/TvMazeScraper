@@ -4,6 +4,7 @@
 
 namespace RtlTvMazeScraper.Core.Test.Mock
 {
+    using System;
     using System.IO;
     using System.Net;
     using System.Threading.Tasks;
@@ -48,12 +49,12 @@ namespace RtlTvMazeScraper.Core.Test.Mock
         /// <summary>
         /// Requests the json from the content that was set.
         /// </summary>
-        /// <param name="url">The URL.</param>
+        /// <param name="url">The URL (ignored).</param>
         /// <param name="retryOnBusy">Ignored.</param>
         /// <returns>
         /// The response status and the json (if any).
         /// </returns>
-        public Task<ApiResponse> RequestJson(string url, bool retryOnBusy)
+        public Task<ApiResponse> RequestJson(Uri url, bool retryOnBusy)
         {
             return Task.FromResult(new ApiResponse(this.StatusToReturn, this.contentToReturn));
         }

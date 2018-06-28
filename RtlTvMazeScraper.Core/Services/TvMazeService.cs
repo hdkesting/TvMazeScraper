@@ -63,6 +63,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// </returns>
         public async Task<List<Show>> ScrapeShowsBySearch(string searchWord)
         {
+            // note: not documented, but apparently returns just the first 10 results
             var (status, json) = await this.apiRepository.RequestJson(new Uri($"{this.hostname}/search/shows?q={searchWord}"), retryOnBusy: true).ConfigureAwait(false);
 
             if (status != HttpStatusCode.OK)
@@ -124,7 +125,7 @@ namespace RtlTvMazeScraper.Core.Services
                 };
 
                 var bd = person["birthday"];
-                member.Birthdate = this.GetDate(bd);
+                member.Birthdate = GetDate(bd);
 
                 result.Add(member);
             }
@@ -178,7 +179,7 @@ namespace RtlTvMazeScraper.Core.Services
                         };
 
                         var bd = person["birthday"];
-                        member.Birthdate = this.GetDate(bd);
+                        member.Birthdate = GetDate(bd);
 
                         show.CastMembers.Add(member);
                     }
@@ -193,7 +194,7 @@ namespace RtlTvMazeScraper.Core.Services
             return new ScrapeBatchResult(count, list);
         }
 
-        private DateTime? GetDate(JToken dayValue)
+        private static DateTime? GetDate(JToken dayValue)
         {
             if (dayValue.Type == JTokenType.Date)
             {

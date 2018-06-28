@@ -4,6 +4,8 @@
 
 namespace RtlTvMazeScraper.UI.Controllers
 {
+    using System;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -42,7 +44,7 @@ namespace RtlTvMazeScraper.UI.Controllers
         /// <returns>A View.</returns>
         public async Task<ActionResult> Index()
         {
-            var max = await this.showService.GetMaxShowId();
+            var max = await this.showService.GetMaxShowId().ConfigureAwait(false);
 
             return this.View(max);
         }
@@ -54,42 +56,45 @@ namespace RtlTvMazeScraper.UI.Controllers
         /// <returns>A View or a redirect.</returns>
         public async Task<ActionResult> ScrapeAlpha(string initial)
         {
+            const string firstInitial = "A";
+            const string lastInitial = "Z";
+
             var model = new ScrapeAlphaViewModel();
 
             if (string.IsNullOrEmpty(initial))
             {
-                initial = "a";
+                initial = firstInitial;
             }
             else
             {
-                initial = initial.Substring(0, 1).ToLowerInvariant();
-                if (initial.CompareTo("a") < 0)
+                initial = initial.Substring(0, 1).ToUpperInvariant();
+                if (string.Compare(initial, firstInitial, StringComparison.Ordinal) < 0)
                 {
-                    initial = "a";
+                    initial = firstInitial;
                 }
-                else if (initial.CompareTo("z") > 0)
+                else if (string.Compare(initial, lastInitial, StringComparison.Ordinal) > 0)
                 {
-                    initial = "z";
+                    initial = lastInitial;
                 }
 
                 model.PreviousInitial = initial;
 
                 // perform scrape
-                var list = await this.tvMazeService.ScrapeShowsBySearch(initial);
+                var list = await this.tvMazeService.ScrapeShowsBySearch(initial).ConfigureAwait(false);
 
                 this.logger.LogInformation("Scraping for {Initial} returned {Count} results.", initial, list.Count);
                 model.PreviousCount = list.Count;
 
-                await this.showService.StoreShowList(list, id => this.tvMazeService.ScrapeCastMembers(id));
+                await this.showService.StoreShowList(list, id => this.tvMazeService.ScrapeCastMembers(id)).ConfigureAwait(false);
 
-                if (initial.StartsWith("z"))
+                if (initial.StartsWith(lastInitial, StringComparison.Ordinal))
                 {
                     // done!
                     return this.RedirectToAction(nameof(this.Index));
                 }
 
                 // setup for next initial
-                initial = ((char)(initial[0] + 1)).ToString();
+                initial = ((char)(initial[0] + 1)).ToString(CultureInfo.InvariantCulture);
             }
 
             model.NextInitial = initial;
@@ -118,14 +123,14 @@ namespace RtlTvMazeScraper.UI.Controllers
                 PreviousIndex = start,
             };
 
-            var (count, list) = await this.tvMazeService.ScrapeById(start);
+            var (count, list) = await this.tvMazeService.ScrapeById(start).ConfigureAwait(false);
 
             model.PreviousCount = list.Count;
             model.AttemptedCount = count;
 
             if (list.Any())
             {
-                await this.showService.StoreShowList(list, null);
+                await this.showService.StoreShowList(list, null).ConfigureAwait(false);
                 this.TempData.Remove(key);
             }
             else

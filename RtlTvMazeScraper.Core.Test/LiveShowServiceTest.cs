@@ -56,7 +56,7 @@ namespace RtlTvMazeScraper.Core.Test
         [TestMethod]
         public async Task TestLiveItemCount()
         {
-            var counts = await this.showService.GetCounts();
+            var counts = await this.showService.GetCounts().ConfigureAwait(false);
 
             this.showServiceLogger.ErrorCount.Should().Be(0, because: "I don't want errors.");
             counts.ShowCount.Should().BeGreaterThan(0, because: "I expect hundreds.");
@@ -70,7 +70,7 @@ namespace RtlTvMazeScraper.Core.Test
         [TestMethod]
         public async Task GetShowsWithCast()
         {
-            var shows = await this.showService.GetShowsWithCast(0, 10);
+            var shows = await this.showService.GetShowsWithCast(0, 10).ConfigureAwait(false);
 
             shows.Should().NotBeNull();
             shows.Count.Should().BeLessOrEqualTo(10, because: "I requested a page of size 10.");
@@ -85,8 +85,8 @@ namespace RtlTvMazeScraper.Core.Test
         [TestMethod]
         public async Task GetShowsWithCast_CheckPaging()
         {
-            var shows0 = await this.showService.GetShowsWithCast(0, 10);
-            var shows3 = await this.showService.GetShowsWithCast(3, 10);
+            var shows0 = await this.showService.GetShowsWithCast(0, 10).ConfigureAwait(false);
+            var shows3 = await this.showService.GetShowsWithCast(3, 10).ConfigureAwait(false);
 
             shows0.Should().NotBeNull();
             shows0.Count.Should().BeGreaterThan(0, because: "I expect enough stored shows.");
@@ -106,7 +106,7 @@ namespace RtlTvMazeScraper.Core.Test
         [TestMethod]
         public async Task GetMaxShowId()
         {
-            var max = await this.showService.GetMaxShowId();
+            var max = await this.showService.GetMaxShowId().ConfigureAwait(false);
 
             max.Should().BeGreaterThan(1000, because: "there are at least this many shows stored.");
         }
@@ -118,7 +118,7 @@ namespace RtlTvMazeScraper.Core.Test
         [TestMethod]
         public async Task GetSingleShow()
         {
-            var show = await this.showService.GetShowById(1058);
+            var show = await this.showService.GetShowById(1058).ConfigureAwait(false);
 
             show.Should().NotBeNull();
             show.Id.Should().BeGreaterThan(0);

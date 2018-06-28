@@ -25,7 +25,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
         /// <param name="url">The URL.</param>
         /// <param name="retryOnBusy">if set to <c>true</c>, retry on a 429 result after a progressive delay.</param>
         /// <returns>The response status and the json (if any).</returns>
-        public async Task<ApiResponse> RequestJson(string url, bool retryOnBusy)
+        public async Task<ApiResponse> RequestJson(Uri url, bool retryOnBusy)
         {
             TimeSpan delay = TimeSpan.Zero;
             int retrycount = 0;
@@ -34,7 +34,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
             {
                 while (true)
                 {
-                    var response = await httpClient.GetAsync(url);
+                    var response = await httpClient.GetAsync(url).ConfigureAwait(false);
 
                     if (response.StatusCode == Core.Support.Constants.ServerTooBusy)
                     {
@@ -45,7 +45,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
                     }
                     else if (response.StatusCode == HttpStatusCode.OK)
                     {
-                        var text = await response.Content.ReadAsStringAsync();
+                        var text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                         return new ApiResponse(response.StatusCode, text);
                     }
                     else
@@ -62,7 +62,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
                     }
 
                     delay += DelayIncrease;
-                    await Task.Delay(delay);
+                    await Task.Delay(delay).ConfigureAwait(false);
                 }
             }
         }

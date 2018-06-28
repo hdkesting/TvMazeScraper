@@ -18,7 +18,7 @@ namespace RtlTvMazeScraper.Core.Test
     /// Tests the <see cref="ShowService"/> against an in-memory database.
     /// </summary>
     [TestClass]
-    public class MockShowServiceTest
+    public sealed class MockShowServiceTest : IDisposable
     {
         private ShowContext context;
         private ShowService showService;
@@ -56,7 +56,7 @@ namespace RtlTvMazeScraper.Core.Test
             this.context.SaveChanges();
 
             // act
-            var counts = await this.showService.GetCounts();
+            var counts = await this.showService.GetCounts().ConfigureAwait(false);
 
             // assert
             counts.ShowCount.Should().Be(2, because: "I added 2.");
@@ -79,13 +79,21 @@ namespace RtlTvMazeScraper.Core.Test
             this.context.SaveChanges();
 
             // act
-            var shows = await this.showService.GetShowsWithCast(0, 10);
+            var shows = await this.showService.GetShowsWithCast(0, 10).ConfigureAwait(false);
 
             // assert
             shows.Should().NotBeNull();
             shows.Count.Should().Be(2, because: "I added 2 shows.");
 
             shows.Where(s => s.CastMembers.Any()).Count().Should().Be(2, because: "Both shows have cast.");
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.context?.Dispose();
         }
     }
 }

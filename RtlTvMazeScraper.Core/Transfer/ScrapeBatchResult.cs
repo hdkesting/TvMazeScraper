@@ -17,6 +17,7 @@ namespace RtlTvMazeScraper.Core.Transfer
         /// </summary>
         public ScrapeBatchResult()
         {
+            this.Shows = new List<Show>();
         }
 
         /// <summary>
@@ -39,12 +40,12 @@ namespace RtlTvMazeScraper.Core.Transfer
         public int NumberOfShowsTried { get; set; }
 
         /// <summary>
-        /// Gets or sets the actual shows retrieved.
+        /// Gets the actual shows retrieved.
         /// </summary>
         /// <value>
         /// The shows.
         /// </value>
-        public List<Show> Shows { get; set; }
+        public List<Show> Shows { get; }
 
         /// <summary>
         /// Deconstructs this instance.

@@ -89,6 +89,18 @@ namespace RtlTvMazeScraper.UI
             });
         }
 
+        private static MapperConfiguration ConfigureMapping()
+        {
+            var config = new AutoMapper.MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Show, ShowForJson>()
+                    .ForMember(dest => dest.Cast, opt => opt.MapFrom(src => src.CastMembers));
+                cfg.CreateMap<CastMember, CastMemberForJson>();
+            });
+
+            return config;
+        }
+
         /// <summary>
         /// Configures the dependency injector.
         /// </summary>
@@ -111,20 +123,8 @@ namespace RtlTvMazeScraper.UI
             services.AddTransient<IShowContext, ShowContext>();
 
             // other
-            var mappingConfig = this.ConfigureMapping();
+            var mappingConfig = ConfigureMapping();
             services.AddSingleton<IMapper, IMapper>(sp => mappingConfig.CreateMapper());
-        }
-
-        private AutoMapper.MapperConfiguration ConfigureMapping()
-        {
-            var config = new AutoMapper.MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Show, ShowForJson>()
-                    .ForMember(dest => dest.Cast, opt => opt.MapFrom(src => src.CastMembers));
-                cfg.CreateMap<CastMember, CastMemberForJson>();
-            });
-
-            return config;
         }
     }
 }

@@ -27,6 +27,7 @@ namespace RtlTvMazeScraper.UI.ViewModels
         /// </value>
         public string Name { get; set; }
 
+#pragma warning disable CA2227 // Collection properties should be read only
         /// <summary>
         /// Gets or sets the show's cast.
         /// </summary>
@@ -34,5 +35,6 @@ namespace RtlTvMazeScraper.UI.ViewModels
         /// The cast.
         /// </value>
         public List<CastMemberForJson> Cast { get; set; } = new List<CastMemberForJson>();
+#pragma warning restore CA2227 // Collection properties should be read only
     }
 }

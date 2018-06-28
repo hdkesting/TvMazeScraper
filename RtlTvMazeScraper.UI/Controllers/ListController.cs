@@ -61,7 +61,7 @@ namespace RtlTvMazeScraper.UI.Controllers
                 pagesize = 2;
             }
 
-            var dbshows = await this.showService.GetShowsWithCast(page, pagesize);
+            var dbshows = await this.showService.GetShowsWithCast(page, pagesize).ConfigureAwait(false);
 
             var result = this.mapper.Map<List<Show>, List<ShowForJson>>(dbshows);
 

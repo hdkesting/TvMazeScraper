@@ -51,7 +51,8 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                 .Where(s => s.Id >= startId)
                 .OrderBy(s => s.Id)
                 .Take(count)
-                .ToListAsync();
+                .ToListAsync()
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -69,7 +70,8 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                 .OrderBy(s => s.Id)
                 .Skip(page * pagesize)
                 .Take(pagesize)
-                .ToListAsync();
+                .ToListAsync()
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -90,7 +92,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                 {
                     if (!show.CastMembers.Any() && getCastOfShow != null)
                     {
-                        show.CastMembers.AddRange(await getCastOfShow(show.Id));
+                        show.CastMembers.AddRange(await getCastOfShow(show.Id).ConfigureAwait(false));
                     }
 
                     // there are duplicate "persons" in the cast (when they have different roles)
@@ -101,15 +103,15 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                         show.CastMembers.AddRange(realcast);
                     }
 
-                    var existing = await this.GetShowById(show.Id);
+                    var existing = await this.GetShowById(show.Id).ConfigureAwait(false);
 
                     if (existing == null)
                     {
-                        await this.AddShow(show);
+                        await this.AddShow(show).ConfigureAwait(false);
                     }
                     else
                     {
-                        await this.UpdateShow(show, existing);
+                        await this.UpdateShow(show, existing).ConfigureAwait(false);
                     }
                 }
                 catch (Exception ex)
@@ -128,8 +130,8 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         public async Task<StorageCount> GetCounts()
         {
             // alas, EF doesn't support running these in parallel.
-            var numberOfShows = await this.showContext.Shows.CountAsync();
-            var numberOfMembers = await this.showContext.CastMembers.CountAsync();
+            var numberOfShows = await this.showContext.Shows.CountAsync().ConfigureAwait(false);
+            var numberOfMembers = await this.showContext.CastMembers.CountAsync().ConfigureAwait(false);
 
             return new StorageCount(numberOfShows, numberOfMembers);
         }
@@ -174,7 +176,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         private async Task AddShow(Show show)
         {
             this.showContext.Shows.Add(show);
-            await this.showContext.SaveChangesAsync();
+            await this.showContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private async Task UpdateShow(Show newShow, Show storedShow)
@@ -198,7 +200,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
 
             storedShow.CastMembers.RemoveAll(m => !newShow.CastMembers.Any(m2 => m2.MemberId == m.MemberId));
 
-            await this.showContext.SaveChangesAsync();
+            await this.showContext.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

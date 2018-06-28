@@ -50,7 +50,7 @@ namespace RtlTvMazeScraper.UI.ViewModels
         {
             get
             {
-                return this.Birthdate?.ToString(DateOnlyFormat);
+                return this.Birthdate?.ToString(DateOnlyFormat, CultureInfo.InvariantCulture);
             }
 
             set

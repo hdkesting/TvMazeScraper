@@ -43,7 +43,7 @@ namespace RtlTvMazeScraper.Core.Services
         {
             try
             {
-                return await this.showRepository.GetShows(startId, count);
+                return await this.showRepository.GetShows(startId, count).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -64,7 +64,7 @@ namespace RtlTvMazeScraper.Core.Services
         {
             try
             {
-                return await this.showRepository.GetShowsWithCast(page, pagesize);
+                return await this.showRepository.GetShowsWithCast(page, pagesize).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -83,7 +83,7 @@ namespace RtlTvMazeScraper.Core.Services
         {
             try
             {
-                return await this.showRepository.GetCounts();
+                return await this.showRepository.GetCounts().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -102,7 +102,7 @@ namespace RtlTvMazeScraper.Core.Services
         {
             try
             {
-                return await this.showRepository.GetMaxShowId();
+                return await this.showRepository.GetMaxShowId().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -123,7 +123,7 @@ namespace RtlTvMazeScraper.Core.Services
         {
             try
             {
-                await this.showRepository.StoreShowList(list, getCastOfShow);
+                await this.showRepository.StoreShowList(list, getCastOfShow).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -140,7 +140,7 @@ namespace RtlTvMazeScraper.Core.Services
         {
             try
             {
-                return await this.showRepository.GetShowById(id);
+                return await this.showRepository.GetShowById(id).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
