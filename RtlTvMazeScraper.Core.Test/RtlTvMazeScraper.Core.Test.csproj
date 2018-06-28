@@ -15,20 +15,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Mock\Data\TvMazeATeamCast.json" />
-    <None Remove="Mock\Data\TvMazeATeamWithCast.json" />
-    <None Remove="Mock\Data\TvMazeSearchByA.json" />
     <None Remove="stylecop.json" />
   </ItemGroup>
 
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Mock\Data\TvMazeATeamCast.json" />
-    <EmbeddedResource Include="Mock\Data\TvMazeATeamWithCast.json" />
-    <EmbeddedResource Include="Mock\Data\TvMazeSearchByA.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +35,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RtlTvMazeScraper.Core\RtlTvMazeScraper.Core.csproj" />
     <ProjectReference Include="..\RtlTvMazeScraper.Infrastructure\RtlTvMazeScraper.Infrastructure.csproj" />
+    <ProjectReference Include="..\RtlTvMazeScraper.Test.Mock\RtlTvMazeScraper.Test.Mock.csproj" />
   </ItemGroup>
 
   <ItemGroup>

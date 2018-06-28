@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Test.Mock
+namespace RtlTvMazeScraper.Test.Mock
 {
     using System;
     using Microsoft.Extensions.Logging;

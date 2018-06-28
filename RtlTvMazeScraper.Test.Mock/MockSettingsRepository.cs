@@ -2,13 +2,13 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Test.Mock
+namespace RtlTvMazeScraper.Test.Mock
 {
     /// <summary>
     /// A mock version of the <see cref="Interfaces.ISettingRepository"/>.
     /// </summary>
     /// <seealso cref="RtlTvMazeScraper.Core.Interfaces.ISettingRepository" />
-    public class MockSettingsRepository : Interfaces.ISettingRepository
+    public class MockSettingsRepository : Core.Interfaces.ISettingRepository
     {
         /// <summary>
         /// Gets the url for TV Maze.

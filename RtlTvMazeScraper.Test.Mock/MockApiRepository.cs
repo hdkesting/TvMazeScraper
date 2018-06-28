@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Test.Mock
+namespace RtlTvMazeScraper.Test.Mock
 {
     using System;
     using System.IO;
@@ -14,7 +14,7 @@ namespace RtlTvMazeScraper.Core.Test.Mock
     /// Mock version of TvMaze API repository, reading from a Stream (usually an embedded resource).
     /// </summary>
     /// <seealso cref="RtlTvMazeScraper.Core.Interfaces.IApiRepository" />
-    public class MockApiRepository : Interfaces.IApiRepository
+    public class MockApiRepository : Core.Interfaces.IApiRepository
     {
         private string contentToReturn;
 

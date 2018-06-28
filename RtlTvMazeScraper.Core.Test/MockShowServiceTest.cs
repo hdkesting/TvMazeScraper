@@ -13,6 +13,7 @@ namespace RtlTvMazeScraper.Core.Test
     using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Services;
     using RtlTvMazeScraper.Infrastructure.Repositories.Local;
+    using RtlTvMazeScraper.Test.Mock;
 
     /// <summary>
     /// Tests the <see cref="ShowService"/> against an in-memory database.
@@ -33,10 +34,10 @@ namespace RtlTvMazeScraper.Core.Test
                                  .UseInMemoryDatabase(Guid.NewGuid().ToString())
                                  .Options;
             this.context = new ShowContext(options);
-            var repologger = new Mock.DebugLogger<ShowRepository>();
+            var repologger = new DebugLogger<ShowRepository>();
             var showRepo = new ShowRepository(repologger, this.context);
 
-            var svclogger = new Mock.DebugLogger<ShowService>();
+            var svclogger = new DebugLogger<ShowService>();
             this.showService = new ShowService(showRepo, svclogger);
         }
 

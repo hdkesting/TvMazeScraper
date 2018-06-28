@@ -10,6 +10,7 @@ namespace RtlTvMazeScraper.Core.Test
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Services;
+    using RtlTvMazeScraper.Test.Mock;
 
     /// <summary>
     /// Tests the <see cref="TvMazeService"/> against mock data.
@@ -24,11 +25,11 @@ namespace RtlTvMazeScraper.Core.Test
         [TestMethod]
         public async Task TestSearchByInitial()
         {
-            ISettingRepository settingRepo = new Mock.MockSettingsRepository();
+            ISettingRepository settingRepo = new MockSettingsRepository();
 
-            var apiRepo = new Mock.MockApiRepository();
-            apiRepo.ReadContent(this.GetType().Assembly.GetManifestResourceStream(this.GetType(), "Mock.Data.TvMazeSearchByA.json"));
-            var svclogger = new Mock.DebugLogger<TvMazeService>();
+            var apiRepo = new MockApiRepository();
+            apiRepo.ReadContent(typeof(MockApiRepository).Assembly.GetManifestResourceStream(typeof(MockApiRepository), "Data.TvMazeSearchByA.json"));
+            var svclogger = new DebugLogger<TvMazeService>();
 
             var svc = new TvMazeService(settingRepo, apiRepo, svclogger);
             var result = await svc.ScrapeShowsBySearch("a").ConfigureAwait(false);
@@ -46,10 +47,10 @@ namespace RtlTvMazeScraper.Core.Test
         [TestMethod]
         public async Task TestReadCast()
         {
-            ISettingRepository settingRepo = new Mock.MockSettingsRepository();
-            var apiRepo = new Mock.MockApiRepository();
-            apiRepo.ReadContent(this.GetType().Assembly.GetManifestResourceStream(this.GetType(), "Mock.Data.TvMazeATeamCast.json"));
-            var svclogger = new Mock.DebugLogger<TvMazeService>();
+            ISettingRepository settingRepo = new MockSettingsRepository();
+            var apiRepo = new MockApiRepository();
+            apiRepo.ReadContent(typeof(MockApiRepository).Assembly.GetManifestResourceStream(typeof(MockApiRepository), "Data.TvMazeATeamCast.json"));
+            var svclogger = new DebugLogger<TvMazeService>();
 
             var svc = new TvMazeService(settingRepo, apiRepo, svclogger);
             var result = await svc.ScrapeCastMembers(1058).ConfigureAwait(false);
@@ -69,9 +70,9 @@ namespace RtlTvMazeScraper.Core.Test
         [TestMethod]
         public async Task TestReadShowAndCast_WithOverload()
         {
-            ISettingRepository settingRepo = new Mock.MockSettingsRepository();
-            var svclogger = new Mock.DebugLogger<TvMazeService>();
-            var apiRepo = new Mock.MockApiRepository
+            ISettingRepository settingRepo = new MockSettingsRepository();
+            var svclogger = new DebugLogger<TvMazeService>();
+            var apiRepo = new MockApiRepository
             {
                 StatusToReturn = Core.Support.Constants.ServerTooBusy,
             };
@@ -89,9 +90,9 @@ namespace RtlTvMazeScraper.Core.Test
         [TestMethod]
         public async Task TestReadShowAndCast_NothingFound()
         {
-            ISettingRepository settingRepo = new Mock.MockSettingsRepository();
-            var svclogger = new Mock.DebugLogger<TvMazeService>();
-            var apiRepo = new Mock.MockApiRepository
+            ISettingRepository settingRepo = new MockSettingsRepository();
+            var svclogger = new DebugLogger<TvMazeService>();
+            var apiRepo = new MockApiRepository
             {
                 StatusToReturn = System.Net.HttpStatusCode.NotFound,
             };
@@ -114,10 +115,10 @@ namespace RtlTvMazeScraper.Core.Test
         [TestMethod]
         public async Task TestReadShowAndCast_Success()
         {
-            ISettingRepository settingRepo = new Mock.MockSettingsRepository();
-            var svclogger = new Mock.DebugLogger<TvMazeService>();
-            var apiRepo = new Mock.MockApiRepository();
-            apiRepo.ReadContent(this.GetType().Assembly.GetManifestResourceStream(this.GetType(), "Mock.Data.TvMazeATeamWithCast.json"));
+            ISettingRepository settingRepo = new MockSettingsRepository();
+            var svclogger = new DebugLogger<TvMazeService>();
+            var apiRepo = new MockApiRepository();
+            apiRepo.ReadContent(typeof(MockApiRepository).Assembly.GetManifestResourceStream(typeof(MockApiRepository), "Data.TvMazeATeamWithCast.json"));
 
             var svc = new TvMazeService(settingRepo, apiRepo, svclogger)
             {

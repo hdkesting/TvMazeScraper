@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Data\TvMazeATeamCast.json" />
+    <None Remove="Data\TvMazeATeamWithCast.json" />
+    <None Remove="Data\TvMazeSearchByA.json" />
+    <None Remove="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Data\TvMazeATeamCast.json" />
+    <EmbeddedResource Include="Data\TvMazeATeamWithCast.json" />
+    <EmbeddedResource Include="Data\TvMazeSearchByA.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RtlTvMazeScraper.Core\RtlTvMazeScraper.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+      <HintPath>..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.logging.abstractions\2.1.1\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

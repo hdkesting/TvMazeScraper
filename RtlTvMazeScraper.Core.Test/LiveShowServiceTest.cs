@@ -13,6 +13,7 @@ namespace RtlTvMazeScraper.Core.Test
     using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Services;
     using RtlTvMazeScraper.Infrastructure.Repositories.Local;
+    using RtlTvMazeScraper.Test.Mock;
 
     /// <summary>
     /// Test the <see cref="ShowService"/> against a live (local) database.
@@ -27,7 +28,7 @@ namespace RtlTvMazeScraper.Core.Test
     public sealed class LiveShowServiceTest
     {
         private ShowService showService;
-        private Mock.DebugLogger<ShowService> showServiceLogger;
+        private DebugLogger<ShowService> showServiceLogger;
 
         /// <summary>
         /// Initializes this test instance.
@@ -42,10 +43,10 @@ namespace RtlTvMazeScraper.Core.Test
                                  .Options;
             var context = new ShowContext(options);
 
-            var repologger = new Mock.DebugLogger<ShowRepository>();
+            var repologger = new DebugLogger<ShowRepository>();
             var showRepo = new ShowRepository(repologger, context);
 
-            this.showServiceLogger = new Mock.DebugLogger<ShowService>();
+            this.showServiceLogger = new DebugLogger<ShowService>();
             this.showService = new ShowService(showRepo, this.showServiceLogger);
         }
 

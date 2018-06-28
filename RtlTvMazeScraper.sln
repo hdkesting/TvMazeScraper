@@ -19,6 +19,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RtlTvMazeScraper.Infrastruc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RtlTvMazeScraper.Core.Test", "RtlTvMazeScraper.Core.Test\RtlTvMazeScraper.Core.Test.csproj", "{2A16D067-52FF-439B-95DF-F2F7E8D7034B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RtlTvMazeScraper.UI.Test", "RtlTvMazeScraper.UI.Test\RtlTvMazeScraper.UI.Test.csproj", "{CF068B39-4BE3-4B4B-9BA8-ADC1DA618D71}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Projects", "Test Projects", "{78809C9E-72B2-4F9B-9F71-E09472C86ECF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RtlTvMazeScraper.Test.Mock", "RtlTvMazeScraper.Test.Mock\RtlTvMazeScraper.Test.Mock.csproj", "{B9522763-D06F-4A63-A6A1-7CF96A210B57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,9 +47,22 @@ Global
 		{2A16D067-52FF-439B-95DF-F2F7E8D7034B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A16D067-52FF-439B-95DF-F2F7E8D7034B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A16D067-52FF-439B-95DF-F2F7E8D7034B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF068B39-4BE3-4B4B-9BA8-ADC1DA618D71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF068B39-4BE3-4B4B-9BA8-ADC1DA618D71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF068B39-4BE3-4B4B-9BA8-ADC1DA618D71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF068B39-4BE3-4B4B-9BA8-ADC1DA618D71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9522763-D06F-4A63-A6A1-7CF96A210B57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9522763-D06F-4A63-A6A1-7CF96A210B57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9522763-D06F-4A63-A6A1-7CF96A210B57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9522763-D06F-4A63-A6A1-7CF96A210B57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2A16D067-52FF-439B-95DF-F2F7E8D7034B} = {78809C9E-72B2-4F9B-9F71-E09472C86ECF}
+		{CF068B39-4BE3-4B4B-9BA8-ADC1DA618D71} = {78809C9E-72B2-4F9B-9F71-E09472C86ECF}
+		{B9522763-D06F-4A63-A6A1-7CF96A210B57} = {78809C9E-72B2-4F9B-9F71-E09472C86ECF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC15AB9F-B23B-41D3-9698-30F9AC00AC2A}
