@@ -59,7 +59,9 @@ namespace RtlTvMazeScraper.UI
                 lb.AddDebug();
             });
 
-            services.AddDbContext<ShowContext>(opt => opt.UseSqlServer(this.Configuration.GetConnectionString("ShowConnection")));
+            services.AddDbContext<ShowContext>(opt => opt.UseSqlServer(
+                this.Configuration.GetConnectionString("ShowConnection"),
+                x => x.MigrationsAssembly("RtlTvMazeScraper.Infrastructure")));
 
             this.ConfigureDI(services);
         }
