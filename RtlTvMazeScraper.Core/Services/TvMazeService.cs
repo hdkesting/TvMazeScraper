@@ -76,15 +76,20 @@ namespace RtlTvMazeScraper.Core.Services
 
             var result = new List<Show>();
 
+            /* NOTE to reviewer: I could have created a tree of objects to deserialize this JSON into,
+             * but that would be a tree per API call with no benefit to speed of execution, speed of development
+             * or maintainability. A change in the API would in both cases force a rewrite.
+            */
+
             // read json
             var array = JArray.Parse(json);
             foreach (var showcontainer in array)
             {
-                var jshow = (JObject)showcontainer["show"];
+                var jshow = (JObject)showcontainer[Support.TvMazeSearchResultNames.ShowContainer];
                 var show = new Show()
                 {
-                    Id = (int)jshow["id"],
-                    Name = (string)jshow["name"],
+                    Id = (int)jshow[Support.TvMazeSearchResultNames.ShowId],
+                    Name = (string)jshow[Support.TvMazeSearchResultNames.ShowName],
                 };
 
                 result.Add(show);
@@ -117,15 +122,15 @@ namespace RtlTvMazeScraper.Core.Services
             var array = JArray.Parse(json);
             foreach (var role in array)
             {
-                var person = (JObject)role["person"];
+                var person = (JObject)role[Support.TvMazeCastResultNames.PersonContainer];
                 var member = new CastMember()
                 {
-                    MemberId = (int)person["id"],
+                    MemberId = (int)person[Support.TvMazeCastResultNames.PersonId],
                     ShowId = showid,
-                    Name = (string)person["name"],
+                    Name = (string)person[Support.TvMazeCastResultNames.PersonName],
                 };
 
-                var bd = person["birthday"];
+                var bd = person[Support.TvMazeCastResultNames.PersonBirthday];
                 member.Birthdate = GetDate(bd);
 
                 result.Add(member);
@@ -150,12 +155,13 @@ namespace RtlTvMazeScraper.Core.Services
 
             while (count < this.MaxNumberOfShowsToScrape)
             {
-                var (status, json) = await this.apiRepository.RequestJson(new Uri($"{this.hostname}/shows/{start + count}?embed=cast"), false).ConfigureAwait(false);
+                int currentId = start + count;
+                var (status, json) = await this.apiRepository.RequestJson(new Uri($"{this.hostname}/shows/{currentId}?embed=cast"), false).ConfigureAwait(false);
 
                 if (status == Support.Constants.ServerTooBusy)
                 {
                     // too much, so back off
-                    this.logger.LogDebug("Server too busy to scrape #{showid}, backing off.", start + count);
+                    this.logger.LogDebug("Server too busy to scrape #{ShowId}, backing off.", currentId);
                     break;
                 }
 
@@ -164,29 +170,46 @@ namespace RtlTvMazeScraper.Core.Services
                     var jshow = JObject.Parse(json);
                     var show = new Show
                     {
-                        Id = (int)jshow["id"],
-                        Name = (string)jshow["name"],
+                        Id = (int)jshow[Support.TvMazeShowWithCastResultNames.ShowId],
+                        Name = (string)jshow[Support.TvMazeShowWithCastResultNames.ShowName],
                     };
 
-                    var jcast = (JArray)jshow["_embedded"]["cast"];
-                    foreach (var container in jcast)
+                    var embedded = jshow[Support.TvMazeShowWithCastResultNames.EmbeddedContainer];
+                    if (embedded == null)
                     {
-                        var person = (JObject)container["person"];
-                        var member = new CastMember
+                        this.logger.LogError("Server didn't return the requested embedded data for show {ShowId}.", currentId);
+                    }
+                    else
+                    {
+                        var jcast = (JArray)embedded[Support.TvMazeShowWithCastResultNames.CastContainer];
+                        if (jcast == null)
                         {
-                            MemberId = (int)person["id"],
-                            ShowId = show.Id,
-                            Name = (string)person["name"],
-                        };
+                            this.logger.LogError("Server didn't return the requested cast in the embedded data for show {ShowId}.", currentId);
+                        }
+                        else
+                        {
+                            foreach (var container in jcast)
+                            {
+                                var person = (JObject)container[Support.TvMazeShowWithCastResultNames.PersonContainer];
+                                var member = new CastMember
+                                {
+                                    MemberId = (int)person[Support.TvMazeShowWithCastResultNames.PersonId],
+                                    ShowId = show.Id,
+                                    Name = (string)person[Support.TvMazeShowWithCastResultNames.PersonName],
+                                };
 
-                        var bd = person["birthday"];
-                        member.Birthdate = GetDate(bd);
+                                var bd = person[Support.TvMazeShowWithCastResultNames.PersonBirthday];
+                                member.Birthdate = GetDate(bd);
 
-                        show.CastMembers.Add(member);
+                                show.CastMembers.Add(member);
+                            }
+                        }
                     }
 
                     list.Add(show);
                 }
+
+                /* just ignore a "not found" response. */
 
                 count++;
             }
@@ -197,15 +220,17 @@ namespace RtlTvMazeScraper.Core.Services
 
         private static DateTime? GetDate(JToken dayValue)
         {
+            const string expectedDateFormat = "yyyy-MM-dd";
+
             if (dayValue.Type == JTokenType.Date)
             {
                 return (DateTime?)dayValue;
             }
             else if (dayValue.Type == JTokenType.String)
             {
-                if (DateTime.TryParseExact(dayValue.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
+                if (DateTime.TryParseExact(dayValue.ToString(), expectedDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
                 {
-                    return dt.Date;
+                    return dt;
                 }
             }
 

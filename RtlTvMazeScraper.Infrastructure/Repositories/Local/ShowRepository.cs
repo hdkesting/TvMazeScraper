@@ -93,10 +93,11 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                 {
                     if (!show.CastMembers.Any() && getCastOfShow != null)
                     {
-                        show.CastMembers.AddRange(await getCastOfShow(show.Id).ConfigureAwait(false));
+                        var cast = await getCastOfShow(show.Id).ConfigureAwait(false);
+                        show.CastMembers.AddRange(cast);
                     }
 
-                    // there are duplicate "persons" in the cast (when they have different roles)
+                    // there are duplicate "persons" in the cast (when they have different roles) - we are only interested in persons, not roles
                     var realcast = show.CastMembers.Distinct(memberEqualityComparer).ToList();
                     if (realcast.Count < show.CastMembers.Count)
                     {
@@ -130,9 +131,14 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// </returns>
         public async Task<StorageCount> GetCounts()
         {
-            // alas, EF doesn't support running these in parallel.
-            var numberOfShows = await this.showContext.Shows.CountAsync().ConfigureAwait(false);
-            var numberOfMembers = await this.showContext.CastMembers.CountAsync().ConfigureAwait(false);
+            // EFCore *can* run this in parallel!
+            var showTask = this.showContext.Shows.CountAsync();
+            var castTask = this.showContext.CastMembers.CountAsync();
+
+            await Task.WhenAll(showTask, castTask).ConfigureAwait(false);
+
+            var numberOfShows = showTask.Result;
+            var numberOfMembers = castTask.Result;
 
             return new StorageCount(numberOfShows, numberOfMembers);
         }
@@ -174,13 +180,13 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        private async Task AddShow(Show show)
+        private Task AddShow(Show show)
         {
             this.showContext.Shows.Add(show);
-            await this.showContext.SaveChangesAsync().ConfigureAwait(false);
+            return this.showContext.SaveChangesAsync();
         }
 
-        private async Task UpdateShow(Show newShow, Show storedShow)
+        private Task UpdateShow(Show newShow, Show storedShow)
         {
             storedShow.Name = newShow.Name;
 
@@ -201,7 +207,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
 
             storedShow.CastMembers.RemoveAll(m => !newShow.CastMembers.Any(m2 => m2.MemberId == m.MemberId));
 
-            await this.showContext.SaveChangesAsync().ConfigureAwait(false);
+            return this.showContext.SaveChangesAsync();
         }
     }
 }
