@@ -64,6 +64,7 @@ namespace RtlTvMazeScraper.UI
             this.ConfigureDI(services);
         }
 
+#pragma warning disable CA1822 // Mark members as static
         /// <summary>
         /// Configures this application.
         /// </summary>
@@ -73,6 +74,7 @@ namespace RtlTvMazeScraper.UI
         /// <param name="app">The application.</param>
         /// <param name="env">The env.</param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+#pragma warning restore CA1822 // Mark members as static
         {
             if (env.IsDevelopment())
             {
