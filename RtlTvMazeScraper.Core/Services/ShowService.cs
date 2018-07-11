@@ -6,6 +6,7 @@ namespace RtlTvMazeScraper.Core.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using RtlTvMazeScraper.Core.Interfaces;
@@ -58,14 +59,15 @@ namespace RtlTvMazeScraper.Core.Services
         /// </summary>
         /// <param name="page">The page number (0-based).</param>
         /// <param name="pagesize">The size of the page.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// A list of shows.
         /// </returns>
-        public async Task<List<Show>> GetShowsWithCast(int page, int pagesize)
+        public async Task<List<Show>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
         {
             try
             {
-                return await this.showRepository.GetShowsWithCast(page, pagesize).ConfigureAwait(false);
+                return await this.showRepository.GetShowsWithCast(page, pagesize, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

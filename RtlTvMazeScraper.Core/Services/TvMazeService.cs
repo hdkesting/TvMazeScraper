@@ -8,6 +8,7 @@ namespace RtlTvMazeScraper.Core.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json.Linq;
@@ -59,13 +60,18 @@ namespace RtlTvMazeScraper.Core.Services
         /// Scrapes the shows by their initial.
         /// </summary>
         /// <param name="searchWord">The search word.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// A list of shows.
         /// </returns>
-        public async Task<List<Show>> ScrapeShowsBySearch(string searchWord)
+        public async Task<List<Show>> ScrapeShowsBySearch(string searchWord, CancellationToken cancellationToken = default)
         {
             // note: not documented, but apparently returns just the first 10 results
-            var (status, json) = await this.apiRepository.RequestJson(new Uri($"{this.hostname}/search/shows?q={searchWord}"), retryOnBusy: true).ConfigureAwait(false);
+            var (status, json) = await this.apiRepository.RequestJson(
+                    new Uri($"{this.hostname}/search/shows?q={searchWord}"),
+                    retryOnBusy: true,
+                    cancellationToken)
+                .ConfigureAwait(false);
 
             if (status != HttpStatusCode.OK)
             {
@@ -103,12 +109,17 @@ namespace RtlTvMazeScraper.Core.Services
         /// Scrapes the cast members for a particular show.
         /// </summary>
         /// <param name="showid">The showid.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// A list of cast members.
         /// </returns>
-        public async Task<List<CastMember>> ScrapeCastMembers(int showid)
+        public async Task<List<CastMember>> ScrapeCastMembers(int showid, CancellationToken cancellationToken = default)
         {
-            var (status, json) = await this.apiRepository.RequestJson(new Uri($"{this.hostname}/shows/{showid}/cast"), retryOnBusy: true).ConfigureAwait(false);
+            var (status, json) = await this.apiRepository.RequestJson(
+                    new Uri($"{this.hostname}/shows/{showid}/cast"),
+                    retryOnBusy: true,
+                    cancellationToken)
+                .ConfigureAwait(false);
 
             if (status != HttpStatusCode.OK)
             {
@@ -144,10 +155,11 @@ namespace RtlTvMazeScraper.Core.Services
         /// Scrapes shows by their identifier.
         /// </summary>
         /// <param name="start">The start.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// A tuple: number of shows tried, list of shows found.
         /// </returns>
-        public async Task<ScrapeBatchResult> ScrapeById(int start)
+        public async Task<ScrapeBatchResult> ScrapeById(int start, CancellationToken cancellationToken = default)
         {
             int count = 0;
 
@@ -156,7 +168,11 @@ namespace RtlTvMazeScraper.Core.Services
             while (count < this.MaxNumberOfShowsToScrape)
             {
                 int currentId = start + count;
-                var (status, json) = await this.apiRepository.RequestJson(new Uri($"{this.hostname}/shows/{currentId}?embed=cast"), false).ConfigureAwait(false);
+                var (status, json) = await this.apiRepository.RequestJson(
+                        new Uri($"{this.hostname}/shows/{currentId}?embed=cast"),
+                        retryOnBusy: false,
+                        cancellationToken)
+                    .ConfigureAwait(false);
 
                 if (status == Support.Constants.ServerTooBusy)
                 {

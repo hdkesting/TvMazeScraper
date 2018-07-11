@@ -6,6 +6,7 @@ namespace RtlTvMazeScraper.Core.Test
 {
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
@@ -80,7 +81,7 @@ namespace RtlTvMazeScraper.Core.Test
             this.context.SaveChanges();
 
             // act
-            var shows = await this.showService.GetShowsWithCast(0, 10).ConfigureAwait(false);
+            var shows = await this.showService.GetShowsWithCast(0, 10, default(CancellationToken)).ConfigureAwait(false);
 
             // assert
             shows.Should().NotBeNull();

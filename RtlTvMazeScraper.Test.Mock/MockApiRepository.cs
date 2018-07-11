@@ -7,6 +7,7 @@ namespace RtlTvMazeScraper.Test.Mock
     using System;
     using System.IO;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using RtlTvMazeScraper.Core.Transfer;
 
@@ -51,10 +52,11 @@ namespace RtlTvMazeScraper.Test.Mock
         /// </summary>
         /// <param name="url">The URL (ignored).</param>
         /// <param name="retryOnBusy">Ignored.</param>
+        /// <param name="cancellation">The cancellation.</param>
         /// <returns>
         /// The response status and the json (if any).
         /// </returns>
-        public Task<ApiResponse> RequestJson(Uri url, bool retryOnBusy)
+        public Task<ApiResponse> RequestJson(Uri url, bool retryOnBusy, CancellationToken cancellation = default(CancellationToken))
         {
             return Task.FromResult(new ApiResponse(this.StatusToReturn, this.contentToReturn));
         }

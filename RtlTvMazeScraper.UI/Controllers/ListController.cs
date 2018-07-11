@@ -4,13 +4,13 @@
 
 namespace RtlTvMazeScraper.UI.Controllers
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.UI.ViewModels;
@@ -18,38 +18,44 @@ namespace RtlTvMazeScraper.UI.Controllers
     /// <summary>
     /// Give list of shows and their cast.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
-    [ApiController]
-    public class ListController : ControllerBase
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    public class ListController : Controller
     {
         private readonly IShowService showService;
         private readonly IMapper mapper;
+        private readonly ILogger<ListController> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ListController" /> class.
         /// </summary>
         /// <param name="showService">The show service.</param>
         /// <param name="mapper">The mapper.</param>
+        /// <param name="logger">The logger.</param>
         public ListController(
             IShowService showService,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<ListController> logger)
         {
             this.showService = showService;
             this.mapper = mapper;
+            this.logger = logger;
         }
 
         /// <summary>
         /// Gets the shows as JSON-serializable objects.
         /// </summary>
+        /// <param name="page">The page number (starts at 0).</param>
+        /// <param name="pagesize">The number of shows per page.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// A JSON-serializable list.
+        /// </returns>
         /// <remarks>
         /// Note that some configuration is done in WebApiConfig.cs.
         /// </remarks>
-        /// <param name="page">The page.</param>
-        /// <param name="pagesize">The pagesize.</param>
-        /// <returns>A JSON-serializable list.</returns>
         [HttpGet]
         [Route("api/list")]
-        public async Task<List<ShowForJson>> List(int page = 0, int pagesize = 20)
+        public async Task<List<ShowForJson>> List(int page = 0, int pagesize = 20, CancellationToken cancellationToken = default)
         {
             if (page < 0)
             {
@@ -61,7 +67,8 @@ namespace RtlTvMazeScraper.UI.Controllers
                 pagesize = 2;
             }
 
-            var dbshows = await this.showService.GetShowsWithCast(page, pagesize).ConfigureAwait(false);
+            var dbshows = await this.showService.GetShowsWithCast(page, pagesize, cancellationToken).ConfigureAwait(false);
+            this.logger.Log(LogLevel.Information, "Found {PageCount} shows for {PageNumber} ({PageSize})", dbshows.Count, page, pagesize);
 
             var result = this.mapper.Map<List<Show>, List<ShowForJson>>(dbshows);
 

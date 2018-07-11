@@ -6,6 +6,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Transfer;
@@ -34,8 +35,11 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// </summary>
         /// <param name="page">The page number (0-based).</param>
         /// <param name="pagesize">The size of the page.</param>
-        /// <returns>A list of shows.</returns>
-        Task<List<Show>> GetShowsWithCast(int page, int pagesize);
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// A list of shows.
+        /// </returns>
+        Task<List<Show>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the maximum show identifier.

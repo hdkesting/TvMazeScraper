@@ -7,6 +7,7 @@ namespace RtlTvMazeScraper.UI.Controllers
     using System;
     using System.Globalization;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -53,8 +54,11 @@ namespace RtlTvMazeScraper.UI.Controllers
         /// Scrapes by searching for an initial.
         /// </summary>
         /// <param name="initial">The initial to search for.</param>
-        /// <returns>A View or a redirect.</returns>
-        public async Task<ActionResult> ScrapeAlpha(string initial = null)
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// A View or a redirect.
+        /// </returns>
+        public async Task<ActionResult> ScrapeAlpha(string initial = null, CancellationToken cancellationToken = default)
         {
             const string firstInitial = "A";
             const string lastInitial = "Z";
@@ -80,17 +84,25 @@ namespace RtlTvMazeScraper.UI.Controllers
                 model.PreviousInitial = initial;
 
                 // perform scrape
-                var list = await this.tvMazeService.ScrapeShowsBySearch(initial).ConfigureAwait(false);
+                var list = await this.tvMazeService.ScrapeShowsBySearch(initial, cancellationToken).ConfigureAwait(false);
 
-                this.logger.LogInformation("Scraping for {Initial} returned {Count} results.", initial, list.Count);
-                model.PreviousCount = list.Count;
-
-                await this.showService.StoreShowList(list, id => this.tvMazeService.ScrapeCastMembers(id)).ConfigureAwait(false);
-
-                if (initial.StartsWith(lastInitial, StringComparison.Ordinal))
+                if (list == null)
                 {
-                    // done!
-                    return this.RedirectToAction(nameof(this.Index));
+                    this.logger.LogWarning("Scraping for {Initial} returned no results.", initial);
+                    model.PreviousCount = 0;
+                }
+                else
+                {
+                    this.logger.LogInformation("Scraping for {Initial} returned {Count} results.", initial, list.Count);
+                    model.PreviousCount = list.Count;
+
+                    await this.showService.StoreShowList(list, id => this.tvMazeService.ScrapeCastMembers(id)).ConfigureAwait(false);
+
+                    if (initial.StartsWith(lastInitial, StringComparison.Ordinal))
+                    {
+                        // done!
+                        return this.RedirectToAction(nameof(this.Index));
+                    }
                 }
 
                 // setup for next initial
@@ -105,12 +117,15 @@ namespace RtlTvMazeScraper.UI.Controllers
         /// <summary>
         /// Scrapes one batch from the specified start ID (defaults to 1).
         /// </summary>
+        /// <param name="start">The start ID.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// A view or redirect.
+        /// </returns>
         /// <remarks>
         /// After tree failed attempts (=no results for a batch of IDs), the scraping is stopped (by a redirect back to Home).
         /// </remarks>
-        /// <param name="start">The start ID.</param>
-        /// <returns>A view or redirect.</returns>
-        public async Task<ActionResult> Scrape(int start = 1)
+        public async Task<ActionResult> Scrape(int start = 1, CancellationToken cancellationToken = default)
         {
             const string key = "noresult";
             if (start < 1)
@@ -123,7 +138,7 @@ namespace RtlTvMazeScraper.UI.Controllers
                 PreviousIndex = start,
             };
 
-            var (count, list) = await this.tvMazeService.ScrapeById(start).ConfigureAwait(false);
+            var (count, list) = await this.tvMazeService.ScrapeById(start, cancellationToken).ConfigureAwait(false);
 
             model.PreviousCount = list.Count;
             model.AttemptedCount = count;
@@ -133,7 +148,7 @@ namespace RtlTvMazeScraper.UI.Controllers
                 await this.showService.StoreShowList(list, null).ConfigureAwait(false);
                 this.TempData.Remove(key);
             }
-            else
+            else if (!cancellationToken.IsCancellationRequested)
             {
                 int failcount = 0;
                 if (this.TempData.ContainsKey(key))

@@ -44,6 +44,6 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <returns>
         /// Number of changes.
         /// </returns>
-        Task<int> SaveChangesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        Task<int> SaveChangesAsync(System.Threading.CancellationToken cancellationToken = default);
     }
 }

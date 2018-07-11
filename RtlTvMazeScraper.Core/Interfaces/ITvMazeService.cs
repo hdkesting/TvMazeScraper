@@ -5,6 +5,7 @@
 namespace RtlTvMazeScraper.Core.Interfaces
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Transfer;
@@ -18,23 +19,30 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// Scrapes the shows by their initial.
         /// </summary>
         /// <param name="searchWord">The search word.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// A list of shows.
         /// </returns>
-        Task<List<Show>> ScrapeShowsBySearch(string searchWord);
+        Task<List<Show>> ScrapeShowsBySearch(string searchWord, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Scrapes the cast members for a particular show.
         /// </summary>
         /// <param name="showid">The showid.</param>
-        /// <returns>A list of cast members.</returns>
-        Task<List<CastMember>> ScrapeCastMembers(int showid);
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// A list of cast members.
+        /// </returns>
+        Task<List<CastMember>> ScrapeCastMembers(int showid, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Scrapes shows by their identifier.
         /// </summary>
         /// <param name="start">The start.</param>
-        /// <returns>A tuple: number of shows tried, list of shows found.</returns>
-        Task<ScrapeBatchResult> ScrapeById(int start);
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// A tuple: number of shows tried, list of shows found.
+        /// </returns>
+        Task<ScrapeBatchResult> ScrapeById(int start, CancellationToken cancellationToken = default);
     }
 }

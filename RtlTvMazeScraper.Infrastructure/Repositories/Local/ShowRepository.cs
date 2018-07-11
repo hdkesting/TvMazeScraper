@@ -7,6 +7,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -61,17 +62,18 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// </summary>
         /// <param name="page">The page number (0-based).</param>
         /// <param name="pagesize">The size of the page.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// A list of shows with cast.
         /// </returns>
-        public async Task<List<Show>> GetShowsWithCast(int page, int pagesize)
+        public async Task<List<Show>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
         {
             return await this.showContext.Shows
                 .Include(s => s.CastMembers)
                 .OrderBy(s => s.Id)
                 .Skip(page * pagesize)
                 .Take(pagesize)
-                .ToListAsync()
+                .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
         }
 
