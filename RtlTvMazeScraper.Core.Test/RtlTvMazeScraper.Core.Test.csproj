@@ -4,6 +4,12 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <Authors>Hans Kesting</Authors>
+
+    <Company>Hans Kesting</Company>
+
+    <Product>RTL TVMaze Scraper - Core UnitTest</Product>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

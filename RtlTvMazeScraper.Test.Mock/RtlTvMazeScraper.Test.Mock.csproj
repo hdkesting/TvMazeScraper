@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <Authors>Hans Kesting</Authors>
+    <Company>Hans Kesting</Company>
+    <Product>RTL TVMaze Scraper - Test Mocks</Product>
   </PropertyGroup>
 
   <ItemGroup>
