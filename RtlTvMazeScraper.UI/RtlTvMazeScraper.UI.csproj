@@ -50,4 +50,8 @@
     <ProjectReference Include="..\RtlTvMazeScraper.Infrastructure\RtlTvMazeScraper.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <RazorCompile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
 </Project>
