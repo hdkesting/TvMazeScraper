@@ -115,7 +115,7 @@ namespace RtlTvMazeScraper.UI.Test
             apiRepo.ReadContent(typeof(MockApiRepository).Assembly.GetManifestResourceStream(typeof(MockApiRepository), "Data.TvMazeSearchByA.json"));
             var apiSvclogger = new DebugLogger<TvMazeService>();
 
-            var tvmazeService = new TvMazeService(settingRepo, apiRepo, apiSvclogger);
+            var tvmazeService = new TvMazeService(apiRepo, apiSvclogger);
 
             var scrapeCtrlLogger = new DebugLogger<ScrapeController>();
             var controller = new ScrapeController(showService: this.showService, tvMazeService: tvmazeService, logger: scrapeCtrlLogger);
@@ -148,7 +148,7 @@ namespace RtlTvMazeScraper.UI.Test
             apiRepo.ReadContent(typeof(MockApiRepository).Assembly.GetManifestResourceStream(typeof(MockApiRepository), "Data.TvMazeSearchByA.json"));
             var apiSvclogger = new DebugLogger<TvMazeService>();
 
-            var tvmazeService = new TvMazeService(settingRepo, apiRepo, apiSvclogger);
+            var tvmazeService = new TvMazeService(apiRepo, apiSvclogger);
 
             var scrapeCtrlLogger = new DebugLogger<ScrapeController>();
             var controller = new ScrapeController(showService: this.showService, tvMazeService: tvmazeService, logger: scrapeCtrlLogger);

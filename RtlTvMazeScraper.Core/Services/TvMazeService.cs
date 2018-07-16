@@ -25,22 +25,18 @@ namespace RtlTvMazeScraper.Core.Services
     {
         private const int DefaultMaximumShows = 40;
 
-        private readonly string hostname;
         private readonly IApiRepository apiRepository;
         private readonly ILogger<TvMazeService> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TvMazeService" /> class.
         /// </summary>
-        /// <param name="settingRepository">The setting repository.</param>
         /// <param name="apiRepository">The API repository.</param>
         /// <param name="logger">The logger.</param>
         public TvMazeService(
-            ISettingRepository settingRepository,
             IApiRepository apiRepository,
             ILogger<TvMazeService> logger)
         {
-            this.hostname = settingRepository.TvMazeHost;
             this.apiRepository = apiRepository;
             this.logger = logger;
         }
@@ -68,7 +64,7 @@ namespace RtlTvMazeScraper.Core.Services
         {
             // note: not documented, but apparently returns just the first 10 results
             var (status, json) = await this.apiRepository.RequestJson(
-                    new Uri($"{this.hostname}/search/shows?q={searchWord}"),
+                    $"/search/shows?q={searchWord}",
                     retryOnBusy: true,
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -116,7 +112,7 @@ namespace RtlTvMazeScraper.Core.Services
         public async Task<List<CastMember>> ScrapeCastMembers(int showid, CancellationToken cancellationToken = default)
         {
             var (status, json) = await this.apiRepository.RequestJson(
-                    new Uri($"{this.hostname}/shows/{showid}/cast"),
+                    $"/shows/{showid}/cast",
                     retryOnBusy: true,
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -169,7 +165,7 @@ namespace RtlTvMazeScraper.Core.Services
             {
                 int currentId = start + count;
                 var (status, json) = await this.apiRepository.RequestJson(
-                        new Uri($"{this.hostname}/shows/{currentId}?embed=cast"),
+                        $"/shows/{currentId}?embed=cast",
                         retryOnBusy: false,
                         cancellationToken)
                     .ConfigureAwait(false);

@@ -31,7 +31,7 @@ namespace RtlTvMazeScraper.Core.Test
             apiRepo.ReadContent(typeof(MockApiRepository).Assembly.GetManifestResourceStream(typeof(MockApiRepository), "Data.TvMazeSearchByA.json"));
             var svclogger = new DebugLogger<TvMazeService>();
 
-            var svc = new TvMazeService(settingRepo, apiRepo, svclogger);
+            var svc = new TvMazeService(apiRepo, svclogger);
             var result = await svc.ScrapeShowsBySearch("a").ConfigureAwait(false);
 
             result.Should().NotBeNull();
@@ -52,7 +52,7 @@ namespace RtlTvMazeScraper.Core.Test
             apiRepo.ReadContent(typeof(MockApiRepository).Assembly.GetManifestResourceStream(typeof(MockApiRepository), "Data.TvMazeATeamCast.json"));
             var svclogger = new DebugLogger<TvMazeService>();
 
-            var svc = new TvMazeService(settingRepo, apiRepo, svclogger);
+            var svc = new TvMazeService(apiRepo, svclogger);
             var result = await svc.ScrapeCastMembers(1058).ConfigureAwait(false);
 
             result.Should().NotBeNull();
@@ -77,7 +77,7 @@ namespace RtlTvMazeScraper.Core.Test
                 StatusToReturn = Core.Support.Constants.ServerTooBusy,
             };
 
-            var svc = new TvMazeService(settingRepo, apiRepo, svclogger);
+            var svc = new TvMazeService(apiRepo, svclogger);
             var (count, shows) = await svc.ScrapeById(999_999).ConfigureAwait(false);
 
             count.Should().Be(0);
@@ -97,7 +97,7 @@ namespace RtlTvMazeScraper.Core.Test
                 StatusToReturn = System.Net.HttpStatusCode.NotFound,
             };
 
-            var svc = new TvMazeService(settingRepo, apiRepo, svclogger)
+            var svc = new TvMazeService(apiRepo, svclogger)
             {
                 MaxNumberOfShowsToScrape = 10,
             };
@@ -120,7 +120,7 @@ namespace RtlTvMazeScraper.Core.Test
             var apiRepo = new MockApiRepository();
             apiRepo.ReadContent(typeof(MockApiRepository).Assembly.GetManifestResourceStream(typeof(MockApiRepository), "Data.TvMazeATeamWithCast.json"));
 
-            var svc = new TvMazeService(settingRepo, apiRepo, svclogger)
+            var svc = new TvMazeService(apiRepo, svclogger)
             {
                 MaxNumberOfShowsToScrape = 1,
             };

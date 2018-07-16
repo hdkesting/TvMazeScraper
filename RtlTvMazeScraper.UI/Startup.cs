@@ -4,6 +4,8 @@
 
 namespace RtlTvMazeScraper.UI
 {
+    using System;
+    using System.Net.Http;
     using AutoMapper;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -11,6 +13,7 @@ namespace RtlTvMazeScraper.UI
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Polly;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Services;
@@ -58,6 +61,28 @@ namespace RtlTvMazeScraper.UI
             services.AddDbContext<ShowContext>(opt => opt.UseSqlServer(
                 this.Configuration.GetConnectionString("ShowConnection"),
                 x => x.MigrationsAssembly("RtlTvMazeScraper.Infrastructure")));
+
+            var retryPolicy = Policy.HandleResult<HttpResponseMessage>(resp => resp.StatusCode == Core.Support.Constants.ServerTooBusy)
+                                    .WaitAndRetryAsync(new[]
+                                    {
+                                        TimeSpan.FromSeconds(5),
+                                        TimeSpan.FromSeconds(10),
+                                        TimeSpan.FromSeconds(20),
+                                    });
+            var host = this.Configuration.GetSection("Config")["tvmaze"];
+
+            services.AddHttpClient(Core.Support.Constants.TvMazeClientWithRetry, client =>
+            {
+                client.BaseAddress = new Uri(host);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            })
+            .AddPolicyHandler(retryPolicy);
+
+            services.AddHttpClient(Core.Support.Constants.TvMazeClientNoRetry, client =>
+            {
+                client.BaseAddress = new Uri(host);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
 
             this.ConfigureDI(services);
         }

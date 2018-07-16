@@ -17,61 +17,44 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
     /// </summary>
     public class ApiRepository : IApiRepository
     {
-        private const int MaxRetryCount = 5;
-        private static readonly TimeSpan DelayIncrease = TimeSpan.FromSeconds(5);
+        private readonly IHttpClientFactory httpClientFactory;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiRepository" /> class.
+        /// </summary>
+        /// <param name="httpClientFactory">The HTTP client factory.</param>
+        public ApiRepository(IHttpClientFactory httpClientFactory)
+        {
+            this.httpClientFactory = httpClientFactory;
+        }
 
         /// <summary>
         /// Requests the json from the specified URL.
         /// </summary>
-        /// <param name="url">The URL.</param>
+        /// <param name="relativePath">The relative URL.</param>
         /// <param name="retryOnBusy">if set to <c>true</c>, retry on a 429 result after a progressive delay.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// The response status and the json (if any).
         /// </returns>
-        public async Task<ApiResponse> RequestJson(Uri url, bool retryOnBusy, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ApiResponse> RequestJson(string relativePath, bool retryOnBusy, CancellationToken cancellationToken = default(CancellationToken))
         {
-            TimeSpan delay = TimeSpan.Zero;
-            int retrycount = 0;
+            var key = retryOnBusy ? Core.Support.Constants.TvMazeClientWithRetry : Core.Support.Constants.TvMazeClientNoRetry;
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = this.httpClientFactory.CreateClient(key))
             {
-                while (true)
+#pragma warning disable CA2234 // Pass system uri objects instead of strings
+                var response = await httpClient.GetAsync(relativePath, cancellationToken).ConfigureAwait(false);
+#pragma warning restore CA2234 // Pass system uri objects instead of strings
+
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        return new ApiResponse(HttpStatusCode.NoContent, string.Empty);
-                    }
-
-                    var response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
-
-                    if (response.StatusCode == Core.Support.Constants.ServerTooBusy)
-                    {
-                        if (!retryOnBusy)
-                        {
-                            return new ApiResponse(response.StatusCode, string.Empty);
-                        }
-                    }
-                    else if (response.StatusCode == HttpStatusCode.OK)
-                    {
-                        var text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        return new ApiResponse(response.StatusCode, text);
-                    }
-                    else
-                    {
-                        return new ApiResponse(response.StatusCode, string.Empty);
-                    }
-
-                    retrycount++;
-
-                    if (retrycount > MaxRetryCount)
-                    {
-                        // give up after several failed tries
-                        return new ApiResponse(Core.Support.Constants.ServerTooBusy, null);
-                    }
-
-                    delay += DelayIncrease;
-                    await Task.Delay(delay).ConfigureAwait(false);
+                    var text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    return new ApiResponse(HttpStatusCode.OK, text);
+                }
+                else
+                {
+                    return new ApiResponse(response.StatusCode, string.Empty);
                 }
             }
         }

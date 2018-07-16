@@ -17,12 +17,12 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <summary>
         /// Requests the json from the specified URL.
         /// </summary>
-        /// <param name="url">The URL.</param>
+        /// <param name="relativePath">The relative path.</param>
         /// <param name="retryOnBusy">if set to <c>true</c>, retry on a 429 result after a progressive delay.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// The response status and the json (if any).
         /// </returns>
-        Task<ApiResponse> RequestJson(Uri url, bool retryOnBusy, CancellationToken cancellationToken = default);
+        Task<ApiResponse> RequestJson(string relativePath, bool retryOnBusy, CancellationToken cancellationToken = default);
     }
 }
