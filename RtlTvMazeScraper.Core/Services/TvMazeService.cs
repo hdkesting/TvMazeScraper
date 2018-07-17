@@ -24,7 +24,7 @@ namespace RtlTvMazeScraper.Core.Services
     [CLSCompliant(false)]
     public class TvMazeService : ITvMazeService
     {
-        private const int DefaultMaximumShows = 40;
+        private const int DefaultMaximumShows = 60;
 
         private readonly IApiRepository apiRepository;
         private readonly ILogger<TvMazeService> logger;

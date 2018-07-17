@@ -59,8 +59,8 @@ namespace RtlTvMazeScraper.UI
             var retryPolicy = Policy.HandleResult<HttpResponseMessage>(resp => resp.StatusCode == Core.Support.Constants.ServerTooBusy)
                                     .WaitAndRetryAsync(new[]
                                     {
-                                        TimeSpan.FromSeconds(5),
                                         TimeSpan.FromSeconds(10),
+                                        TimeSpan.FromSeconds(15),
                                         TimeSpan.FromSeconds(20),
                                     });
             var host = this.Configuration.GetSection("Config")["tvmaze"];
