@@ -20,10 +20,5 @@ namespace RtlTvMazeScraper.Core.Support
         /// The key for the tv maze http-client with retry.
         /// </summary>
         public const string TvMazeClientWithRetry = "tvmazeretry";
-
-        /// <summary>
-        /// The key for the tv maze http-client without retry.
-        /// </summary>
-        public const string TvMazeClientNoRetry = "tvmazenoretry";
     }
 }

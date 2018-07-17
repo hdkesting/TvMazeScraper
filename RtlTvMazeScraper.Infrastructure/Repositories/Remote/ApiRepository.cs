@@ -32,14 +32,13 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
         /// Requests the json from the specified URL.
         /// </summary>
         /// <param name="relativePath">The relative URL.</param>
-        /// <param name="retryOnBusy">if set to <c>true</c>, retry on a 429 result after a progressive delay.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// The response status and the json (if any).
         /// </returns>
-        public async Task<ApiResponse> RequestJson(string relativePath, bool retryOnBusy, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ApiResponse> RequestJson(string relativePath, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var key = retryOnBusy ? Core.Support.Constants.TvMazeClientWithRetry : Core.Support.Constants.TvMazeClientNoRetry;
+            var key = Core.Support.Constants.TvMazeClientWithRetry;
 
             using (var httpClient = this.httpClientFactory.CreateClient(key))
             {

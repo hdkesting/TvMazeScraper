@@ -52,12 +52,6 @@ namespace RtlTvMazeScraper.UI
             services.AddMvc()
                 .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
 
-            services.AddLogging(lb =>
-            {
-                lb.AddConsole();
-                lb.AddDebug();
-            });
-
             services.AddDbContext<ShowContext>(opt => opt.UseSqlServer(
                 this.Configuration.GetConnectionString("ShowConnection"),
                 x => x.MigrationsAssembly("RtlTvMazeScraper.Infrastructure")));
@@ -71,18 +65,13 @@ namespace RtlTvMazeScraper.UI
                                     });
             var host = this.Configuration.GetSection("Config")["tvmaze"];
 
+            // on http status 429, wait and retry (using Polly)
             services.AddHttpClient(Core.Support.Constants.TvMazeClientWithRetry, client =>
             {
                 client.BaseAddress = new Uri(host);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
             })
             .AddPolicyHandler(retryPolicy);
-
-            services.AddHttpClient(Core.Support.Constants.TvMazeClientNoRetry, client =>
-            {
-                client.BaseAddress = new Uri(host);
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
-            });
 
             this.ConfigureDI(services);
         }

@@ -6,6 +6,7 @@ namespace RtlTvMazeScraper.Core.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Globalization;
     using System.Net;
     using System.Threading;
@@ -65,7 +66,6 @@ namespace RtlTvMazeScraper.Core.Services
             // note: not documented, but apparently returns just the first 10 results
             var (status, json) = await this.apiRepository.RequestJson(
                     $"/search/shows?q={searchWord}",
-                    retryOnBusy: true,
                     cancellationToken)
                 .ConfigureAwait(false);
 
@@ -113,7 +113,6 @@ namespace RtlTvMazeScraper.Core.Services
         {
             var (status, json) = await this.apiRepository.RequestJson(
                     $"/shows/{showid}/cast",
-                    retryOnBusy: true,
                     cancellationToken)
                 .ConfigureAwait(false);
 
@@ -164,11 +163,13 @@ namespace RtlTvMazeScraper.Core.Services
             while (count < this.MaxNumberOfShowsToScrape)
             {
                 int currentId = start + count;
+                var sw = Stopwatch.StartNew();
                 var (status, json) = await this.apiRepository.RequestJson(
                         $"/shows/{currentId}?embed=cast",
-                        retryOnBusy: false,
                         cancellationToken)
                     .ConfigureAwait(false);
+                sw.Stop();
+                this.logger.LogInformation("Getting info about show {ShowId} took {Elapsed} msec and returned status {HttpStatus}.", currentId, sw.ElapsedMilliseconds, status);
 
                 if (status == Support.Constants.ServerTooBusy)
                 {
