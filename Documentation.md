@@ -31,6 +31,8 @@ Future enhancement: use "Migrations", so the database in the installed version i
 
 ## Additional setup
 
-* "Code Analysis" nalyzer is used for all projects (except the unittest project), using the Recommended Rules.
+* "Code Analysis" analyzer is used for all projects (except the unittest project), using the Recommended Rules.
 * StyleCop code analyzers are added to the various projects to enforce a consistent coding style.
-* "Polly" (https://github.com/App-vNext/Polly) is used to retry request when the server was too busy. 
+
+## Various
+* "[Polly](https://github.com/App-vNext/Polly)"  is used to retry request when the server was too busy. 

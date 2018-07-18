@@ -52,6 +52,7 @@
     <ProjectReference Include="..\RtlTvMazeScraper.Infrastructure\RtlTvMazeScraper.Infrastructure.csproj" />
   </ItemGroup>
 
+  <!-- https://stackoverflow.com/questions/51082036/clscompliant-attribute-for-asp-net-core-views -->
   <ItemGroup>
     <RazorCompile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
