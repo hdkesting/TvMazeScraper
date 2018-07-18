@@ -18,12 +18,12 @@
     <h2>Explanation</h2>
     <p>
         Try and read a batch of shows by ID, starting from the number as specified in the "start" parameter.
-        After each batch is read (and stored locally) there is a short pause before reading the next one to prevent overloading the remote system.
+        After each batch is read (and stored locally), the next batch is read automatically. When the remote system reports it is overloaded, scraping pauses automatically.
     </p>
     <p>The scraping will stop when several batches return no results.</p>
 </blockquote>
 
 <script type="text/javascript">
     // client-side pause before scraping the next batch
-    setTimeout(function () { location.href = "@Url.Action("Scrape", new { start = Model.NextStartIndex })" }, 7000);
+    setTimeout(function () { location.href = "@Url.Action("Scrape", new { start = Model.NextStartIndex })" }, 500);
 </script>
