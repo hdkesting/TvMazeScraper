@@ -27,12 +27,17 @@ namespace RtlTvMazeScraper.UI
     public class Startup
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Startup"/> class.
+        /// Initializes a new instance of the <see cref="Startup" /> class.
         /// </summary>
-        /// <param name="configuration">The configuration.</param>
-        public Startup(IConfiguration configuration)
+        /// <param name="env">The hosting environment.</param>
+        public Startup(IHostingEnvironment env)
         {
-            this.Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+            this.Configuration = builder.Build();
         }
 
         /// <summary>
@@ -51,6 +56,13 @@ namespace RtlTvMazeScraper.UI
         {
             services.AddMvc()
                 .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
+
+            services.AddLogging(builder =>
+            {
+                builder.AddConfiguration(this.Configuration.GetSection("Logging"));
+                builder.AddConsole();
+                builder.AddDebug();
+            });
 
             services.AddDbContext<ShowContext>(opt => opt.UseSqlServer(
                 this.Configuration.GetConnectionString("ShowConnection"),
