@@ -41,6 +41,14 @@ namespace RtlTvMazeScraper.Core.Model
         public DbSet<CastMember> CastMembers { get; set; }
 
         /// <summary>
+        /// Gets or sets the show cast members, the many-to-many relation between <see cref="Show"/> and <see cref="CastMember"/>.
+        /// </summary>
+        /// <value>
+        /// The show cast members.
+        /// </value>
+        public DbSet<ShowCastMember> ShowCastMembers { get; set; }
+
+        /// <summary>
         /// Further configure the model that was discovered by convention from the entity types
         /// exposed in <see cref="Microsoft.EntityFrameworkCore.DbSet{T}" /> properties on your derived context. The resulting model may be cached
         /// and re-used for subsequent instances of your derived context.
@@ -54,8 +62,20 @@ namespace RtlTvMazeScraper.Core.Model
         /// </remarks>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<CastMember>()
-                .HasKey(it => new { it.ShowId, it.MemberId });
+            // many-to-many link table has a double key
+            modelBuilder.Entity<ShowCastMember>()
+                .HasKey(it => new { it.ShowId, it.CastMemberId });
+
+            // setup two-sided relation. https://docs.microsoft.com/en-us/ef/core/modeling/relationships#many-to-many
+            modelBuilder.Entity<ShowCastMember>()
+                .HasOne(it => it.Show)
+                .WithMany(it => it.ShowCastMembers)
+                .HasForeignKey(it => it.ShowId);
+
+            modelBuilder.Entity<ShowCastMember>()
+                .HasOne(it => it.CastMember)
+                .WithMany(it => it.ShowCastMembers)
+                .HasForeignKey(it => it.CastMemberId);
         }
     }
 }

@@ -131,8 +131,7 @@ namespace RtlTvMazeScraper.Core.Services
                 var person = (JObject)role[Support.TvMazeCastResultNames.PersonContainer];
                 var member = new CastMember()
                 {
-                    MemberId = (int)person[Support.TvMazeCastResultNames.PersonId],
-                    ShowId = showid,
+                    Id = (int)person[Support.TvMazeCastResultNames.PersonId],
                     Name = (string)person[Support.TvMazeCastResultNames.PersonName],
                 };
 
@@ -206,15 +205,20 @@ namespace RtlTvMazeScraper.Core.Services
                                 var person = (JObject)container[Support.TvMazeShowWithCastResultNames.PersonContainer];
                                 var member = new CastMember
                                 {
-                                    MemberId = (int)person[Support.TvMazeShowWithCastResultNames.PersonId],
-                                    ShowId = show.Id,
+                                    Id = (int)person[Support.TvMazeShowWithCastResultNames.PersonId],
                                     Name = (string)person[Support.TvMazeShowWithCastResultNames.PersonName],
                                 };
 
                                 var bd = person[Support.TvMazeShowWithCastResultNames.PersonBirthday];
                                 member.Birthdate = GetDate(bd);
 
-                                show.CastMembers.Add(member);
+                                show.ShowCastMembers.Add(new ShowCastMember
+                                {
+                                    Show = show,
+                                    ShowId = show.Id,
+                                    CastMemberId = member.Id,
+                                    CastMember = member,
+                                });
                             }
                         }
                     }

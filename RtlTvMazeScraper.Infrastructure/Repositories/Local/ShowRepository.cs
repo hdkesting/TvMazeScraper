@@ -49,7 +49,8 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         public async Task<List<Show>> GetShows(int startId, int count)
         {
             return await this.showContext.Shows
-                .Include(s => s.CastMembers)
+                .Include(s => s.ShowCastMembers)
+                .ThenInclude(scm => scm.CastMember)
                 .Where(s => s.Id >= startId)
                 .OrderBy(s => s.Id)
                 .Take(count)
@@ -66,15 +67,15 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// <returns>
         /// A list of shows with cast.
         /// </returns>
-        public async Task<List<Show>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
+        public Task<List<Show>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
         {
-            return await this.showContext.Shows
-                .Include(s => s.CastMembers)
+            return this.showContext.Shows
+                .Include(s => s.ShowCastMembers)
+                .ThenInclude(scm => scm.CastMember)
                 .OrderBy(s => s.Id)
                 .Skip(page * pagesize)
                 .Take(pagesize)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <summary>
@@ -93,18 +94,18 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
             {
                 try
                 {
-                    if (!show.CastMembers.Any() && getCastOfShow != null)
+                    if (!show.ShowCastMembers.Any() && getCastOfShow != null)
                     {
                         var cast = await getCastOfShow(show.Id).ConfigureAwait(false);
-                        show.CastMembers.AddRange(cast);
+                        show.ShowCastMembers.AddRange(cast.Select(c => new ShowCastMember { Show = show, CastMember = c }));
                     }
 
                     // there are duplicate "persons" in the cast (when they have different roles) - we are only interested in persons, not roles
-                    var realcast = show.CastMembers.Distinct(memberEqualityComparer).ToList();
-                    if (realcast.Count < show.CastMembers.Count)
+                    var realcast = show.ShowCastMembers.Select(scm => scm.CastMember).Distinct(memberEqualityComparer).ToList();
+                    if (realcast.Count < show.ShowCastMembers.Count)
                     {
-                        show.CastMembers.Clear();
-                        show.CastMembers.AddRange(realcast);
+                        show.ShowCastMembers.Clear();
+                        show.ShowCastMembers.AddRange(realcast.Select(c => new ShowCastMember { Show = show, CastMember = c }));
                     }
 
                     var existing = await this.GetShowById(show.Id).ConfigureAwait(false);
@@ -163,11 +164,15 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// </summary>
         /// <param name="showId">The show identifier.</param>
         /// <returns>A list of cast members.</returns>
-        public Task<List<CastMember>> GetCastOfShow(int showId)
+        public async Task<List<CastMember>> GetCastOfShow(int showId)
         {
-            return this.showContext.CastMembers
-                .Where(cm => cm.ShowId == showId)
-                .ToListAsync();
+            var show = await this.showContext.Shows
+                .Include(s => s.ShowCastMembers)
+                .ThenInclude(scm => scm.CastMember)
+                .SingleOrDefaultAsync(s => s.Id == showId)
+                .ConfigureAwait(false);
+
+            return show?.ShowCastMembers.Select(it => it.CastMember).ToList();
         }
 
         /// <summary>
@@ -178,7 +183,8 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         public Task<Show> GetShowById(int id)
         {
             return this.showContext.Shows
-                .Include(s => s.CastMembers)
+                .Include(s => s.ShowCastMembers)
+                .ThenInclude(scm => scm.CastMember)
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 
@@ -192,13 +198,13 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         {
             storedShow.Name = newShow.Name;
 
-            foreach (var newMember in newShow.CastMembers)
+            foreach (var newMember in newShow.ShowCastMembers.Select(scm => scm.CastMember))
             {
-                var storedMember = storedShow.CastMembers.FirstOrDefault(m => m.MemberId == newMember.MemberId);
+                var storedMember = storedShow.ShowCastMembers.FirstOrDefault(m => m.CastMemberId == newMember.Id)?.CastMember;
 
                 if (storedMember == null)
                 {
-                    storedShow.CastMembers.Add(newMember);
+                    storedShow.ShowCastMembers.Add(new ShowCastMember { Show = storedShow, CastMember = newMember });
                 }
                 else
                 {
@@ -207,7 +213,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                 }
             }
 
-            storedShow.CastMembers.RemoveAll(m => !newShow.CastMembers.Any(m2 => m2.MemberId == m.MemberId));
+            storedShow.ShowCastMembers.RemoveAll(m => !newShow.ShowCastMembers.Any(m2 => m2.CastMemberId == m.CastMemberId));
 
             return this.showContext.SaveChangesAsync();
         }

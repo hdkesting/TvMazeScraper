@@ -5,6 +5,7 @@
 namespace RtlTvMazeScraper.UI
 {
     using System;
+    using System.Linq;
     using System.Net.Http;
     using AutoMapper;
     using Microsoft.AspNetCore.Builder;
@@ -120,7 +121,7 @@ namespace RtlTvMazeScraper.UI
             var config = new AutoMapper.MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Show, ShowForJson>()
-                    .ForMember(dest => dest.Cast, opt => opt.MapFrom(src => src.CastMembers));
+                    .ForMember(dest => dest.Cast, opt => opt.MapFrom(src => src.ShowCastMembers.Select(scm => scm.CastMember)));
                 cfg.CreateMap<CastMember, CastMemberForJson>();
             });
 

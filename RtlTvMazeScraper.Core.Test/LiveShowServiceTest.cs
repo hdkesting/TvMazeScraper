@@ -77,7 +77,7 @@ namespace RtlTvMazeScraper.Core.Test
             shows.Should().NotBeNull();
             shows.Count.Should().BeLessOrEqualTo(10, because: "I requested a page of size 10.");
 
-            shows.Where(s => s.CastMembers.Any()).Count().Should().BeGreaterThan(0, because: "I expect at least some to have a cast defined.");
+            shows.Where(s => s.ShowCastMembers.Any()).Count().Should().BeGreaterThan(0, because: "I expect at least some to have a cast defined.");
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace RtlTvMazeScraper.Core.Test
 
             show.Should().NotBeNull();
             show.Id.Should().BeGreaterThan(0);
-            show.CastMembers.Count.Should().BeGreaterThan(0);
+            show.ShowCastMembers.Count.Should().BeGreaterThan(0);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace RtlTvMazeScraper.Core.Model
                 return false;
             }
 
-            return x == y || (x.ShowId == y.ShowId && x.MemberId == y.MemberId);
+            return x == y || (x.Id == y.Id);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace RtlTvMazeScraper.Core.Model
         /// </returns>
         public int GetHashCode(CastMember obj)
         {
-            return (obj.ShowId * 1000_000) + obj.MemberId;
+            return obj.Id;
         }
     }
 }
