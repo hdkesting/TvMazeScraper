@@ -194,28 +194,39 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
             return this.showContext.SaveChangesAsync();
         }
 
-        private Task UpdateShow(Show newShow, Show storedShow)
+        private async Task UpdateShow(Show newShow, Show storedShow)
         {
             storedShow.Name = newShow.Name;
 
             foreach (var newMember in newShow.ShowCastMembers.Select(scm => scm.CastMember))
             {
-                var storedMember = storedShow.ShowCastMembers.FirstOrDefault(m => m.CastMemberId == newMember.Id)?.CastMember;
+                var storedMember = storedShow.ShowCastMembers.FirstOrDefault(m => m.CastMemberId == newMember.Id);
 
                 if (storedMember == null)
                 {
-                    storedShow.ShowCastMembers.Add(new ShowCastMember { Show = storedShow, CastMember = newMember });
+                    var storedActor = await this.showContext.CastMembers.SingleOrDefaultAsync(m => m.Id == newMember.Id).ConfigureAwait(false);
+
+                    if (storedActor == null)
+                    {
+                        // also not stored for another show
+                        storedShow.ShowCastMembers.Add(new ShowCastMember { Show = storedShow, CastMember = newMember });
+                    }
+                    else
+                    {
+                        storedShow.ShowCastMembers.Add(new ShowCastMember { Show = storedShow, CastMember = storedActor });
+                    }
                 }
                 else
                 {
-                    storedMember.Name = newMember.Name;
-                    storedMember.Birthdate = newMember.Birthdate;
+                    storedMember.CastMember.Name = newMember.Name;
+                    storedMember.CastMember.Birthdate = newMember.Birthdate;
                 }
             }
 
+            // remove the relation, not the actors
             storedShow.ShowCastMembers.RemoveAll(m => !newShow.ShowCastMembers.Any(m2 => m2.CastMemberId == m.CastMemberId));
 
-            return this.showContext.SaveChangesAsync();
+            await this.showContext.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }
