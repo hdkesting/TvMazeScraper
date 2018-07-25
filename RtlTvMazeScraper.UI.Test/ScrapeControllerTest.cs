@@ -53,11 +53,17 @@ namespace RtlTvMazeScraper.UI.Test
         public async Task TestDefaultAction()
         {
             // arrange
-            this.context.Shows.Add(new Show { Id = 42, Name = "HitchHikers Guide to the Galaxy" });
-            this.context.Shows.Add(new Show { Id = 12, Name = "Some other show" });
-            this.context.CastMembers.Add(new CastMember { MemberId = 1, ShowId = 42, Name = "Ford Prefect", Birthdate = new DateTime(1500, 1, 1) });
-            this.context.CastMembers.Add(new CastMember { MemberId = 2, ShowId = 42, Name = "Arthur Dent", Birthdate = new DateTime(1960, 12, 31) });
-            this.context.CastMembers.Add(new CastMember { MemberId = 5, ShowId = 12, Name = "Someone", Birthdate = new DateTime(1980, 12, 31) });
+            var s1 = new Show { Id = 42, Name = "HitchHikers Guide to the Galaxy" };
+            var m = new CastMember { Id = 1, Name = "Ford Prefect", Birthdate = new DateTime(1500, 1, 1) };
+            s1.ShowCastMembers.Add(new ShowCastMember { Show = s1, CastMember = m });
+            m = new CastMember { Id = 2, Name = "Arthur Dent", Birthdate = new DateTime(1960, 12, 31) };
+            s1.ShowCastMembers.Add(new ShowCastMember { Show = s1, CastMember = m });
+            this.context.Shows.Add(s1);
+
+            var s2 = new Show { Id = 12, Name = "Some other show" };
+            m = new CastMember { Id = 5, Name = "Someone", Birthdate = new DateTime(1980, 12, 31) };
+            s2.ShowCastMembers.Add(new ShowCastMember { Show = s2, CastMember = m });
+            this.context.Shows.Add(s2);
             this.context.SaveChanges();
 
             // note that the tvmazeservice and logger are not used in this action

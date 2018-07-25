@@ -5,6 +5,7 @@
 namespace RtlTvMazeScraper.Core.Model
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,19 +22,7 @@ namespace RtlTvMazeScraper.Core.Model
         /// </value>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column(Order = 2)]
-        public int MemberId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the show identifier.
-        /// </summary>
-        /// <value>
-        /// The show identifier.
-        /// </value>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column(Order = 1)]
-        public int ShowId { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Gets or sets the name.
@@ -50,5 +39,13 @@ namespace RtlTvMazeScraper.Core.Model
         /// The birthdate.
         /// </value>
         public DateTime? Birthdate { get; set; }
+
+        /// <summary>
+        /// Gets the shows this actor appears in.
+        /// </summary>
+        /// <value>
+        /// The shows.
+        /// </value>
+        public List<ShowCastMember> ShowCastMembers { get; } = new List<ShowCastMember>();
     }
 }
