@@ -78,7 +78,7 @@ namespace RtlTvMazeScraper.Core.Test
             };
 
             var svc = new TvMazeService(apiRepo, svclogger);
-            var (count, shows) = await svc.ScrapeById(999_999).ConfigureAwait(false);
+            var (count, shows) = await svc.ScrapeBatchById(999_999).ConfigureAwait(false);
 
             count.Should().Be(0);
         }
@@ -102,7 +102,7 @@ namespace RtlTvMazeScraper.Core.Test
                 MaxNumberOfShowsToScrape = 10,
             };
 
-            var (count, shows) = await svc.ScrapeById(999_999).ConfigureAwait(false);
+            var (count, shows) = await svc.ScrapeBatchById(999_999).ConfigureAwait(false);
 
             count.Should().Be(10, because: "I set 10 as the number of tries.");
             shows.Count.Should().Be(0, because: "nothing was supposed to be found.");
@@ -124,7 +124,7 @@ namespace RtlTvMazeScraper.Core.Test
             {
                 MaxNumberOfShowsToScrape = 1,
             };
-            var (count, shows) = await svc.ScrapeById(1058).ConfigureAwait(false);
+            var (count, shows) = await svc.ScrapeBatchById(1058).ConfigureAwait(false);
 
             shows.Count.Should().Be(1);
             shows[0].ShowCastMembers.Count.Should().Be(7);

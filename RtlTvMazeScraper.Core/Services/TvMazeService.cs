@@ -146,84 +146,34 @@ namespace RtlTvMazeScraper.Core.Services
         }
 
         /// <summary>
-        /// Scrapes shows by their identifier.
+        /// Scrapes a batch of shows by their identifier, starting from the supplied <paramref name="start" />.
         /// </summary>
         /// <param name="start">The start.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// A tuple: number of shows tried, list of shows found.
         /// </returns>
-        public async Task<ScrapeBatchResult> ScrapeById(int start, CancellationToken cancellationToken = default)
+        public async Task<ScrapeBatchResult> ScrapeBatchById(int start, CancellationToken cancellationToken = default)
         {
             int count = 0;
 
             var list = new List<Show>();
 
-            while (count < this.MaxNumberOfShowsToScrape)
+            var backoff = false;
+
+            while (count < this.MaxNumberOfShowsToScrape && !backoff)
             {
                 int currentId = start + count;
-                var sw = Stopwatch.StartNew();
-                var (status, json) = await this.apiRepository.RequestJson(
-                        $"/shows/{currentId}?embed=cast",
-                        cancellationToken)
-                    .ConfigureAwait(false);
-                sw.Stop();
-                this.logger.LogInformation("Getting info about show {ShowId} took {Elapsed} msec and returned status {HttpStatus}.", currentId, sw.ElapsedMilliseconds, status);
 
-                if (status == Support.Constants.ServerTooBusy)
-                {
-                    // too much, so back off
-                    this.logger.LogDebug("Server too busy to scrape #{ShowId}, backing off.", currentId);
-                    break;
-                }
+                var (show, status) = await this.ScrapeSingleShowById(currentId, cancellationToken).ConfigureAwait(false);
 
                 if (status == HttpStatusCode.OK)
                 {
-                    var jshow = JObject.Parse(json);
-                    var show = new Show
-                    {
-                        Id = (int)jshow[Support.TvMazeShowWithCastResultNames.ShowId],
-                        Name = (string)jshow[Support.TvMazeShowWithCastResultNames.ShowName],
-                    };
-
-                    var embedded = jshow[Support.TvMazeShowWithCastResultNames.EmbeddedContainer];
-                    if (embedded == null)
-                    {
-                        this.logger.LogError("Server didn't return the requested embedded data for show {ShowId}.", currentId);
-                    }
-                    else
-                    {
-                        var jcast = (JArray)embedded[Support.TvMazeShowWithCastResultNames.CastContainer];
-                        if (jcast == null)
-                        {
-                            this.logger.LogError("Server didn't return the requested cast in the embedded data for show {ShowId}.", currentId);
-                        }
-                        else
-                        {
-                            foreach (var container in jcast)
-                            {
-                                var person = (JObject)container[Support.TvMazeShowWithCastResultNames.PersonContainer];
-                                var member = new CastMember
-                                {
-                                    Id = (int)person[Support.TvMazeShowWithCastResultNames.PersonId],
-                                    Name = (string)person[Support.TvMazeShowWithCastResultNames.PersonName],
-                                };
-
-                                var bd = person[Support.TvMazeShowWithCastResultNames.PersonBirthday];
-                                member.Birthdate = GetDate(bd);
-
-                                show.ShowCastMembers.Add(new ShowCastMember
-                                {
-                                    Show = show,
-                                    ShowId = show.Id,
-                                    CastMemberId = member.Id,
-                                    CastMember = member,
-                                });
-                            }
-                        }
-                    }
-
                     list.Add(show);
+                }
+                else if (status == Support.Constants.ServerTooBusy)
+                {
+                    backoff = true;
                 }
 
                 /* just ignore a "not found" response. */
@@ -233,6 +183,81 @@ namespace RtlTvMazeScraper.Core.Services
 
             this.logger.LogInformation("Scraping shows from {start} returned {returnedCount} results out of {requestedCount} tried.", start, list.Count, count);
             return new ScrapeBatchResult(count, list);
+        }
+
+        /// <summary>
+        /// Scrapes the single show by its identifier.
+        /// </summary>
+        /// <param name="showId">The show identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A Task with Show and status code.</returns>
+        public async Task<(Show, HttpStatusCode)> ScrapeSingleShowById(int showId, CancellationToken cancellationToken = default)
+        {
+            var sw = Stopwatch.StartNew();
+            var (status, json) = await this.apiRepository.RequestJson(
+                    $"/shows/{showId}?embed=cast",
+                    cancellationToken)
+                .ConfigureAwait(false);
+            sw.Stop();
+            this.logger.LogInformation("Getting info about show {ShowId} took {Elapsed} msec and returned status {HttpStatus}.", showId, sw.ElapsedMilliseconds, status);
+
+            if (status == Support.Constants.ServerTooBusy)
+            {
+                // too much, so back off
+                this.logger.LogDebug("Server too busy to scrape #{ShowId}, backing off.", showId);
+                return (null, status);
+            }
+
+            if (status == HttpStatusCode.OK)
+            {
+                var jshow = JObject.Parse(json);
+                var show = new Show
+                {
+                    Id = (int)jshow[Support.TvMazeShowWithCastResultNames.ShowId],
+                    Name = (string)jshow[Support.TvMazeShowWithCastResultNames.ShowName],
+                };
+
+                var embedded = jshow[Support.TvMazeShowWithCastResultNames.EmbeddedContainer];
+                if (embedded == null)
+                {
+                    this.logger.LogError("Server didn't return the requested embedded data for show {ShowId}.", showId);
+                }
+                else
+                {
+                    var jcast = (JArray)embedded[Support.TvMazeShowWithCastResultNames.CastContainer];
+                    if (jcast == null)
+                    {
+                        this.logger.LogError("Server didn't return the requested cast in the embedded data for show {ShowId}.", showId);
+                    }
+                    else
+                    {
+                        foreach (var container in jcast)
+                        {
+                            var person = (JObject)container[Support.TvMazeShowWithCastResultNames.PersonContainer];
+                            var member = new CastMember
+                            {
+                                Id = (int)person[Support.TvMazeShowWithCastResultNames.PersonId],
+                                Name = (string)person[Support.TvMazeShowWithCastResultNames.PersonName],
+                            };
+
+                            var bd = person[Support.TvMazeShowWithCastResultNames.PersonBirthday];
+                            member.Birthdate = GetDate(bd);
+
+                            show.ShowCastMembers.Add(new ShowCastMember
+                            {
+                                Show = show,
+                                ShowId = show.Id,
+                                CastMemberId = member.Id,
+                                CastMember = member,
+                            });
+                        }
+                    }
+                }
+
+                return (show, status);
+            }
+
+            return (null, status);
         }
 
         private static DateTime? GetDate(JToken dayValue)

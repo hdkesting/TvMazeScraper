@@ -5,6 +5,7 @@
 namespace RtlTvMazeScraper.Core.Interfaces
 {
     using System.Collections.Generic;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using RtlTvMazeScraper.Core.Model;
@@ -36,13 +37,21 @@ namespace RtlTvMazeScraper.Core.Interfaces
         Task<List<CastMember>> ScrapeCastMembers(int showid, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Scrapes shows by their identifier.
+        /// Scrapes a batch of shows by their identifier, starting from the supplied <paramref name="start"/>.
         /// </summary>
         /// <param name="start">The start.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// A tuple: number of shows tried, list of shows found.
         /// </returns>
-        Task<ScrapeBatchResult> ScrapeById(int start, CancellationToken cancellationToken = default);
+        Task<ScrapeBatchResult> ScrapeBatchById(int start, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Scrapes the single show by its identifier.
+        /// </summary>
+        /// <param name="showId">The show identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A Task with Show and status code.</returns>
+        Task<(Show, HttpStatusCode)> ScrapeSingleShowById(int showId, CancellationToken cancellationToken = default);
     }
 }

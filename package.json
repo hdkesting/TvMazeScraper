@@ -1,0 +1,23 @@
+{
+  "name": "RtlTvMazeScraper",
+  "version": "1.0.0",
+  "description": "A sample application that scrapes data about (TV) shows and their cast from TVMaze, stores it locally and can return it (paged) as JSON.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hdkesting/TvMazeScraper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hdkesting/TvMazeScraper/issues"
+  },
+  "homepage": "https://github.com/hdkesting/TvMazeScraper#readme",
+  "dependencies": {
+    "@aspnet/signalr": "^1.0.2"
+  }
+}

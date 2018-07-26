@@ -1,0 +1,48 @@
+﻿@page
+@model RtlTvMazeScraper.UI.Pages.ScraperModel
+
+<div class="container">
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-6">&nbsp;</div>
+        <div class="col-6">
+            <button onclick="startFrom(1)">Start over (from 1)</button><br />
+            <button onclick="startFromEnd()">Resume</button><input type="hidden" id="max" value="@Model.MaxShowIndex" /><br />
+            <button onclick="startFromVal()">Start from: </button><input type="number" id="val" value="@Model.MaxShowIndex" /><br />
+            <button onclick="stopScraping()">Stop!</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">&nbsp;</div>
+        <div class="col-6">
+            <ul id="messagesList"></ul>
+        </div>
+    </div>
+</div>
+<script src="~/lib/signalr/signalr.js"></script>
+<script src="~/js/scraper.js"></script>
+<script>
+    function startFrom(val) {
+        console.log("start from: " + val);
+        if (!val || val <= 0) {
+            val = 1;
+        }
+
+        startScraping(val);
+    }
+
+    function startFromEnd() {
+        var val = document.getElementById("max").attributes["value"].value;
+        startFrom(val);
+    }
+
+    function startFromVal() {
+        var val = document.getElementById("val").attributes["value"].value;
+        startFrom(val);
+    }
+</script>
