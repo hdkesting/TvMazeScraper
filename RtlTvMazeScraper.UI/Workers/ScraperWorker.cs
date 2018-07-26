@@ -6,11 +6,9 @@ namespace RtlTvMazeScraper.UI.Workers
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.SignalR;
-    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.UI.Hubs;
@@ -19,51 +17,72 @@ namespace RtlTvMazeScraper.UI.Workers
     /// <summary>
     /// Scraper worker process.
     /// </summary>
-    public sealed class ScraperWorker : BackgroundService
+    public sealed class ScraperWorker : IScraperWorker
     {
+        private static readonly Queue<int> ShowIdQueue = new Queue<int>();
+
         private readonly IShowService showService;
         private readonly ITvMazeService tvMazeService;
-        private readonly ILogger<ScraperWorker> logger;
         private readonly IHubContext<ScraperHub> hubContext;
+        private readonly ILogger<ScraperWorker> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScraperWorker" /> class.
         /// </summary>
         /// <param name="showService">The show service.</param>
         /// <param name="tvMazeService">The tv maze service.</param>
-        /// <param name="logger">The logger.</param>
         /// <param name="hubContext">The hub context.</param>
+        /// <param name="logger">The logger.</param>
         public ScraperWorker(
             IShowService showService,
             ITvMazeService tvMazeService,
-            ILogger<ScraperWorker> logger,
-            IHubContext<ScraperHub> hubContext)
+            IHubContext<ScraperHub> hubContext,
+            ILogger<ScraperWorker> logger)
         {
             this.showService = showService;
             this.tvMazeService = tvMazeService;
-            this.logger = logger;
             this.hubContext = hubContext;
+            this.logger = logger;
         }
 
         /// <summary>
-        /// Gets or sets the show identifier.
+        /// Adds the show ids to the queue.
         /// </summary>
-        /// <value>
-        /// The show identifier.
-        /// </value>
-        public int ShowId { get; set; }
+        /// <param name="startId">The start identifier.</param>
+        /// <param name="count">The count.</param>
+        public void AddShowIds(int startId, int count = 10)
+        {
+            for (int n = 0; n < count; n++)
+            {
+                int id = startId + n;
+                if (!ShowIdQueue.Contains(id))
+                {
+                    ShowIdQueue.Enqueue(id);
+                }
+            }
+        }
 
         /// <summary>
-        /// This method is called when the <see cref="Microsoft.Extensions.Hosting.IHostedService" /> starts. The implementation should return a task that represents
-        /// the lifetime of the long running operation(s) being performed.
+        /// Clears the queue.
         /// </summary>
-        /// <param name="stoppingToken">Triggered when <see cref="Microsoft.Extensions.Hosting.IHostedService.StopAsync(System.Threading.CancellationToken)" /> is called.</param>
-        /// <returns>
-        /// A <see cref="System.Threading.Tasks.Task" /> that represents the long running operations.
-        /// </returns>
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        public void ClearQueue()
         {
-            return this.PerformScraping(stoppingToken);
+            ShowIdQueue.Clear();
+        }
+
+        /// <summary>
+        /// Does the work.
+        /// </summary>
+        public void DoWork()
+        {
+            try
+            {
+                this.PerformScraping(default).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogCritical(ex, "ExecuteAsync failed");
+            }
         }
 
         /// <summary>
@@ -75,13 +94,15 @@ namespace RtlTvMazeScraper.UI.Workers
             int failedbatches = 0;
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (this.ShowId <= 0)
+                if (ShowIdQueue.Count == 0)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
                     continue;
                 }
 
-                var (show, status) = await this.tvMazeService.ScrapeSingleShowById(this.ShowId).ConfigureAwait(false);
+                int showId = ShowIdQueue.Dequeue();
+
+                var (show, status) = await this.tvMazeService.ScrapeSingleShowById(showId).ConfigureAwait(false);
 
                 if (show != null)
                 {
@@ -90,6 +111,7 @@ namespace RtlTvMazeScraper.UI.Workers
                     var scraped = new ScrapedShow { Id = show.Id, Name = show.Name, CastCount = show.ShowCastMembers.Count };
                     await this.PostShow(scraped).ConfigureAwait(false);
                     await Task.Delay(100).ConfigureAwait(false);
+                    this.AddShowIds(showId);
                     failedbatches = 0;
                 }
                 else if (status == System.Net.HttpStatusCode.NotFound)
@@ -106,17 +128,12 @@ namespace RtlTvMazeScraper.UI.Workers
                     this.logger.LogInformation("Failed {failcount} times to get a show (and counting).", failedbatches);
                 }
 
-                if (status != Core.Support.Constants.ServerTooBusy)
+                if (status == Core.Support.Constants.ServerTooBusy)
                 {
-                    this.ShowId = this.ShowId + 1;
-                }
-                else
-                {
+                    this.AddShowIds(showId, 1); // retry later
                     await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
                 }
             }
-
-            this.ShowId = 0;
         }
 
         private Task PostShow(ScrapedShow show)

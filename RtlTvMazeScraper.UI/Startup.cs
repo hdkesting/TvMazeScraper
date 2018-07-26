@@ -147,18 +147,19 @@ namespace RtlTvMazeScraper.UI
             services.AddSingleton<ISettingRepository, SettingRepository>(sp => new SettingRepository(this.Configuration));
 
             // services
-            services.AddTransient<IShowService, ShowService>();
-            services.AddTransient<ITvMazeService, TvMazeService>();
+            services.AddScoped<IShowService, ShowService>();
+            services.AddScoped<ITvMazeService, TvMazeService>();
 
             // db context
-            services.AddTransient<IShowContext, ShowContext>();
+            services.AddScoped<IShowContext, ShowContext>();
 
             // other
             var mappingConfig = ConfigureMapping();
             services.AddSingleton<IMapper, IMapper>(sp => mappingConfig.CreateMapper());
 
             // background services
-            services.AddSingleton<IHostedService, ScraperWorker>();
+            services.AddHostedService<ConsumeScopedScraperWorker>();
+            services.AddScoped<IScraperWorker, ScraperWorker>();
         }
     }
 }

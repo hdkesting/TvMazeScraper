@@ -20,8 +20,7 @@ namespace RtlTvMazeScraper.UI.Hubs
         private readonly IShowService showService;
         private readonly ITvMazeService tvMazeService;
         private readonly ILogger<ScraperHub> logger;
-        private readonly ScraperWorker scraperWorker;
-        private Task scraperTask;
+        private readonly ConsumeScopedScraperWorker scraperWorker;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScraperHub" /> class.
@@ -34,7 +33,7 @@ namespace RtlTvMazeScraper.UI.Hubs
             IShowService showService,
             ITvMazeService tvMazeService,
             ILogger<ScraperHub> logger,
-            ScraperWorker scraperWorker)
+            ConsumeScopedScraperWorker scraperWorker)
         {
             this.showService = showService;
             this.tvMazeService = tvMazeService;
@@ -62,8 +61,7 @@ namespace RtlTvMazeScraper.UI.Hubs
             await this.StopScraping().ConfigureAwait(false);
 
             this.scraperWorker.ShowId = startId;
-            this.scraperTask = this.scraperWorker.StartAsync(default); // I do NOT want to wait for completion!
-            // default cancellationToken will compile, but not work - you should store a real one somewhere
+            await this.scraperWorker.StartAsync(default).ConfigureAwait(false);
         }
 
         /// <summary>
