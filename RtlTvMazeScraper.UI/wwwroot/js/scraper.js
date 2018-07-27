@@ -9,7 +9,7 @@ const connection = new signalR.HubConnectionBuilder()
 
 connection.on("ShowFound", (show) => {
     const message = "[" + show.id + "] " + show.name + " (" + show.castCount + ")";
-    const msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const msg = message; //.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     const li = document.createElement("li");
     li.textContent = msg;
     const list = document.getElementById("messagesList");

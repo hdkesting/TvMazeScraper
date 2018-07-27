@@ -90,24 +90,24 @@ namespace RtlTvMazeScraper.UI.Workers
                 var res = await scopedScraperWorker.DoWork().ConfigureAwait(false);
 
                 // schedule again, depending on result of worker.DoWork
-                int delay = 1;
+                TimeSpan delay = TimeSpan.FromMilliseconds(50);
                 switch (res)
                 {
                     case WorkResult.Busy:
-                        delay = 30;
+                        delay = TimeSpan.FromSeconds(30);
                         break;
 
                     case WorkResult.Empty:
-                        delay = 20;
+                        delay = TimeSpan.FromSeconds(20);
                         break;
 
                     case WorkResult.Error:
-                        delay = 60;
+                        delay = TimeSpan.FromSeconds(60);
                         break;
                 }
 
                 this.timer.Change(
-                    TimeSpan.FromSeconds(delay),
+                    delay,
                     Timeout.InfiniteTimeSpan);
             }
 
