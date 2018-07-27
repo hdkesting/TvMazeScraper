@@ -5,14 +5,16 @@
 namespace RtlTvMazeScraper.UI.Workers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
+    /// <summary>
+    /// Starter for <see cref="ScraperWorker"/>.
+    /// </summary>
+    /// <seealso cref="Microsoft.Extensions.Hosting.IHostedService" />
     public class ConsumeScopedScraperWorker : IHostedService
     {
         private readonly IServiceProvider services;
@@ -31,6 +33,12 @@ namespace RtlTvMazeScraper.UI.Workers
             this.logger = logger;
         }
 
+        /// <summary>
+        /// Gets the show identifier.
+        /// </summary>
+        /// <value>
+        /// The show identifier.
+        /// </value>
         public int ShowId { get; internal set; }
 
         /// <summary>
@@ -72,7 +80,6 @@ namespace RtlTvMazeScraper.UI.Workers
                     scope.ServiceProvider
                         .GetRequiredService<IScraperWorker>();
 
-                scopedScraperWorker.AddShowIds(this.ShowId, 20);
                 scopedScraperWorker.DoWork();
             }
         }

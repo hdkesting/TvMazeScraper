@@ -1,4 +1,6 @@
-﻿// The following sample code uses modern ECMAScript 6 features 
+﻿'use strict';
+
+// The following sample code uses modern ECMAScript 6 features
 // that aren't supported in Internet Explorer 11.
 
 const connection = new signalR.HubConnectionBuilder()
@@ -12,32 +14,50 @@ connection.on("ShowFound", (show) => {
     li.textContent = msg;
     const list = document.getElementById("messagesList");
     list.appendChild(li);
+
+    // make sure list doesn't get too long
     if (list.children.length > 25) {
         list.children[0].parentNode.removeChild(list.children[0]);
     }
 
-    // todo update "val" value
-    var oldmax = document.getElementById("val").attributes["value"].value;
+    // update "val" value when higher
+    var oldmax = document.getElementById("val").value;
     if (show.id > oldmax) {
-        document.getElementById("val").attributes["value"].value = show.id;
+        document.getElementById("val").value = show.id;
     }
 });
 
 connection.start().catch(err => console.error(err.toString()));
 
-function startScraping(val) {
-    connection.invoke("StartScraping", val).catch(err => console.error(err.toString()));
+async function startScraping(val) {
+    console.log("Start scraping from " + val);
+
+    await fetch("api/scraper/start?showId=" + val);
+    // connection.invoke("StartScraping", val).catch(err => console.error(err.toString()));
 }
 
-function stopScraping() {
-    connection.invoke("StopScraping").catch(err => console.error(err.toString()));
+async function stopScraping() {
+    console.log("Stopping the scraping");
+    await fetch("api/scraper/stop");
+
+    // connection.invoke("StopScraping").catch(err => console.error(err.toString()));
 }
 
-/*
-document.getElementById("sendButton").addEventListener("click", event => {
-    const user = document.getElementById("userInput").value;
-    const message = document.getElementById("messageInput").value;
-    connection.invoke("SendMessage", user, message).catch(err => console.error(err.toString()));
-    event.preventDefault();
-});
-*/
+async function startFrom(val) {
+    console.log("start from: " + val);
+    if (!val || val <= 0) {
+        val = 1;
+    }
+
+    await startScraping(val);
+}
+
+async function startFromEnd() {
+    var val = document.getElementById("max").value;
+    await startFrom(val);
+}
+
+async function startFromVal() {
+    var val = document.getElementById("val").value;
+    await startFrom(val);
+}

@@ -19,8 +19,6 @@ namespace RtlTvMazeScraper.UI.Workers
     /// </summary>
     public sealed class ScraperWorker : IScraperWorker
     {
-        private static readonly Queue<int> ShowIdQueue = new Queue<int>();
-
         private readonly IShowService showService;
         private readonly ITvMazeService tvMazeService;
         private readonly IHubContext<ScraperHub> hubContext;
@@ -46,63 +44,43 @@ namespace RtlTvMazeScraper.UI.Workers
         }
 
         /// <summary>
-        /// Adds the show ids to the queue.
-        /// </summary>
-        /// <param name="startId">The start identifier.</param>
-        /// <param name="count">The count.</param>
-        public void AddShowIds(int startId, int count = 10)
-        {
-            for (int n = 0; n < count; n++)
-            {
-                int id = startId + n;
-                if (!ShowIdQueue.Contains(id))
-                {
-                    ShowIdQueue.Enqueue(id);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Clears the queue.
-        /// </summary>
-        public void ClearQueue()
-        {
-            ShowIdQueue.Clear();
-        }
-
-        /// <summary>
         /// Does the work.
         /// </summary>
-        public void DoWork()
+        /// <returns>
+        /// A Task.
+        /// </returns>
+        public async Task<WorkResult> DoWork()
         {
             try
             {
-                this.PerformScraping(default).ConfigureAwait(false);
+                return await this.PerformScraping(default).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 this.logger.LogCritical(ex, "ExecuteAsync failed");
+                return WorkResult.Error;
             }
         }
 
         /// <summary>
-        /// Performs the scraping.
+        /// Performs the scraping of a single show.
         /// </summary>
-        /// <returns>A Task.</returns>
-        private async Task PerformScraping(CancellationToken stoppingToken)
+        /// <param name="stoppingToken">The cancellation token.</param>
+        /// <returns>
+        /// A Task.
+        /// </returns>
+        private async Task<WorkResult> PerformScraping(CancellationToken stoppingToken)
         {
-            int failedbatches = 0;
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                if (ShowIdQueue.Count == 0)
+                var showId = StaticQueue.GetNextId();
+
+                if (!showId.HasValue)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
-                    continue;
+                    return WorkResult.Empty;
                 }
 
-                int showId = ShowIdQueue.Dequeue();
-
-                var (show, status) = await this.tvMazeService.ScrapeSingleShowById(showId).ConfigureAwait(false);
+                var (show, status) = await this.tvMazeService.ScrapeSingleShowById(showId.Value, stoppingToken).ConfigureAwait(false);
 
                 if (show != null)
                 {
@@ -111,28 +89,26 @@ namespace RtlTvMazeScraper.UI.Workers
                     var scraped = new ScrapedShow { Id = show.Id, Name = show.Name, CastCount = show.ShowCastMembers.Count };
                     await this.PostShow(scraped).ConfigureAwait(false);
                     await Task.Delay(100).ConfigureAwait(false);
-                    this.AddShowIds(showId);
-                    failedbatches = 0;
-                }
-                else if (status == System.Net.HttpStatusCode.NotFound)
-                {
-                    failedbatches++;
 
-                    if (failedbatches > 30)
-                    {
-                        // apparently no more shows to load
-                        this.logger.LogInformation("Failed {failcount} times to get a show - aborting.", failedbatches);
-                        break;
-                    }
-
-                    this.logger.LogInformation("Failed {failcount} times to get a show (and counting).", failedbatches);
+                    // make sure more shows are queued, now that one has been processed. Note that this will fail if there is a gap >30
+                    StaticQueue.AddShowIds(showId.Value + 1, 30);
                 }
+
+                //// no need to handle "404" as that just depletes the queue which automatically halts checking
 
                 if (status == Core.Support.Constants.ServerTooBusy)
                 {
-                    this.AddShowIds(showId, 1); // retry later
-                    await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
+                    // I don't expect this to happen (or rather: "already handled")
+                    StaticQueue.AddShowIds(showId.Value, 1); // retry later
+                    return WorkResult.Busy;
                 }
+
+                return WorkResult.Done;
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogCritical(ex, "PerformScraping failed.");
+                return WorkResult.Error;
             }
         }
 

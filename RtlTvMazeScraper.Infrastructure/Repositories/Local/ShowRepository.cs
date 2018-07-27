@@ -50,7 +50,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         {
             return await this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
-                .ThenInclude(scm => scm.CastMember)
+                    .ThenInclude(scm => scm.CastMember)
                 .Where(s => s.Id >= startId)
                 .OrderBy(s => s.Id)
                 .Take(count)
@@ -71,7 +71,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         {
             return this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
-                .ThenInclude(scm => scm.CastMember)
+                    .ThenInclude(scm => scm.CastMember)
                 .OrderBy(s => s.Id)
                 .Skip(page * pagesize)
                 .Take(pagesize)
@@ -100,12 +100,17 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                         show.ShowCastMembers.AddRange(cast.Select(c => new ShowCastMember { Show = show, CastMember = c }));
                     }
 
-                    // there are duplicate "persons" in the cast (when they have different roles) - we are only interested in persons, not roles
+                    // there are duplicate actors in the cast (when they have different roles) - we are only interested in persons, not roles
                     var realcast = show.ShowCastMembers.Select(scm => scm.CastMember).Distinct(memberEqualityComparer).ToList();
-                    if (realcast.Count < show.ShowCastMembers.Count)
+
+                    var ids = realcast.Select(c => c.Id).ToList();
+                    var storedcast = this.showContext.CastMembers.Where(m => ids.Contains(m.Id)).ToList();
+
+                    show.ShowCastMembers.Clear();
+                    foreach (var member in realcast)
                     {
-                        show.ShowCastMembers.Clear();
-                        show.ShowCastMembers.AddRange(realcast.Select(c => new ShowCastMember { Show = show, CastMember = c }));
+                        var storedmember = storedcast.FirstOrDefault(c => c.Id == member.Id);
+                        show.ShowCastMembers.Add(new ShowCastMember { Show = show, CastMember = storedmember ?? member });
                     }
 
                     var existing = await this.GetShowById(show.Id).ConfigureAwait(false);
@@ -168,7 +173,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         {
             var show = await this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
-                .ThenInclude(scm => scm.CastMember)
+                    .ThenInclude(scm => scm.CastMember)
                 .SingleOrDefaultAsync(s => s.Id == showId)
                 .ConfigureAwait(false);
 
