@@ -1,0 +1,37 @@
+﻿@page
+@model RtlTvMazeScraper.UI.Pages.ScraperModel
+
+<div class="container">
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-6">
+            <button class="btn btn-info" onclick="startFrom(1)">Start over (from 1)</button><br /><br />
+            <button class="btn btn-info" onclick="startFromEnd()">Resume</button><input type="hidden" id="max" value="@Model.MaxShowIndex" /><br /><br />
+            <button class="btn btn-info" onclick="startFromVal()">Start from: </button> <input type="number" id="val" value="@Model.MaxShowIndex" /><br /><br />
+            <button class="btn btn-warning" onclick="stopScraping()">Stop!</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <blockquote>
+                <h2>Explanation</h2>
+                <p>
+                    A background process reads shows, starting from the value specified. A SignalR client on this page lists the shows that are read.
+                </p>
+                <p>Scraping stops when ordered by the Stop button, or when no more shows are found. Leaving this page doesn't stop the background process.</p>
+            </blockquote>
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <ul id="messagesList"></ul>
+        </div>
+    </div>
+</div>
+
+@section scripts
+    {
+    <script src="~/lib/signalr/signalr.js"></script>
+    <script src="~/js/scraper.js"></script>
+}

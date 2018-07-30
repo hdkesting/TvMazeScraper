@@ -16,7 +16,10 @@
             (re)load the shows from TVMaze.
         </p>
         <p>
-            <a href="@Url.Action("Index", "Scrape")">Start scraper</a>
+            <a href="@Url.Action("Index", "Scrape")">Start scraper (MVC)</a>
+        </p>
+        <p>
+            <a href="/Scraper">Start scraper (SignalR)</a>
         </p>
     </div>
     <div class="col-md-4">
@@ -25,7 +28,7 @@
             Get the JSON. Adjust the page (0-based pagenumber) and the pagesize (number of shows per page) in the URL.
         </p>
         <p>
-            Currently available: @Model.ShowCount.ToString("N0") shows with a total of @Model.MemberCount.ToString("N0") cast members.
+            Currently available: @Model.ShowCount.ToString("N0") shows with a total of @Model.MemberCount.ToString("N0") actors.
         </p>
         <p>
             <a href="api/list?page=0" target="_blank">List shows as JSON</a>.

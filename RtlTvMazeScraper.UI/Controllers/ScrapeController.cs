@@ -138,7 +138,7 @@ namespace RtlTvMazeScraper.UI.Controllers
                 PreviousIndex = start,
             };
 
-            var (count, list) = await this.tvMazeService.ScrapeById(start, cancellationToken).ConfigureAwait(false);
+            var (count, list) = await this.tvMazeService.ScrapeBatchById(start, cancellationToken).ConfigureAwait(false);
 
             model.PreviousCount = list.Count;
             model.AttemptedCount = count;

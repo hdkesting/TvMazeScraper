@@ -13,6 +13,7 @@ namespace RtlTvMazeScraper.UI
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Polly;
     using RtlTvMazeScraper.Core.Interfaces;
@@ -20,7 +21,9 @@ namespace RtlTvMazeScraper.UI
     using RtlTvMazeScraper.Core.Services;
     using RtlTvMazeScraper.Infrastructure.Repositories.Local;
     using RtlTvMazeScraper.Infrastructure.Repositories.Remote;
+    using RtlTvMazeScraper.UI.Hubs;
     using RtlTvMazeScraper.UI.ViewModels;
+    using RtlTvMazeScraper.UI.Workers;
 
     /// <summary>
     /// The initialization class of the web app.
@@ -31,7 +34,7 @@ namespace RtlTvMazeScraper.UI
         /// Initializes a new instance of the <see cref="Startup" /> class.
         /// </summary>
         /// <param name="env">The hosting environment.</param>
-        public Startup(IHostingEnvironment env)
+        public Startup(Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -69,12 +72,13 @@ namespace RtlTvMazeScraper.UI
                 this.Configuration.GetConnectionString("ShowConnection"),
                 x => x.MigrationsAssembly("RtlTvMazeScraper.Infrastructure")));
 
+            // "at least 20 calls every 10 seconds"
             var retryPolicy = Policy.HandleResult<HttpResponseMessage>(resp => resp.StatusCode == Core.Support.Constants.ServerTooBusy)
                                     .WaitAndRetryAsync(new[]
                                     {
+                                        TimeSpan.FromSeconds(5),
+                                        TimeSpan.FromSeconds(5),
                                         TimeSpan.FromSeconds(10),
-                                        TimeSpan.FromSeconds(15),
-                                        TimeSpan.FromSeconds(20),
                                     });
             var host = this.Configuration.GetSection("Config")["tvmaze"];
 
@@ -85,6 +89,8 @@ namespace RtlTvMazeScraper.UI
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
             })
             .AddPolicyHandler(retryPolicy);
+
+            services.AddSignalR();
 
             this.ConfigureDI(services);
         }
@@ -98,7 +104,7 @@ namespace RtlTvMazeScraper.UI
         /// </remarks>
         /// <param name="app">The application.</param>
         /// <param name="env">The env.</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
 #pragma warning restore CA1822 // Mark members as static
         {
             if (env.IsDevelopment())
@@ -107,8 +113,10 @@ namespace RtlTvMazeScraper.UI
             }
 
             // static files
-            ////app.UseDefaultFiles();
-            ////app.UseStaticFiles(new StaticFileOptions { OnPrepareResponse = this.PrepareCompressedResponse });
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
+            app.UseSignalR(routes => { routes.MapHub<ScraperHub>("/scraperHub"); });
 
             app.UseMvc(routes =>
             {
@@ -140,15 +148,19 @@ namespace RtlTvMazeScraper.UI
             services.AddSingleton<ISettingRepository, SettingRepository>(sp => new SettingRepository(this.Configuration));
 
             // services
-            services.AddTransient<IShowService, ShowService>();
-            services.AddTransient<ITvMazeService, TvMazeService>();
+            services.AddScoped<IShowService, ShowService>();
+            services.AddScoped<ITvMazeService, TvMazeService>();
 
             // db context
-            services.AddTransient<IShowContext, ShowContext>();
+            services.AddScoped<IShowContext, ShowContext>();
 
             // other
             var mappingConfig = ConfigureMapping();
             services.AddSingleton<IMapper, IMapper>(sp => mappingConfig.CreateMapper());
+
+            // background services
+            services.AddScoped<IScraperWorker, ScraperWorker>();
+            services.AddHostedService<TimedHostedService>();
         }
     }
 }
