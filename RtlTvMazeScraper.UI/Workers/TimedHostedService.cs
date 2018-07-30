@@ -57,7 +57,7 @@ namespace RtlTvMazeScraper.UI.Workers
             this.timer = new Timer(
                 this.DoWork,
                 null,
-                TimeSpan.FromSeconds(5),
+                TimeSpan.FromSeconds(1),
                 Timeout.InfiniteTimeSpan);
 
             return Task.CompletedTask;
@@ -87,7 +87,7 @@ namespace RtlTvMazeScraper.UI.Workers
                     scope.ServiceProvider
                         .GetRequiredService<IScraperWorker>();
 
-                var res = await scopedScraperWorker.DoWork().ConfigureAwait(false);
+                var res = await scopedScraperWorker.DoWorkOnManyShows().ConfigureAwait(false);
 
                 // schedule again, depending on result of worker.DoWork
                 TimeSpan delay = TimeSpan.FromMilliseconds(50);

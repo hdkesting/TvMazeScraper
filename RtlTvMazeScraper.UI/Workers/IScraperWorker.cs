@@ -15,6 +15,12 @@ namespace RtlTvMazeScraper.UI.Workers
         /// Does the work.
         /// </summary>
         /// <returns>A Task.</returns>
-        Task<WorkResult> DoWork();
+        Task<WorkResult> DoWorkOnSingleShow();
+
+        /// <summary>
+        /// Does the work by reading many shows.
+        /// </summary>
+        /// <returns>A Task.</returns>
+        Task<WorkResult> DoWorkOnManyShows();
     }
 }

@@ -44,12 +44,12 @@ namespace RtlTvMazeScraper.UI.Workers
         }
 
         /// <summary>
-        /// Does the work.
+        /// Does the work on a single show.
         /// </summary>
         /// <returns>
         /// A Task.
         /// </returns>
-        public async Task<WorkResult> DoWork()
+        public async Task<WorkResult> DoWorkOnSingleShow()
         {
             try
             {
@@ -57,7 +57,31 @@ namespace RtlTvMazeScraper.UI.Workers
             }
             catch (Exception ex)
             {
-                this.logger.LogCritical(ex, "ExecuteAsync failed");
+                this.logger.LogCritical(ex, "DoWorkOnSingleShow failed");
+                return WorkResult.Error;
+            }
+        }
+
+        /// <summary>
+        /// Does the work by reading many shows.
+        /// </summary>
+        /// <returns>A Task.</returns>
+        public async Task<WorkResult> DoWorkOnManyShows()
+        {
+            WorkResult res;
+
+            try
+            {
+                while ((res = await this.PerformScraping(default).ConfigureAwait(false)) == WorkResult.Done)
+                {
+                    this.logger.LogTrace("Got another one");
+                }
+
+                return res;
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogCritical(ex, "DoWorkOnManyShows failed");
                 return WorkResult.Error;
             }
         }
@@ -88,7 +112,6 @@ namespace RtlTvMazeScraper.UI.Workers
 
                     var scraped = new ScrapedShow { Id = show.Id, Name = show.Name, CastCount = show.ShowCastMembers.Count };
                     await this.PostShow(scraped).ConfigureAwait(false);
-                    await Task.Delay(100).ConfigureAwait(false);
 
                     // make sure more shows are queued, now that one has been processed. Note that this will fail if there is a gap >30
                     StaticQueue.AddShowIds(showId.Value + 1, 30);
