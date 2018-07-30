@@ -15,6 +15,8 @@ namespace RtlTvMazeScraper.UI.Workers
     {
         private static readonly Queue<int> ShowIdQueue = new Queue<int>(50);
 
+        private static bool isStopped;
+
         /// <summary>
         /// Adds the show ids to the queue.
         /// </summary>
@@ -22,7 +24,7 @@ namespace RtlTvMazeScraper.UI.Workers
         /// <param name="count">The count.</param>
         public static void AddShowIds(int startId, int count = 10)
         {
-            if (startId > 0)
+            if (startId > 0 && !isStopped)
             {
                 lock (ShowIdQueue)
                 {
@@ -46,7 +48,16 @@ namespace RtlTvMazeScraper.UI.Workers
             lock (ShowIdQueue)
             {
                 ShowIdQueue.Clear();
+                isStopped = true;
             }
+        }
+
+        /// <summary>
+        /// Enables this instance.
+        /// </summary>
+        public static void Enable()
+        {
+            isStopped = false;
         }
 
         /// <summary>

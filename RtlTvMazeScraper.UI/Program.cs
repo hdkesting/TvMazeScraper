@@ -4,9 +4,12 @@
 
 namespace RtlTvMazeScraper.UI
 {
+    using System;
     using System.IO;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Logging;
+    using NLog.Web;
 
     /// <summary>
     /// The main application entry point.
@@ -19,9 +22,23 @@ namespace RtlTvMazeScraper.UI
         /// <param name="args">The commandline arguments.</param>
         public static void Main(string[] args)
         {
-            var webhost = BuildWebHost(args);
+            // https://github.com/NLog/NLog.Web/wiki/Getting-started-with-ASP.NET-Core-2
+            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            try
+            {
+                var webhost = BuildWebHost(args);
 
-            webhost.Run();
+                webhost.Run();
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Webapp halted because of exception.");
+                throw;
+            }
+            finally
+            {
+                NLog.LogManager.Shutdown();
+            }
         }
 
         /// <summary>
@@ -35,6 +52,12 @@ namespace RtlTvMazeScraper.UI
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.SetMinimumLevel(LogLevel.Trace);
+                })
+                .UseNLog()
                 .Build();
     }
 }

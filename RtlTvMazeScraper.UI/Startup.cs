@@ -15,6 +15,7 @@ namespace RtlTvMazeScraper.UI
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using NLog.Extensions.Logging;
     using Polly;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Model;
@@ -30,6 +31,8 @@ namespace RtlTvMazeScraper.UI
     /// </summary>
     public class Startup
     {
+        // https://codingblast.com/asp-net-core-configureservices-vs-configure/
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup" /> class.
         /// </summary>
@@ -61,12 +64,12 @@ namespace RtlTvMazeScraper.UI
             services.AddMvc()
                 .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
 
-            services.AddLogging(builder =>
-            {
-                builder.AddConfiguration(this.Configuration.GetSection("Logging"));
-                builder.AddConsole();
-                builder.AddDebug();
-            });
+            ////services.AddLogging(builder =>
+            ////{
+            ////    builder.AddConfiguration(this.Configuration.GetSection("Logging"));
+            ////    builder.AddConsole();
+            ////    builder.AddDebug();
+            ////});
 
             services.AddDbContext<ShowContext>(opt => opt.UseSqlServer(
                 this.Configuration.GetConnectionString("ShowConnection"),

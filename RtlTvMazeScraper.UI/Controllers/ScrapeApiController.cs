@@ -4,7 +4,9 @@
 
 namespace RtlTvMazeScraper.UI.Controllers
 {
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
+    using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.UI.Workers;
 
     /// <summary>
@@ -14,21 +16,35 @@ namespace RtlTvMazeScraper.UI.Controllers
     [Route("api/scraper")]
     public class ScrapeApiController : Controller
     {
+        private readonly IShowService showService;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="ScrapeApiController"/> class.
+        /// Initializes a new instance of the <see cref="ScrapeApiController" /> class.
         /// </summary>
-        public ScrapeApiController()
+        /// <param name="showService">The show service.</param>
+        public ScrapeApiController(
+            IShowService showService)
         {
+            this.showService = showService;
         }
 
         /// <summary>
-        /// Starts the scraping from the supplied <paramref name="showId"/>.
+        /// Starts the scraping from the supplied <paramref name="showId" />.
         /// </summary>
         /// <param name="showId">The show identifier.</param>
+        /// <returns>A Task.</returns>
         [HttpGet("start")]
-        public void Start(int showId)
+        public async Task Start(int showId)
         {
             StaticQueue.ClearQueue();
+            StaticQueue.Enable();
+
+            if (showId < 0)
+            {
+                showId = await this.showService.GetMaxShowId().ConfigureAwait(false);
+                showId += 1;
+            }
+
             StaticQueue.AddShowIds(showId);
 
             // assume the worker is continuously running and will pick this up shortly.
