@@ -44,7 +44,7 @@ namespace RtlTvMazeScraper.UI.Controllers
         /// <summary>
         /// Gets the shows as JSON-serializable objects.
         /// </summary>
-        /// <param name="page">The page number (starts at 0).</param>
+        /// <param name="pageno">The page number (starts at 0).</param>
         /// <param name="pagesize">The number of shows per page.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
@@ -54,12 +54,12 @@ namespace RtlTvMazeScraper.UI.Controllers
         /// Note that some configuration is done in WebApiConfig.cs.
         /// </remarks>
         [HttpGet]
-        [Route("api/list")]
-        public async Task<List<ShowForJson>> List(int page = 0, int pagesize = 20, CancellationToken cancellationToken = default)
+        [Route("api/list", Name = "apilist")]
+        public async Task<List<ShowForJson>> List(int pageno = 0, int pagesize = 20, CancellationToken cancellationToken = default)
         {
-            if (page < 0)
+            if (pageno < 0)
             {
-                page = 0;
+                pageno = 0;
             }
 
             if (pagesize < 2)
@@ -67,8 +67,8 @@ namespace RtlTvMazeScraper.UI.Controllers
                 pagesize = 2;
             }
 
-            var dbshows = await this.showService.GetShowsWithCast(page, pagesize, cancellationToken).ConfigureAwait(false);
-            this.logger.Log(LogLevel.Information, "Found {PageCount} shows for {PageNumber} ({PageSize})", dbshows.Count, page, pagesize);
+            var dbshows = await this.showService.GetShowsWithCast(pageno, pagesize, cancellationToken).ConfigureAwait(false);
+            this.logger.Log(LogLevel.Information, "Found {PageCount} shows for {PageNumber} ({PageSize})", dbshows.Count, pageno, pagesize);
 
             var result = this.mapper.Map<List<Show>, List<ShowForJson>>(dbshows);
 

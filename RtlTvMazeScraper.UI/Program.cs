@@ -8,7 +8,6 @@ namespace RtlTvMazeScraper.UI
     using System.IO;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Logging;
     using NLog.Web;
 
     /// <summary>
@@ -52,11 +51,6 @@ namespace RtlTvMazeScraper.UI
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.SetMinimumLevel(LogLevel.Trace);
-                })
                 .UseNLog()
                 .Build();
     }
