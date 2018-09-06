@@ -54,7 +54,9 @@ namespace RtlTvMazeScraper.UI.Controllers
         /// Stops the scraping.
         /// </summary>
         [HttpGet("stop")]
+#pragma warning disable CA1822 // Mark members as static
         public void Stop()
+#pragma warning restore CA1822 // Mark members as static
         {
             StaticQueue.ClearQueue();
         }
