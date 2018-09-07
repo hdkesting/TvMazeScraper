@@ -6,8 +6,11 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    using MongoDB.Driver;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Transfer;
@@ -18,15 +21,41 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
     /// <seealso cref="RtlTvMazeScraper.Core.Interfaces.IShowRepository" />
     public class MongoShowRepository : IShowRepository
     {
+        private const string DatabaseName = "tvmaze";
+        private const string CollectionName = "shows";
+
+        private readonly MongoClient client;
+        private readonly IMongoCollection<Show> collection;
+        private readonly ILogger<MongoShowRepository> logger;
+
+        // ref: http://mongodb.github.io/mongo-csharp-driver/2.7/getting_started/quick_tour/
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MongoShowRepository" /> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        public MongoShowRepository(ILogger<MongoShowRepository> logger)
+        {
+            // TODO? supply connection string or create client as singleton in/from Startup.
+            this.client = new MongoClient();
+
+            var database = this.client.GetDatabase(DatabaseName);
+            this.collection = database.GetCollection<Show>(CollectionName);
+            this.logger = logger;
+        }
+
         /// <summary>
         /// Gets the counts of shows and cast.
         /// </summary>
         /// <returns>
         /// A tuple having counts of shows and castmembers.
         /// </returns>
-        public Task<StorageCount> GetCounts()
+        public async Task<StorageCount> GetCounts()
         {
-            throw new NotImplementedException();
+            var showcount = await this.collection.CountDocumentsAsync(show => true).ConfigureAwait(false);
+
+            // counting the cast members is difficult, ignore for now.
+            return new StorageCount { MemberCount = -1, ShowCount = (int)showcount };
         }
 
         /// <summary>
@@ -35,9 +64,13 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
         /// <returns>
         /// The highest ID.
         /// </returns>
-        public Task<int> GetMaxShowId()
+        public async Task<int> GetMaxShowId()
         {
-            throw new NotImplementedException();
+            var sorter = Builders<Show>.Sort.Descending(s => s.Id);
+
+            var lastshow = await this.collection.Find(s => true).Sort(sorter).FirstOrDefaultAsync().ConfigureAwait(false);
+
+            return lastshow?.Id ?? 0;
         }
 
         /// <summary>
@@ -47,22 +80,29 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
         /// <returns>
         /// One Show (if found).
         /// </returns>
-        public Task<Show> GetShowById(int id)
+        public async Task<Show> GetShowById(int id)
         {
-            throw new NotImplementedException();
+            var filter = Builders<Show>.Filter.Eq(s => s.Id, id);
+            var show = await this.collection.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
+
+            return show;
         }
 
         /// <summary>
-        /// Gets the list of shows.
+        /// Gets the list of shows including cast.
         /// </summary>
         /// <param name="startId">The id to start at.</param>
-        /// <param name="count">The number of shows to download.</param>
+        /// <param name="count">The (max) number of shows to download.</param>
         /// <returns>
         /// A list of shows.
         /// </returns>
-        public Task<List<Show>> GetShows(int startId, int count)
+        public async Task<List<Show>> GetShows(int startId, int count)
         {
-            throw new NotImplementedException();
+            var filterBuilder = Builders<Show>.Filter;
+            var filter = filterBuilder.Gte(s => s.Id, startId) & filterBuilder.Lt(s => s.Id, startId + count);
+
+            var shows = await this.collection.Find(filter).ToListAsync().ConfigureAwait(false);
+            return shows;
         }
 
         /// <summary>
@@ -76,7 +116,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
         /// </returns>
         public Task<List<Show>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return this.GetShows(page * pagesize, pagesize);
         }
 
         /// <summary>
@@ -87,9 +127,17 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
         /// <returns>
         /// A Task.
         /// </returns>
-        public Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow)
+        public async Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow)
         {
-            throw new NotImplementedException();
+            // first add the cast (when needed)
+            foreach (var show in list.Where(s => !s.ShowCastMembers.Any()))
+            {
+                var cast = await getCastOfShow(show.Id).ConfigureAwait(false);
+                show.ShowCastMembers.AddRange(cast.Select(c => new ShowCastMember { Show = show, CastMember = c }));
+            }
+
+            // then store the shows including their cast
+            await this.collection.InsertManyAsync(list).ConfigureAwait(false);
         }
     }
 }

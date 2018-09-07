@@ -147,7 +147,8 @@ namespace RtlTvMazeScraper.UI
         {
             // repositories
             services.AddTransient<IApiRepository, ApiRepository>();
-            services.AddTransient<IShowRepository, ShowRepository>();
+            //// services.AddTransient<IShowRepository, ShowRepository>();
+            services.AddTransient<IShowRepository, Infrastructure.Mongo.Repositories.Local.MongoShowRepository>();
             services.AddSingleton<ISettingRepository, SettingRepository>(sp => new SettingRepository(this.Configuration));
 
             // services
