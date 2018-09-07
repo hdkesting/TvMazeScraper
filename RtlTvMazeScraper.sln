@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Projects", "Test Proje
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RtlTvMazeScraper.Test.Mock", "RtlTvMazeScraper.Test.Mock\RtlTvMazeScraper.Test.Mock.csproj", "{B9522763-D06F-4A63-A6A1-7CF96A210B57}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RtlTvMazeScraper.Infrastructure.Mongo", "RtlTvMazeScraper.Infrastructure.Mongo\RtlTvMazeScraper.Infrastructure.Mongo.csproj", "{CBFB5EAC-B62B-4038-ADAB-6FC5A6FAACDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{B9522763-D06F-4A63-A6A1-7CF96A210B57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9522763-D06F-4A63-A6A1-7CF96A210B57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9522763-D06F-4A63-A6A1-7CF96A210B57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBFB5EAC-B62B-4038-ADAB-6FC5A6FAACDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBFB5EAC-B62B-4038-ADAB-6FC5A6FAACDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBFB5EAC-B62B-4038-ADAB-6FC5A6FAACDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBFB5EAC-B62B-4038-ADAB-6FC5A6FAACDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
