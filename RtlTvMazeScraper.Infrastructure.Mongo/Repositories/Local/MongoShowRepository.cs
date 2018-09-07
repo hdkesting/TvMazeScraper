@@ -14,6 +14,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Transfer;
+    using RtlTvMazeScraper.Infrastructure.Mongo.Model;
 
     /// <summary>
     /// Repository for shows, using MongoDB as back-end.
@@ -25,7 +26,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
         private const string CollectionName = "shows";
 
         private readonly MongoClient client;
-        private readonly IMongoCollection<Show> collection;
+        private readonly IMongoCollection<ShowWithCast> collection;
         private readonly ILogger<MongoShowRepository> logger;
 
         // ref: http://mongodb.github.io/mongo-csharp-driver/2.7/getting_started/quick_tour/
@@ -40,7 +41,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
             this.client = new MongoClient();
 
             var database = this.client.GetDatabase(DatabaseName);
-            this.collection = database.GetCollection<Show>(CollectionName);
+            this.collection = database.GetCollection<ShowWithCast>(CollectionName);
             this.logger = logger;
         }
 
@@ -66,7 +67,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
         /// </returns>
         public async Task<int> GetMaxShowId()
         {
-            var sorter = Builders<Show>.Sort.Descending(s => s.Id);
+            var sorter = Builders<ShowWithCast>.Sort.Descending(s => s.Id);
 
             var lastshow = await this.collection.Find(s => true).Sort(sorter).FirstOrDefaultAsync().ConfigureAwait(false);
 
@@ -82,10 +83,10 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
         /// </returns>
         public async Task<Show> GetShowById(int id)
         {
-            var filter = Builders<Show>.Filter.Eq(s => s.Id, id);
+            var filter = Builders<ShowWithCast>.Filter.Eq(s => s.Id, id);
             var show = await this.collection.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
 
-            return show;
+            return ConvertShow(show);
         }
 
         /// <summary>
@@ -98,11 +99,12 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
         /// </returns>
         public async Task<List<Show>> GetShows(int startId, int count)
         {
-            var filterBuilder = Builders<Show>.Filter;
+            var filterBuilder = Builders<ShowWithCast>.Filter;
             var filter = filterBuilder.Gte(s => s.Id, startId) & filterBuilder.Lt(s => s.Id, startId + count);
 
             var shows = await this.collection.Find(filter).ToListAsync().ConfigureAwait(false);
-            return shows;
+
+            return shows.Select(ConvertShow).ToList();
         }
 
         /// <summary>
@@ -129,15 +131,40 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
         /// </returns>
         public async Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow)
         {
-            // first add the cast (when needed)
-            foreach (var show in list.Where(s => !s.ShowCastMembers.Any()))
+            var mongolist = new List<ShowWithCast>(list.Count);
+
+            foreach (var orgshow in list)
             {
-                var cast = await getCastOfShow(show.Id).ConfigureAwait(false);
-                show.ShowCastMembers.AddRange(cast.Select(c => new ShowCastMember { Show = show, CastMember = c }));
+                var show = new ShowWithCast
+                {
+                    Id = orgshow.Id,
+                    Name = orgshow.Name,
+                };
+
+                if (orgshow.ShowCastMembers != null && orgshow.ShowCastMembers.Any())
+                {
+                    show.Cast.AddRange(orgshow.ShowCastMembers.Select(cm => cm.CastMember));
+                }
+                else
+                {
+                    var cast = await getCastOfShow(show.Id).ConfigureAwait(false);
+                    show.Cast = cast;
+                }
+
+                mongolist.Add(show);
             }
 
             // then store the shows including their cast
-            await this.collection.InsertManyAsync(list).ConfigureAwait(false);
+            await this.collection.InsertManyAsync(mongolist).ConfigureAwait(false);
+        }
+
+        private static Show ConvertShow(ShowWithCast mongoShow)
+        {
+            // remove the n:m relation
+            var show = new Show { Id = mongoShow.Id, Name = mongoShow.Name };
+            show.ShowCastMembers.AddRange(mongoShow.Cast.Select(c => new ShowCastMember { Show = show, CastMember = c }));
+
+            return show;
         }
     }
 }
