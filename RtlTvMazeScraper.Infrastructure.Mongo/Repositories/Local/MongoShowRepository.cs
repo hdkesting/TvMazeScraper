@@ -55,8 +55,10 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
         {
             var showcount = await this.collection.CountDocumentsAsync(show => true).ConfigureAwait(false);
 
-            // counting the cast members is difficult, ignore for now.
-            return new StorageCount { MemberCount = -1, ShowCount = (int)showcount };
+            // Attempt at counting the cast. May load the entire list in memory?
+            var castcount = this.collection.AsQueryable().SelectMany(s => s.Cast).Distinct().Count();
+
+            return new StorageCount { MemberCount = castcount, ShowCount = (int)showcount };
         }
 
         /// <summary>

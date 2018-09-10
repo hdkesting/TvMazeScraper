@@ -145,10 +145,12 @@ namespace RtlTvMazeScraper.UI
         /// <param name="services">The services.</param>
         private void ConfigureDI(IServiceCollection services)
         {
+            //// TODO switch between sqlserver and mongodb through config option
+
             // repositories
             services.AddTransient<IApiRepository, ApiRepository>();
             //// services.AddTransient<IShowRepository, ShowRepository>();
-            services.AddTransient<IShowRepository, Infrastructure.Mongo.Repositories.Local.MongoShowRepository>();
+            services.AddTransient<IShowRepository, Infrastructure.Mongo.Repositories.Local.MongoShowRepository>(); // or singleton?
             services.AddSingleton<ISettingRepository, SettingRepository>(sp => new SettingRepository(this.Configuration));
 
             // services
