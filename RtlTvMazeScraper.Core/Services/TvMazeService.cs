@@ -191,7 +191,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// <param name="showId">The show identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A Task with Show and status code.</returns>
-        public async Task<(Show, HttpStatusCode)> ScrapeSingleShowById(int showId, CancellationToken cancellationToken = default)
+        public async Task<ScrapeResult> ScrapeSingleShowById(int showId, CancellationToken cancellationToken = default)
         {
             var sw = Stopwatch.StartNew();
             var (status, json) = await this.apiRepository.RequestJson(
@@ -205,7 +205,7 @@ namespace RtlTvMazeScraper.Core.Services
             {
                 // too much, so back off
                 this.logger.LogDebug("Server too busy to scrape #{ShowId}, backing off.", showId);
-                return (null, status);
+                return new ScrapeResult { HttpStatus = status };
             }
 
             if (status == HttpStatusCode.OK)
@@ -243,21 +243,15 @@ namespace RtlTvMazeScraper.Core.Services
                             var bd = person[Support.TvMazeShowWithCastResultNames.PersonBirthday];
                             member.Birthdate = GetDate(bd);
 
-                            show.ShowCastMembers.Add(new ShowCastMember
-                            {
-                                Show = show,
-                                ShowId = show.Id,
-                                CastMemberId = member.Id,
-                                CastMember = member,
-                            });
+                            show.CastMembers.Add(member);
                         }
                     }
                 }
 
-                return (show, status);
+                return new ScrapeResult { Show = show, HttpStatus = status };
             }
 
-            return (null, status);
+            return new ScrapeResult { HttpStatus = status };
         }
 
         private static DateTime? GetDate(JToken dayValue)

@@ -3,21 +3,15 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RtlTvMazeScraper.Core.Model;
+using RtlTvMazeScraper.Infrastructure.Sql.Model;
 
-namespace RtlTvMazeScraper.Infrastructure.Migrations
+namespace RtlTvMazeScraper.Infrastructure.Sql.Migrations
 {
     [DbContext(typeof(ShowContext))]
-    [Migration("20180629063744_InitialCreate")]
-    partial class InitialCreate
+    partial class ShowContextModelSnapshot : ModelSnapshot
     {
-        /// <summary>
-        /// Implemented to builds the <see cref="P:Microsoft.EntityFrameworkCore.Migrations.Migration.TargetModel" />.
-        /// </summary>
-        /// <param name="modelBuilder">The <see cref="T:Microsoft.EntityFrameworkCore.ModelBuilder" /> to use to build the model.</param>
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,17 +21,13 @@ namespace RtlTvMazeScraper.Infrastructure.Migrations
 
             modelBuilder.Entity("RtlTvMazeScraper.Core.Model.CastMember", b =>
                 {
-                    b.Property<int>("ShowId");
-
-                    b.Property<int>("MemberId");
+                    b.Property<int>("Id");
 
                     b.Property<DateTime?>("Birthdate");
 
                     b.Property<string>("Name");
 
-                    b.HasKey("ShowId", "MemberId");
-
-                    b.HasAlternateKey("MemberId", "ShowId");
+                    b.HasKey("Id");
 
                     b.ToTable("CastMembers");
                 });
@@ -53,10 +43,28 @@ namespace RtlTvMazeScraper.Infrastructure.Migrations
                     b.ToTable("Shows");
                 });
 
-            modelBuilder.Entity("RtlTvMazeScraper.Core.Model.CastMember", b =>
+            modelBuilder.Entity("RtlTvMazeScraper.Core.Model.ShowCastMember", b =>
                 {
-                    b.HasOne("RtlTvMazeScraper.Core.Model.Show")
-                        .WithMany("CastMembers")
+                    b.Property<int>("ShowId");
+
+                    b.Property<int>("CastMemberId");
+
+                    b.HasKey("ShowId", "CastMemberId");
+
+                    b.HasIndex("CastMemberId");
+
+                    b.ToTable("ShowCastMembers");
+                });
+
+            modelBuilder.Entity("RtlTvMazeScraper.Core.Model.ShowCastMember", b =>
+                {
+                    b.HasOne("RtlTvMazeScraper.Core.Model.CastMember", "CastMember")
+                        .WithMany("ShowCastMembers")
+                        .HasForeignKey("CastMemberId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("RtlTvMazeScraper.Core.Model.Show", "Show")
+                        .WithMany("ShowCastMembers")
                         .HasForeignKey("ShowId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

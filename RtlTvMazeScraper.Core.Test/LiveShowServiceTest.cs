@@ -14,6 +14,8 @@ namespace RtlTvMazeScraper.Core.Test
     using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Services;
     using RtlTvMazeScraper.Infrastructure.Repositories.Local;
+    using RtlTvMazeScraper.Infrastructure.Sql.Model;
+    using RtlTvMazeScraper.Infrastructure.Sql.Repositories;
     using RtlTvMazeScraper.Test.Mock;
 
     /// <summary>
@@ -77,7 +79,7 @@ namespace RtlTvMazeScraper.Core.Test
             shows.Should().NotBeNull();
             shows.Count.Should().BeLessOrEqualTo(10, because: "I requested a page of size 10.");
 
-            shows.Where(s => s.ShowCastMembers.Any()).Count().Should().BeGreaterThan(0, because: "I expect at least some to have a cast defined.");
+            shows.Where(s => s.CastMembers.Any()).Count().Should().BeGreaterThan(0, because: "I expect at least some to have a cast defined.");
         }
 
         /// <summary>
@@ -120,11 +122,11 @@ namespace RtlTvMazeScraper.Core.Test
         [TestMethod]
         public async Task GetSingleShow()
         {
-            var show = await this.showService.GetShowById(1058).ConfigureAwait(false);
+            var show = await this.showService.GetShowById(42).ConfigureAwait(false);
 
             show.Should().NotBeNull();
             show.Id.Should().BeGreaterThan(0);
-            show.ShowCastMembers.Count.Should().BeGreaterThan(0);
+            show.CastMembers.Count.Should().BeGreaterThan(0);
         }
     }
 }

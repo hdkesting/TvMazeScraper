@@ -110,7 +110,7 @@ namespace RtlTvMazeScraper.UI.Workers
                 {
                     await this.showService.StoreShowList(new List<Core.Model.Show> { show }, null).ConfigureAwait(false);
 
-                    var scraped = new ScrapedShow { Id = show.Id, Name = show.Name, CastCount = show.ShowCastMembers.Count };
+                    var scraped = new ScrapedShow { Id = show.Id, Name = show.Name, CastCount = show.CastMembers.Count };
                     await this.PostShow(scraped).ConfigureAwait(false);
 
                     // make sure more shows are queued, now that one has been processed. Note that this will fail if there is a gap >30

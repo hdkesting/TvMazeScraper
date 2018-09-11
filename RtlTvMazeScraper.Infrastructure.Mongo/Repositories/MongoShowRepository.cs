@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
+namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
 {
     using System;
     using System.Collections.Generic;
@@ -143,9 +143,9 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
                     Name = orgshow.Name,
                 };
 
-                if (orgshow.ShowCastMembers != null && orgshow.ShowCastMembers.Any())
+                if (orgshow.CastMembers != null && orgshow.CastMembers.Any())
                 {
-                    show.Cast.AddRange(orgshow.ShowCastMembers.Select(cm => cm.CastMember));
+                    show.Cast.AddRange(orgshow.CastMembers);
                 }
                 else
                 {
@@ -164,7 +164,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories.Local
         {
             // remove the n:m relation
             var show = new Show { Id = mongoShow.Id, Name = mongoShow.Name };
-            show.ShowCastMembers.AddRange(mongoShow.Cast.Select(c => new ShowCastMember { Show = show, CastMember = c }));
+            show.CastMembers.AddRange(mongoShow.Cast);
 
             return show;
         }

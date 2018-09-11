@@ -52,6 +52,6 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <param name="showId">The show identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A Task with Show and status code.</returns>
-        Task<(Show, HttpStatusCode)> ScrapeSingleShowById(int showId, CancellationToken cancellationToken = default);
+        Task<ScrapeResult> ScrapeSingleShowById(int showId, CancellationToken cancellationToken = default);
     }
 }

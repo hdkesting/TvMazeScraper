@@ -2,9 +2,12 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Model
+namespace RtlTvMazeScraper.Infrastructure.Sql.Model
 {
     using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
     /// A cast member.
@@ -17,6 +20,8 @@ namespace RtlTvMazeScraper.Core.Model
         /// <value>
         /// The identifier.
         /// </value>
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         /// <summary>
@@ -34,5 +39,13 @@ namespace RtlTvMazeScraper.Core.Model
         /// The birthdate.
         /// </value>
         public DateTime? Birthdate { get; set; }
+
+        /// <summary>
+        /// Gets the shows this actor appears in.
+        /// </summary>
+        /// <value>
+        /// The shows.
+        /// </value>
+        public List<ShowCastMember> ShowCastMembers { get; } = new List<ShowCastMember>();
     }
 }

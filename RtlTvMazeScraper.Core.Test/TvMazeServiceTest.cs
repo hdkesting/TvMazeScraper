@@ -36,7 +36,7 @@ namespace RtlTvMazeScraper.Core.Test
 
             result.Should().NotBeNull();
             result.Count.Should().Be(10, because: "there are 10 shows in the sample.");
-            result.Where(s => s.ShowCastMembers.Any()).Count().Should().Be(0, because: "there is no cast in this show data.");
+            result.Where(s => s.CastMembers.Any()).Count().Should().Be(0, because: "there is no cast in this show data.");
             result.Select(m => m.Id).Distinct().Count().Should().Be(10, because: "ID is unique");
         }
 
@@ -80,7 +80,7 @@ namespace RtlTvMazeScraper.Core.Test
             var svc = new TvMazeService(apiRepo, svclogger);
             var (count, shows) = await svc.ScrapeBatchById(999_999).ConfigureAwait(false);
 
-            count.Should().Be(0);
+            count.Should().Be(1);
         }
 
         /// <summary>
@@ -127,8 +127,8 @@ namespace RtlTvMazeScraper.Core.Test
             var (count, shows) = await svc.ScrapeBatchById(1058).ConfigureAwait(false);
 
             shows.Count.Should().Be(1);
-            shows[0].ShowCastMembers.Count.Should().Be(7);
-            shows[0].ShowCastMembers.Where(m => m.CastMember.Birthdate.HasValue).Count().Should().Be(6);
+            shows[0].CastMembers.Count.Should().Be(7);
+            shows[0].CastMembers.Where(m => m.Birthdate.HasValue).Count().Should().Be(6);
         }
     }
 }

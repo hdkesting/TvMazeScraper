@@ -2,17 +2,16 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Model
+namespace RtlTvMazeScraper.Infrastructure.Sql.Model
 {
     using System;
     using Microsoft.EntityFrameworkCore;
-    using RtlTvMazeScraper.Core.Interfaces;
+    using RtlTvMazeScraper.Infrastructure.Sql.Interfaces;
 
     /// <summary>
     /// The DB context for the show database.
     /// </summary>
     /// <seealso cref="Microsoft.EntityFrameworkCore.DbContext" />
-    [CLSCompliant(false)]
     public class ShowContext : DbContext, IShowContext
     {
         /// <summary>

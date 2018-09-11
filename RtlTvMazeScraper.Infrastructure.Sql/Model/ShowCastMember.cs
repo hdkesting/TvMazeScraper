@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Model
+namespace RtlTvMazeScraper.Infrastructure.Sql.Model
 {
     /// <summary>
     /// Represents the many-to-many relationship between <see cref="Show"/>s and <see cref="CastMember"/>s.

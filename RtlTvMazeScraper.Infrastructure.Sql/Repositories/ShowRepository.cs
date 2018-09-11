@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
+namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
 {
     using System;
     using System.Collections.Generic;
@@ -14,12 +14,13 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Transfer;
+    using RtlTvMazeScraper.Infrastructure.Sql.Interfaces;
+    using RtlTvMazeScraper.Infrastructure.Sql.Model;
 
     /// <summary>
     /// A repository for locally stored shows.
     /// </summary>
     /// <seealso cref="IShowRepository" />
-    [CLSCompliant(false)]
     public class ShowRepository : IShowRepository
     {
         private readonly ILogger<ShowRepository> logger;
@@ -46,9 +47,9 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// <returns>
         /// A list of shows with cast.
         /// </returns>
-        public async Task<List<Show>> GetShows(int startId, int count)
+        public async Task<List<Core.Model.Show>> GetShows(int startId, int count)
         {
-            return await this.showContext.Shows
+            var shows = await this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
                     .ThenInclude(scm => scm.CastMember)
                 .Where(s => s.Id >= startId)
@@ -56,10 +57,12 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                 .Take(count)
                 .ToListAsync()
                 .ConfigureAwait(false);
+
+            return shows.Select(this.ConvertShow).ToList();
         }
 
         /// <summary>
-        /// Gets the shows including cast.
+        /// Gets a page of the shows including cast.
         /// </summary>
         /// <param name="page">The page number (0-based).</param>
         /// <param name="pagesize">The size of the page.</param>
@@ -67,15 +70,17 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// <returns>
         /// A list of shows with cast.
         /// </returns>
-        public Task<List<Show>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
+        public async Task<List<Core.Model.Show>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
         {
-            return this.showContext.Shows
+            var shows = await this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
                     .ThenInclude(scm => scm.CastMember)
                 .OrderBy(s => s.Id)
                 .Skip(page * pagesize)
                 .Take(pagesize)
                 .ToListAsync(cancellationToken);
+
+            return shows.Select(this.ConvertShow).ToList();
         }
 
         /// <summary>
@@ -86,7 +91,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// <returns>
         /// A Task.
         /// </returns>
-        public async Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow)
+        public async Task StoreShowList(List<Core.Model.Show> list, Func<int, Task<List<Core.Model.CastMember>>> getCastOfShow)
         {
             var memberEqualityComparer = new CastMemberEqualityComparer();
 
@@ -94,34 +99,43 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
             {
                 try
                 {
-                    if (!show.ShowCastMembers.Any() && getCastOfShow != null)
+                    if (!show.CastMembers.Any() && getCastOfShow != null)
                     {
                         var cast = await getCastOfShow(show.Id).ConfigureAwait(false);
-                        show.ShowCastMembers.AddRange(cast.Select(c => new ShowCastMember { Show = show, CastMember = c }));
+                        show.CastMembers.AddRange(cast);
                     }
 
                     // there are duplicate actors in the cast (when they have different roles) - we are only interested in persons, not roles
-                    var realcast = show.ShowCastMembers.Select(scm => scm.CastMember).Distinct(memberEqualityComparer).ToList();
+                    var realcast = show.CastMembers.Distinct(memberEqualityComparer).ToList();
 
                     var ids = realcast.Select(c => c.Id).ToList();
                     var storedcast = this.showContext.CastMembers.Where(m => ids.Contains(m.Id)).ToList();
 
-                    show.ShowCastMembers.Clear();
+                    show.CastMembers.Clear();
                     foreach (var member in realcast)
                     {
                         var storedmember = storedcast.FirstOrDefault(c => c.Id == member.Id);
-                        show.ShowCastMembers.Add(new ShowCastMember { Show = show, CastMember = storedmember ?? member });
+                        if (storedmember == null)
+                        {
+                            // not stored yet
+                            show.CastMembers.Add(member);
+                        }
+                        else
+                        {
+                            show.CastMembers.Add(new Core.Model.CastMember { Id = storedmember.Id, Name = storedmember.Name, Birthdate = storedmember.Birthdate });
+                        }
                     }
 
-                    var existing = await this.GetShowById(show.Id).ConfigureAwait(false);
+                    var localshow = this.ConvertShow(show);
+                    var existingShow = await this.GetLocalShowById(show.Id).ConfigureAwait(false);
 
-                    if (existing == null)
+                    if (existingShow == null)
                     {
-                        await this.AddShow(show).ConfigureAwait(false);
+                        await this.AddShow(localshow).ConfigureAwait(false);
                     }
                     else
                     {
-                        await this.UpdateShow(show, existing).ConfigureAwait(false);
+                        await this.UpdateShow(localshow, existingShow).ConfigureAwait(false);
                     }
                 }
                 catch (Exception ex)
@@ -169,7 +183,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// </summary>
         /// <param name="showId">The show identifier.</param>
         /// <returns>A list of cast members.</returns>
-        public async Task<List<CastMember>> GetCastOfShow(int showId)
+        public async Task<List<Core.Model.CastMember>> GetCastOfShow(int showId)
         {
             var show = await this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
@@ -177,7 +191,15 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                 .SingleOrDefaultAsync(s => s.Id == showId)
                 .ConfigureAwait(false);
 
-            return show?.ShowCastMembers.Select(it => it.CastMember).ToList();
+            return show?.ShowCastMembers
+                .Select(it => it.CastMember)
+                .Select(it => new Core.Model.CastMember
+                {
+                    Id = it.Id,
+                    Name = it.Name,
+                    Birthdate = it.Birthdate,
+                })
+                .ToList();
         }
 
         /// <summary>
@@ -185,7 +207,17 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns>One Show (if found).</returns>
-        public Task<Show> GetShowById(int id)
+        public async Task<Core.Model.Show> GetShowById(int id)
+        {
+            var localshow = await this.showContext.Shows
+                .Include(s => s.ShowCastMembers)
+                .ThenInclude(scm => scm.CastMember)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            return this.ConvertShow(localshow);
+        }
+
+        private Task<Model.Show> GetLocalShowById(int id)
         {
             return this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
@@ -193,13 +225,40 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        private Task AddShow(Show show)
+        private Core.Model.Show ConvertShow(Model.Show localshow)
+        {
+            // TODO use mapper
+            var coreshow = new Core.Model.Show { Id = localshow.Id, Name = localshow.Name };
+            coreshow.CastMembers.AddRange(localshow.ShowCastMembers
+                .Select(scm => scm.CastMember)
+                .Select(cm => new Core.Model.CastMember { Id = cm.Id, Name = cm.Name, Birthdate = cm.Birthdate }));
+            return coreshow;
+        }
+
+        private Model.Show ConvertShow(Core.Model.Show coreshow)
+        {
+            var modelshow = new Model.Show { Id = coreshow.Id, Name = coreshow.Name };
+            modelshow.ShowCastMembers.AddRange(coreshow.CastMembers
+                .Select(cm => new ShowCastMember
+                {
+                    Show = modelshow,
+                    CastMember = new Model.CastMember
+                    {
+                        Id = cm.Id,
+                        Name = cm.Name,
+                        Birthdate = cm.Birthdate
+                    }
+                }));
+            return modelshow;
+        }
+
+        private Task AddShow(Model.Show show)
         {
             this.showContext.Shows.Add(show);
             return this.showContext.SaveChangesAsync();
         }
 
-        private async Task UpdateShow(Show newShow, Show storedShow)
+        private async Task UpdateShow(Model.Show newShow, Model.Show storedShow)
         {
             storedShow.Name = newShow.Name;
 

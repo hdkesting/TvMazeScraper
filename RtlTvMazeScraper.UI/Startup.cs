@@ -5,7 +5,6 @@
 namespace RtlTvMazeScraper.UI
 {
     using System;
-    using System.Linq;
     using System.Net.Http;
     using AutoMapper;
     using Microsoft.AspNetCore.Builder;
@@ -15,13 +14,12 @@ namespace RtlTvMazeScraper.UI
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using NLog.Web;
     using Polly;
     using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Services;
     using RtlTvMazeScraper.Infrastructure.Repositories.Local;
     using RtlTvMazeScraper.Infrastructure.Repositories.Remote;
+    using RtlTvMazeScraper.Infrastructure.Sql.Model;
     using RtlTvMazeScraper.UI.Hubs;
     using RtlTvMazeScraper.UI.ViewModels;
     using RtlTvMazeScraper.UI.Workers;
@@ -131,9 +129,9 @@ namespace RtlTvMazeScraper.UI
         {
             var config = new AutoMapper.MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Show, ShowForJson>()
-                    .ForMember(dest => dest.Cast, opt => opt.MapFrom(src => src.ShowCastMembers.Select(scm => scm.CastMember)));
-                cfg.CreateMap<CastMember, CastMemberForJson>();
+                cfg.CreateMap<Core.Model.Show, ShowForJson>()
+                    .ForMember(dest => dest.Cast, opt => opt.MapFrom(src => src.CastMembers));
+                cfg.CreateMap<Core.Model.CastMember, CastMemberForJson>();
             });
 
             return config;
@@ -145,20 +143,20 @@ namespace RtlTvMazeScraper.UI
         /// <param name="services">The services.</param>
         private void ConfigureDI(IServiceCollection services)
         {
-            //// TODO switch between sqlserver and mongodb through config option
-
             // repositories
             services.AddTransient<IApiRepository, ApiRepository>();
-            //// services.AddTransient<IShowRepository, ShowRepository>();
-            services.AddTransient<IShowRepository, Infrastructure.Mongo.Repositories.Local.MongoShowRepository>(); // or singleton?
             services.AddSingleton<ISettingRepository, SettingRepository>(sp => new SettingRepository(this.Configuration));
 
             // services
             services.AddScoped<IShowService, ShowService>();
             services.AddScoped<ITvMazeService, TvMazeService>();
 
-            // db context
-            services.AddScoped<IShowContext, ShowContext>();
+            // TODO switch between these as needed
+#if !USESQL
+            Infrastructure.Sql.Startup.ConfigureDI(services);
+#else
+            Infrastructure.Mongo.Startup.ConfigureDI(services);
+#endif
 
             // other
             var mappingConfig = ConfigureMapping();

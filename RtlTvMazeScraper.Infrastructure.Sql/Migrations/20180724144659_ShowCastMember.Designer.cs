@@ -3,15 +3,21 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RtlTvMazeScraper.Core.Model;
+using RtlTvMazeScraper.Infrastructure.Sql.Model;
 
-namespace RtlTvMazeScraper.Infrastructure.Migrations
+namespace RtlTvMazeScraper.Infrastructure.Sql.Migrations
 {
     [DbContext(typeof(ShowContext))]
-    partial class ShowContextModelSnapshot : ModelSnapshot
+    [Migration("20180724144659_ShowCastMember")]
+    partial class ShowCastMember
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <summary>
+        /// Implemented to builds the <see cref="Microsoft.EntityFrameworkCore.Migrations.Migration.TargetModel" />.
+        /// </summary>
+        /// <param name="modelBuilder">The <see cref="Microsoft.EntityFrameworkCore.ModelBuilder" /> to use to build the model.</param>
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

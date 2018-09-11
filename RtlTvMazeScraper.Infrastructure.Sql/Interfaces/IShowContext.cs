@@ -2,17 +2,15 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Interfaces
+namespace RtlTvMazeScraper.Infrastructure.Sql.Interfaces
 {
-    using System;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
-    using RtlTvMazeScraper.Core.Model;
+    using RtlTvMazeScraper.Infrastructure.Sql.Model;
 
     /// <summary>
     /// Interface for DbContext of shows.
     /// </summary>
-    [CLSCompliant(false)]
     public interface IShowContext
     {
         /// <summary>

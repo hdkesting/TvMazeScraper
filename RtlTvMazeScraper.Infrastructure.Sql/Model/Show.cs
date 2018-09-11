@@ -2,9 +2,11 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Model
+namespace RtlTvMazeScraper.Infrastructure.Sql.Model
 {
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
     /// A show.
@@ -17,6 +19,8 @@ namespace RtlTvMazeScraper.Core.Model
         /// <value>
         /// The identifier.
         /// </value>
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         /// <summary>
@@ -33,6 +37,6 @@ namespace RtlTvMazeScraper.Core.Model
         /// <value>
         /// The cast.
         /// </value>
-        public List<CastMember> CastMembers { get; } = new List<CastMember>();
+        public List<ShowCastMember> ShowCastMembers { get; } = new List<ShowCastMember>();
     }
 }
