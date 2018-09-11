@@ -37,8 +37,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
         /// <param name="logger">The logger.</param>
         public MongoShowRepository(ILogger<MongoShowRepository> logger)
         {
-            // TODO? supply connection string or create client as singleton in/from Startup.
-            this.client = new MongoClient();
+            this.client = new MongoClient(Startup.ConnectionString);
 
             var database = this.client.GetDatabase(DatabaseName);
             this.collection = database.GetCollection<ShowWithCast>(CollectionName);
@@ -147,7 +146,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
                 {
                     show.Cast.AddRange(orgshow.CastMembers);
                 }
-                else
+                else if (getCastOfShow != null)
                 {
                     var cast = await getCastOfShow(show.Id).ConfigureAwait(false);
                     show.Cast = cast;

@@ -46,6 +46,15 @@ namespace RtlTvMazeScraper.UI
         }
 
         /// <summary>
+        /// Where the shows should be persisted.
+        /// </summary>
+        private enum Storage
+        {
+            Sql,
+            Mongo,
+        }
+
+        /// <summary>
         /// Gets the configuration.
         /// </summary>
         /// <value>
@@ -69,9 +78,18 @@ namespace RtlTvMazeScraper.UI
                 builder.AddDebug();
             });
 
-            services.AddDbContext<ShowContext>(opt => opt.UseSqlServer(
-                this.Configuration.GetConnectionString("ShowConnection"),
-                x => x.MigrationsAssembly("RtlTvMazeScraper.Infrastructure")));
+            switch (this.GetStorageType())
+            {
+                case Storage.Sql:
+                    services.AddDbContext<ShowContext>(opt => opt.UseSqlServer(
+                        this.Configuration.GetConnectionString("ShowConnection"),
+                        x => x.MigrationsAssembly("RtlTvMazeScraper.Infrastructure.Sql")));
+                    break;
+
+                case Storage.Mongo:
+                    Infrastructure.Mongo.Startup.Configure(this.Configuration.GetConnectionString("MongoConnection"));
+                    break;
+            }
 
             // "at least 20 calls every 10 seconds"
             var retryPolicy = Policy.HandleResult<HttpResponseMessage>(resp => resp.StatusCode == Core.Support.Constants.ServerTooBusy)
@@ -151,12 +169,16 @@ namespace RtlTvMazeScraper.UI
             services.AddScoped<IShowService, ShowService>();
             services.AddScoped<ITvMazeService, TvMazeService>();
 
-            // TODO switch between these as needed
-#if !USESQL
-            Infrastructure.Sql.Startup.ConfigureDI(services);
-#else
-            Infrastructure.Mongo.Startup.ConfigureDI(services);
-#endif
+            switch (this.GetStorageType())
+            {
+                case Storage.Sql:
+                    Infrastructure.Sql.Startup.ConfigureDI(services);
+                    break;
+
+                case Storage.Mongo:
+                    Infrastructure.Mongo.Startup.ConfigureDI(services);
+                    break;
+            }
 
             // other
             var mappingConfig = ConfigureMapping();
@@ -165,6 +187,21 @@ namespace RtlTvMazeScraper.UI
             // background services
             services.AddScoped<IScraperWorker, ScraperWorker>();
             services.AddHostedService<TimedHostedService>();
+        }
+
+        private Storage GetStorageType()
+        {
+            var storage = this.Configuration.GetSection("Config")["persisting"];
+            switch (storage)
+            {
+                case "sql":
+                    return Storage.Sql;
+
+                case "mongo":
+                    return Storage.Mongo;
+            }
+
+            throw new InvalidOperationException($"Wrong 'persisting' configuration. Expected 'sql' or 'mongo', got '{storage}'.");
         }
     }
 }
