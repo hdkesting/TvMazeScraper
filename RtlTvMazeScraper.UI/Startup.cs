@@ -62,11 +62,13 @@ namespace RtlTvMazeScraper.UI
         /// </value>
         public IConfiguration Configuration { get; }
 
+#pragma warning disable CA1506 // Avoid excessive class coupling
         /// <summary>
         /// Configures the services.
         /// </summary>
         /// <param name="services">The services.</param>
         public void ConfigureServices(IServiceCollection services)
+#pragma warning restore CA1506 // Avoid excessive class coupling
         {
             services.AddMvc()
                 .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);

@@ -78,7 +78,8 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
                 .OrderBy(s => s.Id)
                 .Skip(page * pagesize)
                 .Take(pagesize)
-                .ToListAsync(cancellationToken);
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
 
             return shows.Select(this.ConvertShow).ToList();
         }
@@ -212,7 +213,8 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
             var localshow = await this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
                 .ThenInclude(scm => scm.CastMember)
-                .FirstOrDefaultAsync(s => s.Id == id);
+                .FirstOrDefaultAsync(s => s.Id == id)
+                .ConfigureAwait(false);
 
             return this.ConvertShow(localshow);
         }

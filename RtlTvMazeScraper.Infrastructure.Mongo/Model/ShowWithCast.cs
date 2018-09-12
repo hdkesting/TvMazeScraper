@@ -32,6 +32,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Model
         public string Name { get; set; }
 
 #pragma warning disable CA2227 // Collection properties should be read only
+
         /// <summary>
         /// Gets or sets all cast members.
         /// </summary>
