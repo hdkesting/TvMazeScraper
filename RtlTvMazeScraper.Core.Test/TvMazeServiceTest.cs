@@ -60,7 +60,7 @@ namespace RtlTvMazeScraper.Core.Test
             result.Where(m => m.Birthdate.HasValue).Count().Should().Be(6, because: "I set one birthdate to null (as happens).");
             result.Where(m => m.Id <= 0).Any().Should().Be(false, because: "everyone has a positive id number.");
             result.Select(m => m.Id).Distinct().Count().Should().Be(7, because: "ID is unique");
-            result.Where(m => m.Name == null).Any().Should().Be(false, because: "everyone has a name defined.");
+            result.Where(m => m.Name is null).Any().Should().Be(false, because: "everyone has a name defined.");
         }
 
         /// <summary>

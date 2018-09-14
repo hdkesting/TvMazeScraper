@@ -142,11 +142,11 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
                     Name = orgshow.Name,
                 };
 
-                if (orgshow.CastMembers != null && orgshow.CastMembers.Any())
+                if (!(orgshow.CastMembers is null) && orgshow.CastMembers.Any())
                 {
                     show.Cast.AddRange(orgshow.CastMembers);
                 }
-                else if (getCastOfShow != null)
+                else if (!(getCastOfShow is null))
                 {
                     var cast = await getCastOfShow(show.Id).ConfigureAwait(false);
                     show.Cast = cast;

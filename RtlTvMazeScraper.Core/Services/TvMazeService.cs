@@ -218,14 +218,14 @@ namespace RtlTvMazeScraper.Core.Services
                 };
 
                 var embedded = jshow[Support.TvMazeShowWithCastResultNames.EmbeddedContainer];
-                if (embedded == null)
+                if (embedded is null)
                 {
                     this.logger.LogError("Server didn't return the requested embedded data for show {ShowId}.", showId);
                 }
                 else
                 {
                     var jcast = (JArray)embedded[Support.TvMazeShowWithCastResultNames.CastContainer];
-                    if (jcast == null)
+                    if (jcast is null)
                     {
                         this.logger.LogError("Server didn't return the requested cast in the embedded data for show {ShowId}.", showId);
                     }

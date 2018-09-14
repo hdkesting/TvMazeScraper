@@ -21,14 +21,14 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         public SettingRepository(Microsoft.Extensions.Configuration.IConfiguration configuration)
         {
             var cfgSection = configuration?.GetSection("Config");
-            if (cfgSection == null)
+            if (cfgSection is null)
             {
                 throw new InvalidOperationException("The config section 'Config' is missing.");
             }
 
             this.TvMazeHost = cfgSection["tvmaze"];
 
-            if (this.TvMazeHost == null)
+            if (this.TvMazeHost is null)
             {
                 throw new InvalidOperationException("The 'Config' section is missing a value for 'tvmaze'.");
             }

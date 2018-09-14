@@ -106,7 +106,7 @@ namespace RtlTvMazeScraper.UI.Workers
 
                 var (show, status) = await this.tvMazeService.ScrapeSingleShowById(showId.Value, stoppingToken).ConfigureAwait(false);
 
-                if (show != null)
+                if (!(show is null))
                 {
                     await this.showService.StoreShowList(new List<Core.Model.Show> { show }, null).ConfigureAwait(false);
 

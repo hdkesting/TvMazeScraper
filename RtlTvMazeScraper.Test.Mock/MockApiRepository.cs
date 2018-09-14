@@ -35,7 +35,7 @@ namespace RtlTvMazeScraper.Test.Mock
         /// <param name="contentStream">The content stream.</param>
         public void ReadContent(Stream contentStream)
         {
-            if (contentStream == null)
+            if (contentStream is null)
             {
                 throw new System.ArgumentNullException(nameof(contentStream));
             }

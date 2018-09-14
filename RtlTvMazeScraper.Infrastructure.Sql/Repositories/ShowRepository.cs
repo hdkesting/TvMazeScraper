@@ -100,7 +100,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
             {
                 try
                 {
-                    if (!show.CastMembers.Any() && getCastOfShow != null)
+                    if (!show.CastMembers.Any() && !(getCastOfShow is null))
                     {
                         var cast = await getCastOfShow(show.Id).ConfigureAwait(false);
                         show.CastMembers.AddRange(cast);
@@ -116,7 +116,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
                     foreach (var member in realcast)
                     {
                         var storedmember = storedcast.FirstOrDefault(c => c.Id == member.Id);
-                        if (storedmember == null)
+                        if (storedmember is null)
                         {
                             // not stored yet
                             show.CastMembers.Add(member);
@@ -130,7 +130,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
                     var localshow = this.ConvertShow(show);
                     var existingShow = await this.GetLocalShowById(show.Id).ConfigureAwait(false);
 
-                    if (existingShow == null)
+                    if (existingShow is null)
                     {
                         await this.AddShow(localshow).ConfigureAwait(false);
                     }
@@ -268,11 +268,11 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
             {
                 var storedMember = storedShow.ShowCastMembers.FirstOrDefault(m => m.CastMemberId == newMember.Id);
 
-                if (storedMember == null)
+                if (storedMember is null)
                 {
                     var storedActor = await this.showContext.CastMembers.SingleOrDefaultAsync(m => m.Id == newMember.Id).ConfigureAwait(false);
 
-                    if (storedActor == null)
+                    if (storedActor is null)
                     {
                         // also not stored for another show
                         storedShow.ShowCastMembers.Add(new ShowCastMember { Show = storedShow, CastMember = newMember });

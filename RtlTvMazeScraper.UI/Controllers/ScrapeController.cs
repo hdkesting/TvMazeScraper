@@ -86,7 +86,7 @@ namespace RtlTvMazeScraper.UI.Controllers
                 // perform scrape
                 var list = await this.tvMazeService.ScrapeShowsBySearch(initial, cancellationToken).ConfigureAwait(false);
 
-                if (list == null)
+                if (list is null)
                 {
                     this.logger.LogWarning("Scraping for {Initial} returned no results.", initial);
                     model.PreviousCount = 0;

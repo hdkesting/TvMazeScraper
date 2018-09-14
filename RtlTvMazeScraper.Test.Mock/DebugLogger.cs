@@ -80,7 +80,7 @@ namespace RtlTvMazeScraper.Test.Mock
             var msg = formatter?.Invoke(state, exception);
             System.Diagnostics.Debug.WriteLine($"{typeof(T).Name} [{logLevel}] - {msg}.");
 
-            while (exception != null)
+            while (!(exception is null))
             {
                 System.Diagnostics.Debug.WriteLine(exception);
                 System.Diagnostics.Debug.WriteLine(new string('-', 20));
