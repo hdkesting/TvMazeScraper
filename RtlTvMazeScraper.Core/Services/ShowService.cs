@@ -9,8 +9,8 @@ namespace RtlTvMazeScraper.Core.Services
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
+    using RtlTvMazeScraper.Core.DTO;
     using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Transfer;
 
     /// <summary>

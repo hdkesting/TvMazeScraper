@@ -11,9 +11,7 @@ namespace RtlTvMazeScraper.Core.Test
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Services;
-    using RtlTvMazeScraper.Infrastructure.Repositories.Local;
     using RtlTvMazeScraper.Infrastructure.Sql.Model;
     using RtlTvMazeScraper.Infrastructure.Sql.Repositories;
     using RtlTvMazeScraper.Test.Mock;

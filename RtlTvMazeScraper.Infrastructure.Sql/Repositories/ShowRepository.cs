@@ -11,8 +11,8 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using RtlTvMazeScraper.Core.DTO;
     using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Transfer;
     using RtlTvMazeScraper.Infrastructure.Sql.Interfaces;
     using RtlTvMazeScraper.Infrastructure.Sql.Model;
@@ -47,7 +47,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
         /// <returns>
         /// A list of shows with cast.
         /// </returns>
-        public async Task<List<Core.Model.Show>> GetShows(int startId, int count)
+        public async Task<List<Core.DTO.Show>> GetShows(int startId, int count)
         {
             var shows = await this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
@@ -70,7 +70,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
         /// <returns>
         /// A list of shows with cast.
         /// </returns>
-        public async Task<List<Core.Model.Show>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
+        public async Task<List<Core.DTO.Show>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
         {
             var shows = await this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
@@ -92,7 +92,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
         /// <returns>
         /// A Task.
         /// </returns>
-        public async Task StoreShowList(List<Core.Model.Show> list, Func<int, Task<List<Core.Model.CastMember>>> getCastOfShow)
+        public async Task StoreShowList(List<Core.DTO.Show> list, Func<int, Task<List<Core.DTO.CastMember>>> getCastOfShow)
         {
             var memberEqualityComparer = new CastMemberEqualityComparer();
 
@@ -123,7 +123,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
                         }
                         else
                         {
-                            show.CastMembers.Add(new Core.Model.CastMember { Id = storedmember.Id, Name = storedmember.Name, Birthdate = storedmember.Birthdate });
+                            show.CastMembers.Add(new Core.DTO.CastMember { Id = storedmember.Id, Name = storedmember.Name, Birthdate = storedmember.Birthdate });
                         }
                     }
 
@@ -184,7 +184,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
         /// </summary>
         /// <param name="showId">The show identifier.</param>
         /// <returns>A list of cast members.</returns>
-        public async Task<List<Core.Model.CastMember>> GetCastOfShow(int showId)
+        public async Task<List<Core.DTO.CastMember>> GetCastOfShow(int showId)
         {
             var show = await this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
@@ -194,7 +194,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
 
             return show?.ShowCastMembers
                 .Select(it => it.CastMember)
-                .Select(it => new Core.Model.CastMember
+                .Select(it => new Core.DTO.CastMember
                 {
                     Id = it.Id,
                     Name = it.Name,
@@ -208,7 +208,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns>One Show (if found).</returns>
-        public async Task<Core.Model.Show> GetShowById(int id)
+        public async Task<Core.DTO.Show> GetShowById(int id)
         {
             var localshow = await this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
@@ -227,17 +227,17 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        private Core.Model.Show ConvertShow(Model.Show localshow)
+        private Core.DTO.Show ConvertShow(Model.Show localshow)
         {
             // TODO use mapper
-            var coreshow = new Core.Model.Show { Id = localshow.Id, Name = localshow.Name };
+            var coreshow = new Core.DTO.Show { Id = localshow.Id, Name = localshow.Name };
             coreshow.CastMembers.AddRange(localshow.ShowCastMembers
                 .Select(scm => scm.CastMember)
-                .Select(cm => new Core.Model.CastMember { Id = cm.Id, Name = cm.Name, Birthdate = cm.Birthdate }));
+                .Select(cm => new Core.DTO.CastMember { Id = cm.Id, Name = cm.Name, Birthdate = cm.Birthdate }));
             return coreshow;
         }
 
-        private Model.Show ConvertShow(Core.Model.Show coreshow)
+        private Model.Show ConvertShow(Core.DTO.Show coreshow)
         {
             var modelshow = new Model.Show { Id = coreshow.Id, Name = coreshow.Name };
             modelshow.ShowCastMembers.AddRange(coreshow.CastMembers

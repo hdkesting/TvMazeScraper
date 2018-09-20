@@ -5,7 +5,7 @@
 namespace RtlTvMazeScraper.Core.Transfer
 {
     using System.Net;
-    using RtlTvMazeScraper.Core.Model;
+    using RtlTvMazeScraper.Core.DTO;
 
     /// <summary>
     /// The result of a single scrape action.

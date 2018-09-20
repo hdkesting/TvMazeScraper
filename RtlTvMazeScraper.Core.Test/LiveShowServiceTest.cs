@@ -4,16 +4,13 @@
 
 namespace RtlTvMazeScraper.Core.Test
 {
-    using System.Configuration;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Services;
-    using RtlTvMazeScraper.Infrastructure.Repositories.Local;
     using RtlTvMazeScraper.Infrastructure.Sql.Model;
     using RtlTvMazeScraper.Infrastructure.Sql.Repositories;
     using RtlTvMazeScraper.Test.Mock;
@@ -36,6 +33,9 @@ namespace RtlTvMazeScraper.Core.Test
         /// <summary>
         /// Initializes this test instance.
         /// </summary>
+        /// <remarks>
+        /// I assume the application has run for some time, so that the database does contain these records.
+        /// </remarks>
         [TestInitialize]
         public void Initialize()
         {

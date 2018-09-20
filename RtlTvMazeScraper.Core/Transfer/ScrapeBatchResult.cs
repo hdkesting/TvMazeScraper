@@ -5,7 +5,7 @@
 namespace RtlTvMazeScraper.Core.Transfer
 {
     using System.Collections.Generic;
-    using RtlTvMazeScraper.Core.Model;
+    using RtlTvMazeScraper.Core.DTO;
 
     /// <summary>
     /// Result of scraping a batch of shows.

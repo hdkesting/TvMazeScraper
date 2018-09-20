@@ -6,6 +6,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo
 {
     using Microsoft.Extensions.DependencyInjection;
     using RtlTvMazeScraper.Core.Interfaces;
+    using RtlTvMazeScraper.Infrastructure.Mongo.Repositories;
 
     /// <summary>
     /// Statup as relates to this project.
@@ -35,7 +36,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo
         /// <param name="services">The services.</param>
         public static void ConfigureDI(IServiceCollection services)
         {
-            services.AddTransient<IShowRepository, Repositories.MongoShowRepository>(); // or singleton?
+            services.AddTransient<IShowRepository, MongoShowRepository>(); // or singleton?
         }
     }
 }

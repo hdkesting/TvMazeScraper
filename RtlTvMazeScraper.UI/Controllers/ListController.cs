@@ -11,8 +11,8 @@ namespace RtlTvMazeScraper.UI.Controllers
     using AutoMapper;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
+    using RtlTvMazeScraper.Core.DTO;
     using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.UI.ViewModels;
 
     /// <summary>

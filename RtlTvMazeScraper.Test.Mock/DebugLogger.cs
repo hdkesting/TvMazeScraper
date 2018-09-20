@@ -5,6 +5,7 @@
 namespace RtlTvMazeScraper.Test.Mock
 {
     using System;
+    using System.Diagnostics;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -78,12 +79,12 @@ namespace RtlTvMazeScraper.Test.Mock
             }
 
             var msg = formatter?.Invoke(state, exception);
-            System.Diagnostics.Debug.WriteLine($"{typeof(T).Name} [{logLevel}] - {msg}.");
+            Debug.WriteLine($"{typeof(T).Name} [{logLevel}] - {msg}.");
 
             while (!(exception is null))
             {
-                System.Diagnostics.Debug.WriteLine(exception);
-                System.Diagnostics.Debug.WriteLine(new string('-', 20));
+                Debug.WriteLine(exception);
+                Debug.WriteLine(new string('-', 20));
                 exception = exception.InnerException;
             }
         }

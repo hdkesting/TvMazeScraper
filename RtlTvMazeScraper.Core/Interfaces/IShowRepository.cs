@@ -8,7 +8,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using RtlTvMazeScraper.Core.Model;
+    using RtlTvMazeScraper.Core.DTO;
     using RtlTvMazeScraper.Core.Transfer;
 
     /// <summary>

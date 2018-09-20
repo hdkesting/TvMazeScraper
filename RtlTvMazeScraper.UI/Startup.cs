@@ -50,6 +50,7 @@ namespace RtlTvMazeScraper.UI
         /// </summary>
         private enum Storage
         {
+            Unknown,
             Sql,
             Mongo,
         }
@@ -149,9 +150,9 @@ namespace RtlTvMazeScraper.UI
         {
             var config = new AutoMapper.MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Core.Model.Show, ShowForJson>()
+                cfg.CreateMap<Core.DTO.Show, ShowForJson>()
                     .ForMember(dest => dest.Cast, opt => opt.MapFrom(src => src.CastMembers));
-                cfg.CreateMap<Core.Model.CastMember, CastMemberForJson>();
+                cfg.CreateMap<Core.DTO.CastMember, CastMemberForJson>();
             });
 
             return config;
@@ -171,7 +172,8 @@ namespace RtlTvMazeScraper.UI
             services.AddScoped<IShowService, ShowService>();
             services.AddScoped<ITvMazeService, TvMazeService>();
 
-            switch (this.GetStorageType())
+            var persistence = this.GetStorageType();
+            switch (persistence)
             {
                 case Storage.Sql:
                     Infrastructure.Sql.Startup.ConfigureDI(services);
@@ -180,6 +182,9 @@ namespace RtlTvMazeScraper.UI
                 case Storage.Mongo:
                     Infrastructure.Mongo.Startup.ConfigureDI(services);
                     break;
+
+                default:
+                    throw new InvalidOperationException($"Persitance type not supported: {persistence}.");
             }
 
             // other

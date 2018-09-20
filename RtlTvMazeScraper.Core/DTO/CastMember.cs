@@ -1,18 +1,18 @@
-﻿// <copyright file="Show.cs" company="Hans Keﬆing">
+﻿// <copyright file="CastMember.cs" company="Hans Keﬆing">
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Model
+namespace RtlTvMazeScraper.Core.DTO
 {
-    using System.Collections.Generic;
+    using System;
 
     /// <summary>
-    /// A show.
+    /// A cast member.
     /// </summary>
-    public class Show
+    public class CastMember
     {
         /// <summary>
-        /// Gets or sets the identifier.
+        /// Gets or sets the member identifier.
         /// </summary>
         /// <value>
         /// The identifier.
@@ -28,11 +28,11 @@ namespace RtlTvMazeScraper.Core.Model
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets the show's cast.
+        /// Gets or sets the birthdate.
         /// </summary>
         /// <value>
-        /// The cast.
+        /// The birthdate.
         /// </value>
-        public List<CastMember> CastMembers { get; } = new List<CastMember>();
+        public DateTime? Birthdate { get; set; }
     }
 }

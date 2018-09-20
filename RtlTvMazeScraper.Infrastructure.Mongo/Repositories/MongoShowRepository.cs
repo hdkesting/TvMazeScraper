@@ -11,16 +11,18 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using MongoDB.Driver;
+    using RtlTvMazeScraper.Core.DTO;
     using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Model;
     using RtlTvMazeScraper.Core.Transfer;
     using RtlTvMazeScraper.Infrastructure.Mongo.Model;
 
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes, because it is instantiated through DI.
     /// <summary>
     /// Repository for shows, using MongoDB as back-end.
     /// </summary>
     /// <seealso cref="RtlTvMazeScraper.Core.Interfaces.IShowRepository" />
-    public class MongoShowRepository : IShowRepository
+    internal class MongoShowRepository : IShowRepository
+#pragma warning restore CA1812 // Avoid uninstantiated internal classes
     {
         private const string DatabaseName = "tvmaze";
         private const string CollectionName = "shows";

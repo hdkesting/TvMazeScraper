@@ -4,7 +4,6 @@
 
 namespace RtlTvMazeScraper.Infrastructure.Sql.Model
 {
-    using System;
     using Microsoft.EntityFrameworkCore;
     using RtlTvMazeScraper.Infrastructure.Sql.Interfaces;
 
