@@ -5,6 +5,7 @@
 namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
 {
     using System;
+    using Microsoft.Extensions.Configuration;
     using RtlTvMazeScraper.Core.Interfaces;
 
     /// <summary>
@@ -18,7 +19,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
         /// Initializes a new instance of the <see cref="SettingRepository"/> class.
         /// </summary>
         /// <param name="configuration">The configuration.</param>
-        public SettingRepository(Microsoft.Extensions.Configuration.IConfiguration configuration)
+        public SettingRepository(IConfiguration configuration)
         {
             var cfgSection = configuration?.GetSection("Config");
             if (cfgSection is null)

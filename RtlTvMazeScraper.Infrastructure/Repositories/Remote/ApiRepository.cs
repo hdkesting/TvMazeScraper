@@ -10,6 +10,7 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
     using System.Threading;
     using System.Threading.Tasks;
     using RtlTvMazeScraper.Core.Interfaces;
+    using RtlTvMazeScraper.Core.Support;
     using RtlTvMazeScraper.Core.Transfer;
 
     /// <summary>
@@ -32,19 +33,17 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
         /// Requests the json from the specified URL.
         /// </summary>
         /// <param name="relativePath">The relative URL.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation. Default <see cref="CancellationToken.None"/>.</param>
         /// <returns>
         /// The response status and the json (if any).
         /// </returns>
-        public async Task<ApiResponse> RequestJson(string relativePath, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ApiResponse> RequestJson(Uri relativePath, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var key = Core.Support.Constants.TvMazeClientWithRetry;
+            var key = Constants.TvMazeClientWithRetry;
 
             using (var httpClient = this.httpClientFactory.CreateClient(key))
             {
-#pragma warning disable CA2234 // Pass system uri objects instead of strings
                 var response = await httpClient.GetAsync(relativePath, cancellationToken).ConfigureAwait(false);
-#pragma warning restore CA2234 // Pass system uri objects instead of strings
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {

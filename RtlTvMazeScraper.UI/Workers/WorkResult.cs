@@ -9,6 +9,9 @@ namespace RtlTvMazeScraper.UI.Workers
     /// </summary>
     public enum WorkResult
     {
+        /// <summary>Unkown result.</summary>
+        Unkown,
+
         /// <summary>Work is done, one show is read.</summary>
         Done,
 

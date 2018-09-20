@@ -37,7 +37,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Model
         /// Gets or sets all cast members.
         /// </summary>
         /// <remarks>
-        /// Apparently MongoDB needs a writable list property.
+        /// Apparently MongoDB needs a <b>writable</b> list property.
         /// </remarks>
         /// <value>
         /// The cast.

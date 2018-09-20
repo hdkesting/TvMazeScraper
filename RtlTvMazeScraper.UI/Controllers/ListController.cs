@@ -46,7 +46,7 @@ namespace RtlTvMazeScraper.UI.Controllers
         /// </summary>
         /// <param name="pageno">The page number (starts at 0).</param>
         /// <param name="pagesize">The number of shows per page.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>
         /// A JSON-serializable list.
         /// </returns>

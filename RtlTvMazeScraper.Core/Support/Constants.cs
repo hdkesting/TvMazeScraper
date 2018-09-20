@@ -14,11 +14,11 @@ namespace RtlTvMazeScraper.Core.Support
         /// <summary>
         /// The http status: "server too busy" as used by TvMaze.
         /// </summary>
-        public const HttpStatusCode ServerTooBusy = (HttpStatusCode)429;
+        public static readonly HttpStatusCode ServerTooBusy = (HttpStatusCode)429;
 
         /// <summary>
         /// The key for the tv maze http-client with retry.
         /// </summary>
-        public const string TvMazeClientWithRetry = "tvmazeretry";
+        public static readonly string TvMazeClientWithRetry = "tvmazeretry";
     }
 }

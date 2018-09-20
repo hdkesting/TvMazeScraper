@@ -148,7 +148,7 @@ namespace RtlTvMazeScraper.UI
 
         private static MapperConfiguration ConfigureMapping()
         {
-            var config = new AutoMapper.MapperConfiguration(cfg =>
+            var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Core.DTO.Show, ShowForJson>()
                     .ForMember(dest => dest.Cast, opt => opt.MapFrom(src => src.CastMembers));

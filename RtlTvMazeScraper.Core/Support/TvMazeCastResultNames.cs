@@ -9,24 +9,26 @@ namespace RtlTvMazeScraper.Core.Support
     /// </summary>
     internal static class TvMazeCastResultNames
     {
+#pragma warning disable CA1802 // Use literals where appropriate
         /// <summary>
         /// The name of the attribute holding the person's information.
         /// </summary>
-        public const string PersonContainer = "person";
+        public static readonly string PersonContainer = "person";
 
         /// <summary>
         /// The attribute name of the person identifier within the person object.
         /// </summary>
-        public const string PersonId = "id";
+        public static readonly string PersonId = "id";
 
         /// <summary>
         /// The attribute name of the person's name within the person object.
         /// </summary>
-        public const string PersonName = "name";
+        public static readonly string PersonName = "name";
 
         /// <summary>
         /// The attribute name of the person's birthday within the person object.
         /// </summary>
-        public const string PersonBirthday = "birthday";
+        public static readonly string PersonBirthday = "birthday";
+#pragma warning restore CA1802 // Use literals where appropriate
     }
 }

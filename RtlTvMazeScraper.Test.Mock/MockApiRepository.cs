@@ -4,6 +4,7 @@
 
 namespace RtlTvMazeScraper.Test.Mock
 {
+    using System;
     using System.IO;
     using System.Net;
     using System.Threading;
@@ -54,7 +55,7 @@ namespace RtlTvMazeScraper.Test.Mock
         /// <returns>
         /// The response status and the json (if any).
         /// </returns>
-        public Task<ApiResponse> RequestJson(string relativePath, CancellationToken cancellation = default(CancellationToken))
+        public Task<ApiResponse> RequestJson(Uri relativePath, CancellationToken cancellation = default(CancellationToken))
         {
             return Task.FromResult(new ApiResponse(this.StatusToReturn, this.contentToReturn));
         }

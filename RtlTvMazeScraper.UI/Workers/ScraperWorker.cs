@@ -89,7 +89,7 @@ namespace RtlTvMazeScraper.UI.Workers
         /// <summary>
         /// Performs the scraping of a single show.
         /// </summary>
-        /// <param name="stoppingToken">The cancellation token.</param>
+        /// <param name="stoppingToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>
         /// A Task.
         /// </returns>

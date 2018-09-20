@@ -54,7 +54,7 @@ namespace RtlTvMazeScraper.UI.Controllers
         /// Scrapes by searching for an initial.
         /// </summary>
         /// <param name="initial">The initial to search for.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>
         /// A View or a redirect.
         /// </returns>
@@ -118,7 +118,7 @@ namespace RtlTvMazeScraper.UI.Controllers
         /// Scrapes one batch from the specified start ID (defaults to 1).
         /// </summary>
         /// <param name="start">The start ID.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>
         /// A view or redirect.
         /// </returns>

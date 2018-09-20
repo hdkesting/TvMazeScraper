@@ -4,6 +4,7 @@
 
 namespace RtlTvMazeScraper.Infrastructure.Sql.Interfaces
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using RtlTvMazeScraper.Infrastructure.Sql.Model;
@@ -38,10 +39,10 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Interfaces
         /// <summary>
         /// Saves the changes asynchronously.
         /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation. Default <see cref="CancellationToken.None"/></param>
         /// <returns>
         /// Number of changes.
         /// </returns>
-        Task<int> SaveChangesAsync(System.Threading.CancellationToken cancellationToken = default);
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

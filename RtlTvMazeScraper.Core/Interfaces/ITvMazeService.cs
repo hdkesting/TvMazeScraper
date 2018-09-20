@@ -18,8 +18,8 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <summary>
         /// Scrapes the shows by their initial.
         /// </summary>
-        /// <param name="searchWord">The search word.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="searchWord">The word to search for.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>
         /// A list of shows.
         /// </returns>
@@ -28,8 +28,8 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <summary>
         /// Scrapes the cast members for a particular show.
         /// </summary>
-        /// <param name="showid">The showid.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="showid">The show's id.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>
         /// A list of cast members.
         /// </returns>
@@ -38,8 +38,8 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <summary>
         /// Scrapes a batch of shows by their identifier, starting from the supplied <paramref name="start"/>.
         /// </summary>
-        /// <param name="start">The start.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="start">The start ID.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>
         /// A tuple: number of shows tried, list of shows found.
         /// </returns>
@@ -48,8 +48,8 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <summary>
         /// Scrapes the single show by its identifier.
         /// </summary>
-        /// <param name="showId">The show identifier.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="showId">The show's identifier.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>A Task with Show and status code.</returns>
         Task<ScrapeResult> ScrapeSingleShowById(int showId, CancellationToken cancellationToken = default);
     }

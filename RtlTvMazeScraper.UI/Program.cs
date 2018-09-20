@@ -22,7 +22,7 @@ namespace RtlTvMazeScraper.UI
         public static void Main(string[] args)
         {
             // https://github.com/NLog/NLog.Web/wiki/Getting-started-with-ASP.NET-Core-2
-            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
             try
             {
                 var webhost = BuildWebHost(args);

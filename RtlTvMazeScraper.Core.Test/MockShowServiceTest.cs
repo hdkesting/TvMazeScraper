@@ -93,7 +93,7 @@ namespace RtlTvMazeScraper.Core.Test
             this.context.SaveChanges();
 
             // act
-            var shows = await this.showService.GetShowsWithCast(0, 10, default(CancellationToken)).ConfigureAwait(false);
+            var shows = await this.showService.GetShowsWithCast(0, 10, CancellationToken.None).ConfigureAwait(false);
 
             // assert
             shows.Should().NotBeNull();

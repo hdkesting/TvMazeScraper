@@ -74,7 +74,7 @@ namespace RtlTvMazeScraper.Core.Test
         [TestMethod]
         public async Task GetShowsWithCast()
         {
-            var shows = await this.showService.GetShowsWithCast(0, 10, default(CancellationToken)).ConfigureAwait(false);
+            var shows = await this.showService.GetShowsWithCast(0, 10, CancellationToken.None).ConfigureAwait(false);
 
             shows.Should().NotBeNull();
             shows.Count.Should().BeLessOrEqualTo(10, because: "I requested a page of size 10.");
@@ -89,8 +89,8 @@ namespace RtlTvMazeScraper.Core.Test
         [TestMethod]
         public async Task GetShowsWithCast_CheckPaging()
         {
-            var shows0 = await this.showService.GetShowsWithCast(0, 10, default(CancellationToken)).ConfigureAwait(false);
-            var shows3 = await this.showService.GetShowsWithCast(3, 10, default(CancellationToken)).ConfigureAwait(false);
+            var shows0 = await this.showService.GetShowsWithCast(0, 10, CancellationToken.None).ConfigureAwait(false);
+            var shows3 = await this.showService.GetShowsWithCast(3, 10, CancellationToken.None).ConfigureAwait(false);
 
             shows0.Should().NotBeNull();
             shows0.Count.Should().BeGreaterThan(0, because: "I expect enough stored shows.");

@@ -66,7 +66,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
         /// </summary>
         /// <param name="page">The page number (0-based).</param>
         /// <param name="pagesize">The size of the page.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>
         /// A list of shows with cast.
         /// </returns>

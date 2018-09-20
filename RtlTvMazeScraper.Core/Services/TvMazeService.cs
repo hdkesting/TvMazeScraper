@@ -15,6 +15,7 @@ namespace RtlTvMazeScraper.Core.Services
     using Newtonsoft.Json.Linq;
     using RtlTvMazeScraper.Core.DTO;
     using RtlTvMazeScraper.Core.Interfaces;
+    using RtlTvMazeScraper.Core.Support;
     using RtlTvMazeScraper.Core.Transfer;
 
     /// <summary>
@@ -57,7 +58,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// Scrapes the shows by their initial.
         /// </summary>
         /// <param name="searchWord">The search word.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>
         /// A list of shows.
         /// </returns>
@@ -65,7 +66,7 @@ namespace RtlTvMazeScraper.Core.Services
         {
             // note: not documented, but apparently returns just the first 10 results
             var (status, json) = await this.apiRepository.RequestJson(
-                    $"/search/shows?q={searchWord}",
+                    new Uri($"/search/shows?q={searchWord}", UriKind.Relative),
                     cancellationToken)
                 .ConfigureAwait(false);
 
@@ -87,11 +88,11 @@ namespace RtlTvMazeScraper.Core.Services
             var array = JArray.Parse(json);
             foreach (var showcontainer in array)
             {
-                var jshow = (JObject)showcontainer[Support.TvMazeSearchResultNames.ShowContainer];
+                var jshow = (JObject)showcontainer[TvMazeSearchResultNames.ShowContainer];
                 var show = new Show()
                 {
-                    Id = (int)jshow[Support.TvMazeSearchResultNames.ShowId],
-                    Name = (string)jshow[Support.TvMazeSearchResultNames.ShowName],
+                    Id = (int)jshow[TvMazeSearchResultNames.ShowId],
+                    Name = (string)jshow[TvMazeSearchResultNames.ShowName],
                 };
 
                 result.Add(show);
@@ -105,14 +106,14 @@ namespace RtlTvMazeScraper.Core.Services
         /// Scrapes the cast members for a particular show.
         /// </summary>
         /// <param name="showid">The showid.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>
         /// A list of cast members.
         /// </returns>
         public async Task<List<CastMember>> ScrapeCastMembers(int showid, CancellationToken cancellationToken = default)
         {
             var (status, json) = await this.apiRepository.RequestJson(
-                    $"/shows/{showid}/cast",
+                    new Uri($"/shows/{showid}/cast", UriKind.Relative),
                     cancellationToken)
                 .ConfigureAwait(false);
 
@@ -128,14 +129,14 @@ namespace RtlTvMazeScraper.Core.Services
             var array = JArray.Parse(json);
             foreach (var role in array)
             {
-                var person = (JObject)role[Support.TvMazeCastResultNames.PersonContainer];
+                var person = (JObject)role[TvMazeCastResultNames.PersonContainer];
                 var member = new CastMember()
                 {
-                    Id = (int)person[Support.TvMazeCastResultNames.PersonId],
-                    Name = (string)person[Support.TvMazeCastResultNames.PersonName],
+                    Id = (int)person[TvMazeCastResultNames.PersonId],
+                    Name = (string)person[TvMazeCastResultNames.PersonName],
                 };
 
-                var bd = person[Support.TvMazeCastResultNames.PersonBirthday];
+                var bd = person[TvMazeCastResultNames.PersonBirthday];
                 member.Birthdate = GetDate(bd);
 
                 result.Add(member);
@@ -148,8 +149,8 @@ namespace RtlTvMazeScraper.Core.Services
         /// <summary>
         /// Scrapes a batch of shows by their identifier, starting from the supplied <paramref name="start" />.
         /// </summary>
-        /// <param name="start">The start.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="start">The start ID.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>
         /// A tuple: number of shows tried, list of shows found.
         /// </returns>
@@ -171,7 +172,7 @@ namespace RtlTvMazeScraper.Core.Services
                 {
                     list.Add(show);
                 }
-                else if (status == Support.Constants.ServerTooBusy)
+                else if (status == Constants.ServerTooBusy)
                 {
                     backoff = true;
                 }
@@ -188,20 +189,20 @@ namespace RtlTvMazeScraper.Core.Services
         /// <summary>
         /// Scrapes the single show by its identifier.
         /// </summary>
-        /// <param name="showId">The show identifier.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="showId">The show's identifier.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>A Task with Show and status code.</returns>
         public async Task<ScrapeResult> ScrapeSingleShowById(int showId, CancellationToken cancellationToken = default)
         {
             var sw = Stopwatch.StartNew();
             var (status, json) = await this.apiRepository.RequestJson(
-                    $"/shows/{showId}?embed=cast",
+                    new Uri($"/shows/{showId}?embed=cast", UriKind.Relative),
                     cancellationToken)
                 .ConfigureAwait(false);
             sw.Stop();
             this.logger.LogInformation("Getting info about show {ShowId} took {Elapsed} msec and returned status {HttpStatus}.", showId, sw.ElapsedMilliseconds, status);
 
-            if (status == Support.Constants.ServerTooBusy)
+            if (status == Constants.ServerTooBusy)
             {
                 // too much, so back off
                 this.logger.LogDebug("Server too busy to scrape #{ShowId}, backing off.", showId);
@@ -213,18 +214,18 @@ namespace RtlTvMazeScraper.Core.Services
                 var jshow = JObject.Parse(json);
                 var show = new Show
                 {
-                    Id = (int)jshow[Support.TvMazeShowWithCastResultNames.ShowId],
-                    Name = (string)jshow[Support.TvMazeShowWithCastResultNames.ShowName],
+                    Id = (int)jshow[TvMazeShowWithCastResultNames.ShowId],
+                    Name = (string)jshow[TvMazeShowWithCastResultNames.ShowName],
                 };
 
-                var embedded = jshow[Support.TvMazeShowWithCastResultNames.EmbeddedContainer];
+                var embedded = jshow[TvMazeShowWithCastResultNames.EmbeddedContainer];
                 if (embedded is null)
                 {
                     this.logger.LogError("Server didn't return the requested embedded data for show {ShowId}.", showId);
                 }
                 else
                 {
-                    var jcast = (JArray)embedded[Support.TvMazeShowWithCastResultNames.CastContainer];
+                    var jcast = (JArray)embedded[TvMazeShowWithCastResultNames.CastContainer];
                     if (jcast is null)
                     {
                         this.logger.LogError("Server didn't return the requested cast in the embedded data for show {ShowId}.", showId);
@@ -233,14 +234,14 @@ namespace RtlTvMazeScraper.Core.Services
                     {
                         foreach (var container in jcast)
                         {
-                            var person = (JObject)container[Support.TvMazeShowWithCastResultNames.PersonContainer];
+                            var person = (JObject)container[TvMazeShowWithCastResultNames.PersonContainer];
                             var member = new CastMember
                             {
-                                Id = (int)person[Support.TvMazeShowWithCastResultNames.PersonId],
-                                Name = (string)person[Support.TvMazeShowWithCastResultNames.PersonName],
+                                Id = (int)person[TvMazeShowWithCastResultNames.PersonId],
+                                Name = (string)person[TvMazeShowWithCastResultNames.PersonName],
                             };
 
-                            var bd = person[Support.TvMazeShowWithCastResultNames.PersonBirthday];
+                            var bd = person[TvMazeShowWithCastResultNames.PersonBirthday];
                             member.Birthdate = GetDate(bd);
 
                             show.CastMembers.Add(member);
