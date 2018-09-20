@@ -13,7 +13,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Model
     /// <remarks>
     /// Todo: make this the default and the current Show the db-specific exception.
     /// </remarks>
-    public class ShowWithCast
+    internal class ShowWithCast
     {
         /// <summary>
         /// Gets or sets the identifier.

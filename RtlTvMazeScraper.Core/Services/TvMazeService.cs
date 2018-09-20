@@ -85,14 +85,15 @@ namespace RtlTvMazeScraper.Core.Services
             */
 
             // read json
-            var array = JArray.Parse(json);
-            foreach (var showcontainer in array)
+            var shows = JArray.Parse(json);
+
+            foreach (dynamic showcontainer in shows)
             {
-                var jshow = (JObject)showcontainer[TvMazeSearchResultNames.ShowContainer];
-                var show = new Show()
+                var jshow = showcontainer.show;
+                var show = new Show
                 {
-                    Id = (int)jshow[TvMazeSearchResultNames.ShowId],
-                    Name = (string)jshow[TvMazeSearchResultNames.ShowName],
+                    Id = jshow.id,
+                    Name = jshow.name,
                 };
 
                 result.Add(show);
@@ -126,18 +127,17 @@ namespace RtlTvMazeScraper.Core.Services
             var result = new List<CastMember>();
 
             // read json
-            var array = JArray.Parse(json);
-            foreach (var role in array)
-            {
-                var person = (JObject)role[TvMazeCastResultNames.PersonContainer];
-                var member = new CastMember()
-                {
-                    Id = (int)person[TvMazeCastResultNames.PersonId],
-                    Name = (string)person[TvMazeCastResultNames.PersonName],
-                };
+            var roles = JArray.Parse(json);
 
-                var bd = person[TvMazeCastResultNames.PersonBirthday];
-                member.Birthdate = GetDate(bd);
+            foreach (dynamic role in roles)
+            {
+                var person = role.person;
+                var member = new CastMember
+                {
+                    Id = person.id,
+                    Name = person.name,
+                    Birthdate = person.birthday,
+                };
 
                 result.Add(member);
             }
@@ -211,21 +211,21 @@ namespace RtlTvMazeScraper.Core.Services
 
             if (status == HttpStatusCode.OK)
             {
-                var jshow = JObject.Parse(json);
+                dynamic jshow = JObject.Parse(json);
                 var show = new Show
                 {
-                    Id = (int)jshow[TvMazeShowWithCastResultNames.ShowId],
-                    Name = (string)jshow[TvMazeShowWithCastResultNames.ShowName],
+                    Id = jshow.id,
+                    Name = jshow.name,
                 };
 
-                var embedded = jshow[TvMazeShowWithCastResultNames.EmbeddedContainer];
+                var embedded = jshow._embedded;
                 if (embedded is null)
                 {
                     this.logger.LogError("Server didn't return the requested embedded data for show {ShowId}.", showId);
                 }
                 else
                 {
-                    var jcast = (JArray)embedded[TvMazeShowWithCastResultNames.CastContainer];
+                    var jcast = embedded.cast;
                     if (jcast is null)
                     {
                         this.logger.LogError("Server didn't return the requested cast in the embedded data for show {ShowId}.", showId);
@@ -234,15 +234,13 @@ namespace RtlTvMazeScraper.Core.Services
                     {
                         foreach (var container in jcast)
                         {
-                            var person = (JObject)container[TvMazeShowWithCastResultNames.PersonContainer];
+                            var person = container.person;
                             var member = new CastMember
                             {
-                                Id = (int)person[TvMazeShowWithCastResultNames.PersonId],
-                                Name = (string)person[TvMazeShowWithCastResultNames.PersonName],
+                                Id = person.id,
+                                Name = person.name,
+                                Birthdate = person.birthday,
                             };
-
-                            var bd = person[TvMazeShowWithCastResultNames.PersonBirthday];
-                            member.Birthdate = GetDate(bd);
 
                             show.CastMembers.Add(member);
                         }
@@ -253,25 +251,6 @@ namespace RtlTvMazeScraper.Core.Services
             }
 
             return new ScrapeResult { HttpStatus = status };
-        }
-
-        private static DateTime? GetDate(JToken dayValue)
-        {
-            const string expectedDateFormat = "yyyy-MM-dd";
-
-            if (dayValue.Type == JTokenType.Date)
-            {
-                return (DateTime?)dayValue;
-            }
-            else if (dayValue.Type == JTokenType.String)
-            {
-                if (DateTime.TryParseExact(dayValue.ToString(), expectedDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
-                {
-                    return dt;
-                }
-            }
-
-            return null;
         }
     }
 }
