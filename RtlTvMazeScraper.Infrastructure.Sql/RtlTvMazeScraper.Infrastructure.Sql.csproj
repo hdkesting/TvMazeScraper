@@ -6,7 +6,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\w\Other\RtlTvMazeScraper\RtlTvMazeScraper.Infrastructure.Sql\RtlTvMazeScraper.Infrastructure.Sql.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\RtlTvMazeScraper.Infrastructure.Sql.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\RtlTvMazeScraper.Infrastructure.Sql.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
