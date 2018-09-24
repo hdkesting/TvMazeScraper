@@ -18,7 +18,7 @@ namespace RtlTvMazeScraper.Core.Transfer
         /// <value>
         /// The show.
         /// </value>
-        public Show Show { get; set; }
+        public ShowDto Show { get; set; }
 
         /// <summary>
         /// Gets or sets the HTTP status code.
@@ -33,7 +33,7 @@ namespace RtlTvMazeScraper.Core.Transfer
         /// </summary>
         /// <param name="show">The show.</param>
         /// <param name="status">The status.</param>
-        public void Deconstruct(out Show show, out HttpStatusCode status)
+        public void Deconstruct(out ShowDto show, out HttpStatusCode status)
         {
             show = this.Show;
             status = this.HttpStatus;

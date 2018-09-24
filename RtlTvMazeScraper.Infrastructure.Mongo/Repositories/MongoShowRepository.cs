@@ -84,7 +84,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
         /// <returns>
         /// One Show (if found).
         /// </returns>
-        public async Task<Show> GetShowById(int id)
+        public async Task<ShowDto> GetShowById(int id)
         {
             var filter = Builders<ShowWithCast>.Filter.Eq(s => s.Id, id);
             var show = await this.collection.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
@@ -100,7 +100,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
         /// <returns>
         /// A list of shows.
         /// </returns>
-        public async Task<List<Show>> GetShows(int startId, int count)
+        public async Task<List<ShowDto>> GetShows(int startId, int count)
         {
             var filterBuilder = Builders<ShowWithCast>.Filter;
             var filter = filterBuilder.Gte(s => s.Id, startId) & filterBuilder.Lt(s => s.Id, startId + count);
@@ -119,7 +119,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
         /// <returns>
         /// A list of shows.
         /// </returns>
-        public Task<List<Show>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
+        public Task<List<ShowDto>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
         {
             return this.GetShows(page * pagesize, pagesize);
         }
@@ -132,7 +132,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
         /// <returns>
         /// A Task.
         /// </returns>
-        public async Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow)
+        public async Task StoreShowList(List<ShowDto> list, Func<int, Task<List<CastMemberDto>>> getCastOfShow)
         {
             var mongolist = new List<ShowWithCast>(list.Count);
 
@@ -161,10 +161,10 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
             await this.collection.InsertManyAsync(mongolist).ConfigureAwait(false);
         }
 
-        private static Show ConvertShow(ShowWithCast mongoShow)
+        private static ShowDto ConvertShow(ShowWithCast mongoShow)
         {
             // remove the n:m relation
-            var show = new Show { Id = mongoShow.Id, Name = mongoShow.Name };
+            var show = new ShowDto { Id = mongoShow.Id, Name = mongoShow.Name };
             show.CastMembers.AddRange(mongoShow.Cast);
 
             return show;

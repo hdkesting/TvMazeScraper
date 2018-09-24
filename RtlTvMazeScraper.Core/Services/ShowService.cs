@@ -41,7 +41,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// <returns>
         /// A list of shows.
         /// </returns>
-        public async Task<List<Show>> GetShows(int startId, int count)
+        public async Task<List<ShowDto>> GetShows(int startId, int count)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace RtlTvMazeScraper.Core.Services
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Failure to get {count} shows from #{startId} onwards.", count, startId);
-                return new List<Show>();
+                return new List<ShowDto>();
             }
         }
 
@@ -63,7 +63,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// <returns>
         /// A list of shows.
         /// </returns>
-        public async Task<List<Show>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
+        public async Task<List<ShowDto>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
         {
             try
             {
@@ -72,7 +72,7 @@ namespace RtlTvMazeScraper.Core.Services
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Failure to get page {pagenr} of shows.", page);
-                return new List<Show>();
+                return new List<ShowDto>();
             }
         }
 
@@ -122,7 +122,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// <returns>
         /// A Task.
         /// </returns>
-        public async Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow)
+        public async Task StoreShowList(List<ShowDto> list, Func<int, Task<List<CastMemberDto>>> getCastOfShow)
         {
             try
             {
@@ -139,7 +139,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns>One Show (if found).</returns>
-        public async Task<Show> GetShowById(int id)
+        public async Task<ShowDto> GetShowById(int id)
         {
             try
             {

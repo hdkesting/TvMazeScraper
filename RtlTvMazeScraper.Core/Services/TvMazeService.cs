@@ -62,7 +62,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// <returns>
         /// A list of shows.
         /// </returns>
-        public async Task<List<Show>> ScrapeShowsBySearch(string searchWord, CancellationToken cancellationToken = default)
+        public async Task<List<ShowDto>> ScrapeShowsBySearch(string searchWord, CancellationToken cancellationToken = default)
         {
             // note: not documented, but apparently returns just the first 10 results
             var (status, json) = await this.apiRepository.RequestJson(
@@ -77,7 +77,7 @@ namespace RtlTvMazeScraper.Core.Services
                 return null;
             }
 
-            var result = new List<Show>();
+            var result = new List<ShowDto>();
 
             /* NOTE to reviewer: I could have created a tree of objects to deserialize this JSON into,
              * but that would be a tree per API call with no benefit to speed of execution, speed of development
@@ -90,7 +90,7 @@ namespace RtlTvMazeScraper.Core.Services
             foreach (dynamic showcontainer in shows)
             {
                 var jshow = showcontainer.show;
-                var show = new Show
+                var show = new ShowDto
                 {
                     Id = jshow.id,
                     Name = jshow.name,
@@ -111,7 +111,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// <returns>
         /// A list of cast members.
         /// </returns>
-        public async Task<List<CastMember>> ScrapeCastMembers(int showid, CancellationToken cancellationToken = default)
+        public async Task<List<CastMemberDto>> ScrapeCastMembers(int showid, CancellationToken cancellationToken = default)
         {
             var (status, json) = await this.apiRepository.RequestJson(
                     new Uri($"/shows/{showid}/cast", UriKind.Relative),
@@ -124,7 +124,7 @@ namespace RtlTvMazeScraper.Core.Services
                 return null;
             }
 
-            var result = new List<CastMember>();
+            var result = new List<CastMemberDto>();
 
             // read json
             var roles = JArray.Parse(json);
@@ -132,7 +132,7 @@ namespace RtlTvMazeScraper.Core.Services
             foreach (dynamic role in roles)
             {
                 var person = role.person;
-                var member = new CastMember
+                var member = new CastMemberDto
                 {
                     Id = person.id,
                     Name = person.name,
@@ -158,7 +158,7 @@ namespace RtlTvMazeScraper.Core.Services
         {
             int count = 0;
 
-            var list = new List<Show>();
+            var list = new List<ShowDto>();
 
             var backoff = false;
 
@@ -212,7 +212,7 @@ namespace RtlTvMazeScraper.Core.Services
             if (status == HttpStatusCode.OK)
             {
                 dynamic jshow = JObject.Parse(json);
-                var show = new Show
+                var show = new ShowDto
                 {
                     Id = jshow.id,
                     Name = jshow.name,
@@ -235,7 +235,7 @@ namespace RtlTvMazeScraper.Core.Services
                         foreach (var container in jcast)
                         {
                             var person = container.person;
-                            var member = new CastMember
+                            var member = new CastMemberDto
                             {
                                 Id = person.id,
                                 Name = person.name,

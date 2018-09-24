@@ -1,4 +1,4 @@
-﻿// <copyright file="Show.cs" company="Hans Keﬆing">
+﻿// <copyright file="ShowDto.cs" company="Hans Keﬆing">
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
@@ -9,7 +9,7 @@ namespace RtlTvMazeScraper.Core.DTO
     /// <summary>
     /// A show.
     /// </summary>
-    public class Show
+    public sealed class ShowDto
     {
         /// <summary>
         /// Gets or sets the identifier.
@@ -33,6 +33,17 @@ namespace RtlTvMazeScraper.Core.DTO
         /// <value>
         /// The cast.
         /// </value>
-        public List<CastMember> CastMembers { get; } = new List<CastMember>();
+        public List<CastMemberDto> CastMembers { get; } = new List<CastMemberDto>();
+
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            return $"{nameof(ShowDto)} {this.Name} - ID {this.Id}";
+        }
     }
 }

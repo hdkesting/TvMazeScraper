@@ -7,21 +7,21 @@ namespace RtlTvMazeScraper.Core.DTO
     using System.Collections.Generic;
 
     /// <summary>
-    /// Equality comparer for <see cref="CastMember"/>.
+    /// Equality comparer for <see cref="CastMemberDto"/>.
     /// </summary>
     /// <seealso cref="IEqualityComparer{T}" />
-    /// <seealso cref="CastMember" />
-    public class CastMemberEqualityComparer : IEqualityComparer<CastMember>
+    /// <seealso cref="CastMemberDto" />
+    public class CastMemberEqualityComparer : IEqualityComparer<CastMemberDto>
     {
         /// <summary>
         /// Determines whether the specified objects are equal.
         /// </summary>
-        /// <param name="x">The first <see cref="CastMember"/> to compare.</param>
-        /// <param name="y">The second <see cref="CastMember"/> to compare.</param>
+        /// <param name="x">The first <see cref="CastMemberDto"/> to compare.</param>
+        /// <param name="y">The second <see cref="CastMemberDto"/> to compare.</param>
         /// <returns>
         ///   <see langword="true" /> if the specified objects are equal; otherwise, <see langword="false" />.
         /// </returns>
-        public bool Equals(CastMember x, CastMember y)
+        public bool Equals(CastMemberDto x, CastMemberDto y)
         {
             if (x is null && y is null)
             {
@@ -45,7 +45,7 @@ namespace RtlTvMazeScraper.Core.DTO
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
-        public int GetHashCode(CastMember obj)
+        public int GetHashCode(CastMemberDto obj)
         {
             return obj.Id;
         }

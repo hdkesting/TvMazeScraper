@@ -150,9 +150,9 @@ namespace RtlTvMazeScraper.UI
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Core.DTO.Show, ShowForJson>()
+                cfg.CreateMap<Core.DTO.ShowDto, ShowForJson>()
                     .ForMember(dest => dest.Cast, opt => opt.MapFrom(src => src.CastMembers));
-                cfg.CreateMap<Core.DTO.CastMember, CastMemberForJson>();
+                cfg.CreateMap<Core.DTO.CastMemberDto, CastMemberForJson>();
             });
 
             return config;

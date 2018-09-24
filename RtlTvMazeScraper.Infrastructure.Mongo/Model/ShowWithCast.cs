@@ -42,7 +42,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Model
         /// <value>
         /// The cast.
         /// </value>
-        public List<CastMember> Cast { get; set; } = new List<CastMember>();
+        public List<CastMemberDto> Cast { get; set; } = new List<CastMemberDto>();
 #pragma warning restore CA2227 // Collection properties should be read only
     }
 }

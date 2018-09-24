@@ -70,7 +70,7 @@ namespace RtlTvMazeScraper.UI.Controllers
             var dbshows = await this.showService.GetShowsWithCast(pageno, pagesize, cancellationToken).ConfigureAwait(false);
             this.logger.Log(LogLevel.Information, "Found {PageCount} shows for {PageNumber} ({PageSize})", dbshows.Count, pageno, pagesize);
 
-            var result = this.mapper.Map<List<Show>, List<ShowForJson>>(dbshows);
+            var result = this.mapper.Map<List<ShowDto>, List<ShowForJson>>(dbshows);
 
             // per requirement, sort descending by birthday
             result.ForEach(s => s.Cast = s.Cast.OrderByDescending(cm => cm.Birthdate).ToList());

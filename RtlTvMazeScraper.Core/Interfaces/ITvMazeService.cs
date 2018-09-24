@@ -23,7 +23,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <returns>
         /// A list of shows.
         /// </returns>
-        Task<List<Show>> ScrapeShowsBySearch(string searchWord, CancellationToken cancellationToken = default);
+        Task<List<ShowDto>> ScrapeShowsBySearch(string searchWord, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Scrapes the cast members for a particular show.
@@ -33,7 +33,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <returns>
         /// A list of cast members.
         /// </returns>
-        Task<List<CastMember>> ScrapeCastMembers(int showid, CancellationToken cancellationToken = default);
+        Task<List<CastMemberDto>> ScrapeCastMembers(int showid, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Scrapes a batch of shows by their identifier, starting from the supplied <paramref name="start"/>.

@@ -47,7 +47,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
         /// <returns>
         /// A list of shows with cast.
         /// </returns>
-        public async Task<List<Core.DTO.Show>> GetShows(int startId, int count)
+        public async Task<List<ShowDto>> GetShows(int startId, int count)
         {
             var shows = await this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
@@ -70,7 +70,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
         /// <returns>
         /// A list of shows with cast.
         /// </returns>
-        public async Task<List<Core.DTO.Show>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
+        public async Task<List<ShowDto>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken)
         {
             var shows = await this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
@@ -92,7 +92,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
         /// <returns>
         /// A Task.
         /// </returns>
-        public async Task StoreShowList(List<Core.DTO.Show> list, Func<int, Task<List<Core.DTO.CastMember>>> getCastOfShow)
+        public async Task StoreShowList(List<ShowDto> list, Func<int, Task<List<CastMemberDto>>> getCastOfShow)
         {
             var memberEqualityComparer = new CastMemberEqualityComparer();
 
@@ -123,7 +123,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
                         }
                         else
                         {
-                            show.CastMembers.Add(new Core.DTO.CastMember { Id = storedmember.Id, Name = storedmember.Name, Birthdate = storedmember.Birthdate });
+                            show.CastMembers.Add(new CastMemberDto { Id = storedmember.Id, Name = storedmember.Name, Birthdate = storedmember.Birthdate });
                         }
                     }
 
@@ -184,7 +184,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
         /// </summary>
         /// <param name="showId">The show identifier.</param>
         /// <returns>A list of cast members.</returns>
-        public async Task<List<Core.DTO.CastMember>> GetCastOfShow(int showId)
+        public async Task<List<CastMemberDto>> GetCastOfShow(int showId)
         {
             var show = await this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
@@ -194,7 +194,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
 
             return show?.ShowCastMembers
                 .Select(it => it.CastMember)
-                .Select(it => new Core.DTO.CastMember
+                .Select(it => new CastMemberDto
                 {
                     Id = it.Id,
                     Name = it.Name,
@@ -208,7 +208,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns>One Show (if found).</returns>
-        public async Task<Core.DTO.Show> GetShowById(int id)
+        public async Task<ShowDto> GetShowById(int id)
         {
             var localshow = await this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
@@ -219,7 +219,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
             return this.ConvertShow(localshow);
         }
 
-        private Task<Model.Show> GetLocalShowById(int id)
+        private Task<Show> GetLocalShowById(int id)
         {
             return this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
@@ -227,24 +227,24 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        private Core.DTO.Show ConvertShow(Model.Show localshow)
+        private ShowDto ConvertShow(Show localshow)
         {
             // TODO use mapper
-            var coreshow = new Core.DTO.Show { Id = localshow.Id, Name = localshow.Name };
+            var coreshow = new ShowDto { Id = localshow.Id, Name = localshow.Name };
             coreshow.CastMembers.AddRange(localshow.ShowCastMembers
                 .Select(scm => scm.CastMember)
-                .Select(cm => new Core.DTO.CastMember { Id = cm.Id, Name = cm.Name, Birthdate = cm.Birthdate }));
+                .Select(cm => new CastMemberDto { Id = cm.Id, Name = cm.Name, Birthdate = cm.Birthdate }));
             return coreshow;
         }
 
-        private Model.Show ConvertShow(Core.DTO.Show coreshow)
+        private Show ConvertShow(ShowDto coreshow)
         {
-            var modelshow = new Model.Show { Id = coreshow.Id, Name = coreshow.Name };
+            var modelshow = new Show { Id = coreshow.Id, Name = coreshow.Name };
             modelshow.ShowCastMembers.AddRange(coreshow.CastMembers
                 .Select(cm => new ShowCastMember
                 {
                     Show = modelshow,
-                    CastMember = new Model.CastMember
+                    CastMember = new CastMember
                     {
                         Id = cm.Id,
                         Name = cm.Name,
@@ -254,13 +254,13 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
             return modelshow;
         }
 
-        private Task AddShow(Model.Show show)
+        private Task AddShow(Show show)
         {
             this.showContext.Shows.Add(show);
             return this.showContext.SaveChangesAsync();
         }
 
-        private async Task UpdateShow(Model.Show newShow, Model.Show storedShow)
+        private async Task UpdateShow(Show newShow, Show storedShow)
         {
             storedShow.Name = newShow.Name;
 

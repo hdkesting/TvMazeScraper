@@ -108,7 +108,7 @@ namespace RtlTvMazeScraper.UI.Workers
 
                 if (!(show is null))
                 {
-                    await this.showService.StoreShowList(new List<Core.DTO.Show> { show }, null).ConfigureAwait(false);
+                    await this.showService.StoreShowList(new List<Core.DTO.ShowDto> { show }, null).ConfigureAwait(false);
 
                     var scraped = new ScrapedShow { Id = show.Id, Name = show.Name, CastCount = show.CastMembers.Count };
                     await this.PostShow(scraped).ConfigureAwait(false);

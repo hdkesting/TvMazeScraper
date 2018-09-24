@@ -17,7 +17,7 @@ namespace RtlTvMazeScraper.Core.Transfer
         /// </summary>
         public ScrapeBatchResult()
         {
-            this.Shows = new List<Show>();
+            this.Shows = new List<ShowDto>();
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace RtlTvMazeScraper.Core.Transfer
         /// </summary>
         /// <param name="count">The count.</param>
         /// <param name="shows">The shows.</param>
-        public ScrapeBatchResult(int count, List<Show> shows)
+        public ScrapeBatchResult(int count, List<ShowDto> shows)
         {
             this.NumberOfShowsTried = count;
             this.Shows = shows;
@@ -45,14 +45,14 @@ namespace RtlTvMazeScraper.Core.Transfer
         /// <value>
         /// The shows.
         /// </value>
-        public List<Show> Shows { get; }
+        public List<ShowDto> Shows { get; }
 
         /// <summary>
         /// Deconstructs this instance.
         /// </summary>
         /// <param name="count">The number of shows tried.</param>
         /// <param name="shows">The shows.</param>
-        public void Deconstruct(out int count, out List<Show> shows)
+        public void Deconstruct(out int count, out List<ShowDto> shows)
         {
             count = this.NumberOfShowsTried;
             shows = this.Shows;

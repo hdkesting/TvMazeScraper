@@ -22,7 +22,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <param name="startId">The id to start at.</param>
         /// <param name="count">The number of shows to download.</param>
         /// <returns>A list of shows.</returns>
-        Task<List<Show>> GetShows(int startId, int count);
+        Task<List<ShowDto>> GetShows(int startId, int count);
 
         /// <summary>
         /// Gets the counts of shows and cast.
@@ -39,7 +39,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <returns>
         /// A list of shows.
         /// </returns>
-        Task<List<Show>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken);
+        Task<List<ShowDto>> GetShowsWithCast(int page, int pagesize, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the maximum show identifier.
@@ -53,13 +53,13 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <param name="list">The list.</param>
         /// <param name="getCastOfShow">A function to get the cast of one show.</param>
         /// <returns>A Task.</returns>
-        Task StoreShowList(List<Show> list, Func<int, Task<List<CastMember>>> getCastOfShow);
+        Task StoreShowList(List<ShowDto> list, Func<int, Task<List<CastMemberDto>>> getCastOfShow);
 
         /// <summary>
         /// Gets the show by identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns>One Show (if found).</returns>
-        Task<Show> GetShowById(int id);
+        Task<ShowDto> GetShowById(int id);
     }
 }
