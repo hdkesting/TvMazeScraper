@@ -19,13 +19,14 @@ namespace RtlTvMazeScraper.Core.Test
     /// Test the <see cref="ShowService"/> against a live (local) database.
     /// </summary>
     /// <remarks>
-    /// The service just passes the requests through to the repository, so when I mock that repository, there is nothing left to test.
+    /// The service just passes the requests through to the repository, so when I mock that repository, there is nothing left to test. 
+    /// Some features may work differently on a live system compared to a mock, such as parallel queries.
     /// </remarks>
     [TestClass]
 #if !DEBUG
     [Ignore]
 #endif
-    public sealed class LiveShowServiceTest
+    public sealed class LiveShowServiceIntegrationTest
     {
         private ShowService showService;
         private DebugLogger<ShowService> showServiceLogger;
@@ -34,7 +35,7 @@ namespace RtlTvMazeScraper.Core.Test
         /// Initializes this test instance.
         /// </summary>
         /// <remarks>
-        /// I assume the application has run for some time, so that the database does contain these records.
+        /// NB: I assume the application has run for some time, so that the database does contain these records.
         /// </remarks>
         [TestInitialize]
         public void Initialize()
