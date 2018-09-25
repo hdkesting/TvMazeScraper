@@ -60,7 +60,7 @@ namespace RtlTvMazeScraper.UI
         {
             Unknown,
             Sql,
-            Mongo,
+            MongoDB,
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace RtlTvMazeScraper.UI
                         x => x.MigrationsAssembly("RtlTvMazeScraper.Infrastructure.Sql")));
                     break;
 
-                case Storage.Mongo:
+                case Storage.MongoDB:
                     Infrastructure.Mongo.Startup.Configure(this.Configuration.GetConnectionString("MongoConnection"));
                     break;
 
@@ -205,7 +205,7 @@ namespace RtlTvMazeScraper.UI
                     Infrastructure.Sql.Startup.ConfigureDI(services);
                     break;
 
-                case Storage.Mongo:
+                case Storage.MongoDB:
                     Infrastructure.Mongo.Startup.ConfigureDI(services);
                     break;
 
@@ -231,7 +231,7 @@ namespace RtlTvMazeScraper.UI
                     return Storage.Sql;
 
                 case "mongo":
-                    return Storage.Mongo;
+                    return Storage.MongoDB;
             }
 
             throw new InvalidOperationException($"Wrong 'persisting' configuration. Expected 'sql' or 'mongo', got '{storage}'.");
