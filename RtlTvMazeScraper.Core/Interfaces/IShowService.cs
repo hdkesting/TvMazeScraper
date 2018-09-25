@@ -69,5 +69,13 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <param name="id">The identifier.</param>
         /// <returns>One Show (if found).</returns>
         Task<ShowDto> GetShowById(int id);
+
+        /// <summary>
+        /// Sets the IMDb rating of the specified show.
+        /// </summary>
+        /// <param name="showId">The show identifier.</param>
+        /// <param name="rating">The IMDb rating.</param>
+        /// <returns>A <see cref="Task"/>.</returns>
+        Task SetRating(int showId, decimal rating);
     }
 }

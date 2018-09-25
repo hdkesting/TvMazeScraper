@@ -17,6 +17,7 @@ namespace RtlTvMazeScraper.UI
     using Polly;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Services;
+    using RtlTvMazeScraper.Core.Support;
     using RtlTvMazeScraper.Infrastructure.Repositories.Local;
     using RtlTvMazeScraper.Infrastructure.Repositories.Remote;
     using RtlTvMazeScraper.Infrastructure.Sql.Model;
@@ -42,6 +43,13 @@ namespace RtlTvMazeScraper.UI
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+
+            if (env.IsDevelopment())
+            {
+                // https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-2.1&tabs=windows
+                builder.AddUserSecrets<Startup>();
+            }
+
             this.Configuration = builder.Build();
         }
 
@@ -92,25 +100,35 @@ namespace RtlTvMazeScraper.UI
                 case Storage.Mongo:
                     Infrastructure.Mongo.Startup.Configure(this.Configuration.GetConnectionString("MongoConnection"));
                     break;
+
+                default:
+                    throw new InvalidOperationException("Unknown storage type");
             }
 
             // "at least 20 calls every 10 seconds"
-            var retryPolicy = Policy.HandleResult<HttpResponseMessage>(resp => resp.StatusCode == Core.Support.Constants.ServerTooBusy)
+            var retryPolicy = Policy.HandleResult<HttpResponseMessage>(resp => resp.StatusCode == Constants.ServerTooBusy)
                                     .WaitAndRetryAsync(new[]
                                     {
                                         TimeSpan.FromSeconds(5),
                                         TimeSpan.FromSeconds(5),
                                         TimeSpan.FromSeconds(10),
                                     });
-            var host = this.Configuration.GetSection("Config")["tvmaze"];
+            var host1 = this.Configuration.GetSection("Config")["tvmaze"];
 
             // on http status 429, wait and retry (using Polly)
-            services.AddHttpClient(Core.Support.Constants.TvMazeClientWithRetry, client =>
+            services.AddHttpClient(Constants.TvMazeClientWithRetry, client =>
             {
-                client.BaseAddress = new Uri(host);
+                client.BaseAddress = new Uri(host1);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
             })
             .AddPolicyHandler(retryPolicy);
+
+            var host2 = this.Configuration.GetSection("Config")["omdbapi"];
+            services.AddHttpClient(Constants.OmdbClient, client =>
+            {
+                client.BaseAddress = new Uri(host2);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            }); // no retry policy (max 1000 per day)
 
             services.AddSignalR();
 
@@ -144,6 +162,11 @@ namespace RtlTvMazeScraper.UI
             {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
+
+            // apikey is stored as "secret"
+            OmdbService.ApiKey = this.Configuration["omdbApiKey"];
+
+            var omdbSingleton = app.ApplicationServices.GetService<IOmdbService>(); // to have it register with the message hub
         }
 
         private static MapperConfiguration ConfigureMapping()
@@ -169,8 +192,11 @@ namespace RtlTvMazeScraper.UI
             services.AddSingleton<ISettingRepository, SettingRepository>(sp => new SettingRepository(this.Configuration));
 
             // services
-            services.AddScoped<IShowService, ShowService>();
+            services.AddSingleton(new MessageHub());
+            services.AddSingleton<IShowService, ShowService>();
             services.AddScoped<ITvMazeService, TvMazeService>();
+
+            services.AddSingleton<IOmdbService, OmdbService>();
 
             var persistence = this.GetStorageType();
             switch (persistence)

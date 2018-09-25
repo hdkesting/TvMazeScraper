@@ -20,12 +20,29 @@ namespace RtlTvMazeScraper.Core.DTO
         public int Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the name.
+        /// Gets or sets the name of the show.
         /// </summary>
         /// <value>
         /// The name.
         /// </value>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the IMDb identifier.
+        /// </summary>
+        /// <remarks>A string like "tt0898266".</remarks>
+        /// <value>
+        /// The IMDb identifier.
+        /// </value>
+        public string ImdbId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the IMDb rating.
+        /// </summary>
+        /// <value>
+        /// The IMDb rating, a value between 1.0 and 10.0.
+        /// </value>
+        public decimal? ImdbRating { get; set; }
 
         /// <summary>
         /// Gets the show's cast.
@@ -43,7 +60,7 @@ namespace RtlTvMazeScraper.Core.DTO
         /// </returns>
         public override string ToString()
         {
-            return $"{nameof(ShowDto)} {this.Name} - ID {this.Id}";
+            return $"{nameof(ShowDto)} '{this.Name}' ({this.Id}/{this.ImdbId})";
         }
     }
 }

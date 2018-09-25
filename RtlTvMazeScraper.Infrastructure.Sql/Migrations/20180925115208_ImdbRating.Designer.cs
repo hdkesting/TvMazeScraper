@@ -3,15 +3,21 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RtlTvMazeScraper.Infrastructure.Sql.Model;
 
 namespace RtlTvMazeScraper.Infrastructure.Sql.Migrations
 {
     [DbContext(typeof(ShowContext))]
-    partial class ShowContextModelSnapshot : ModelSnapshot
+    [Migration("20180925115208_ImdbRating")]
+    partial class ImdbRating
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <summary>
+        /// Implemented to builds the <see cref="P:Microsoft.EntityFrameworkCore.Migrations.Migration.TargetModel" />.
+        /// </summary>
+        /// <param name="modelBuilder">The <see cref="T:Microsoft.EntityFrameworkCore.ModelBuilder" /> to use to build the model.</param>
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

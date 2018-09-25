@@ -17,8 +17,13 @@ namespace RtlTvMazeScraper.Core.Support
         public static readonly HttpStatusCode ServerTooBusy = (HttpStatusCode)429;
 
         /// <summary>
-        /// The key for the tv maze http-client with retry.
+        /// The key for the tv maze http-client with retry on "too many requests".
         /// </summary>
         public static readonly string TvMazeClientWithRetry = "tvmazeretry";
+
+        /// <summary>
+        /// The key for the omdb client.
+        /// </summary>
+        public static readonly string OmdbClient = "omdbapi";
     }
 }

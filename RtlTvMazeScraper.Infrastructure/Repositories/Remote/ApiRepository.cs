@@ -30,17 +30,42 @@ namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
         }
 
         /// <summary>
-        /// Requests the json from the specified URL.
+        /// Requests the json from the specified URL, for TV Maze.
         /// </summary>
         /// <param name="relativePath">The relative URL.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation. Default <see cref="CancellationToken.None"/>.</param>
         /// <returns>
         /// The response status and the json (if any).
         /// </returns>
-        public async Task<ApiResponse> RequestJson(Uri relativePath, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<ApiResponse> RequestJsonForTvMaze(Uri relativePath, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var key = Constants.TvMazeClientWithRetry;
+            return this.RequestJson(Constants.TvMazeClientWithRetry, relativePath, cancellationToken);
+        }
 
+        /// <summary>
+        /// Requests the json from the specified URL, for OMDb.
+        /// </summary>
+        /// <param name="relativePath">The relative URL.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation. Default <see cref="CancellationToken.None"/>.</param>
+        /// <returns>
+        /// The response status and the json (if any).
+        /// </returns>
+        public Task<ApiResponse> RequestJsonForOmdb(Uri relativePath, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return this.RequestJson(Constants.OmdbClient, relativePath, cancellationToken);
+        }
+
+        /// <summary>
+        /// Requests the json.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="relativePath">The relative path.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// The response status and the json (if any).
+        /// </returns>
+        private async Task<ApiResponse> RequestJson(string key, Uri relativePath, CancellationToken cancellationToken = default(CancellationToken))
+        {
             using (var httpClient = this.httpClientFactory.CreateClient(key))
             {
                 var response = await httpClient.GetAsync(relativePath, cancellationToken).ConfigureAwait(false);

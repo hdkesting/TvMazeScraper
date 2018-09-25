@@ -8,6 +8,7 @@
     <Product>RTL TVMaze Scraper</Product>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <UserSecretsId>d9626c82-8e6a-45fd-9316-277969978d85</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

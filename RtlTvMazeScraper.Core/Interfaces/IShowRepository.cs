@@ -52,7 +52,7 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// </summary>
         /// <param name="list">The list.</param>
         /// <param name="getCastOfShow">A function to get the cast of one show.</param>
-        /// <returns>A Task.</returns>
+        /// <returns>A <see cref="Task"/>.</returns>
         Task StoreShowList(List<ShowDto> list, Func<int, Task<List<CastMemberDto>>> getCastOfShow);
 
         /// <summary>
@@ -61,5 +61,13 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <param name="id">The identifier.</param>
         /// <returns>One Show (if found).</returns>
         Task<ShowDto> GetShowById(int id);
+
+        /// <summary>
+        /// Sets the rating of the specified show.
+        /// </summary>
+        /// <param name="showId">The show identifier.</param>
+        /// <param name="rating">The rating.</param>
+        /// <returns>A <see cref="Task"/>.</returns>
+        Task SetRating(int showId, decimal rating);
     }
 }
