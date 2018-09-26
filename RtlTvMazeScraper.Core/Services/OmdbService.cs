@@ -8,14 +8,12 @@ namespace RtlTvMazeScraper.Core.Services
     using System.Threading.Tasks;
     using Newtonsoft.Json.Linq;
     using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Support;
     using RtlTvMazeScraper.Core.Support.Events;
 
     /// <summary>
     /// The service that calls the Open Movie Database API.
     /// </summary>
-    /// <seealso cref="RtlTvMazeScraper.Core.Interfaces.IOmdbService" />
-    /// <seealso cref="System.IDisposable" />
+    /// <seealso cref="IOmdbService" />
     public sealed class OmdbService : IOmdbService
     {
         private readonly IShowService showService;

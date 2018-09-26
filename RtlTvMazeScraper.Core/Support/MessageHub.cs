@@ -9,7 +9,6 @@ namespace RtlTvMazeScraper.Core.Support
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.DependencyInjection;
     using RtlTvMazeScraper.Core.Interfaces;
 
     /// <summary>
@@ -54,13 +53,14 @@ namespace RtlTvMazeScraper.Core.Support
         /// </summary>
         /// <typeparam name="TService">The type of the service (or -interface) to activate.</typeparam>
         /// <typeparam name="TMessage">The type of the message to subscribe to.</typeparam>
-        /// <param name="methodName">Name of the method in the service, that accepts a single TMessage parameter and returns a Task.</param>
+        /// <param name="methodName">Name of the method in the service, that accepts a single TMessage parameter and returns a Task. Use <c>nameof</c>.</param>
         /// <returns>
         /// The token for the subscription.
         /// </returns>
         public static Guid Subscribe<TService, TMessage>(string methodName)
         {
-            //// TODO inspect the input: does the method exist and use the correct params?
+            // inspect the input: does the method exist and use the correct param?
+            SubscriptionSanityCheck<TService, TMessage>(methodName);
 
             lock (Subscriptions)
             {
@@ -106,7 +106,7 @@ namespace RtlTvMazeScraper.Core.Support
 
                     // get the method to execute
                     var methodName = sub.MethodName;
-                    var actionMethod = sub.ServiceType.GetMethod(methodName);
+                    var actionMethod = sub.ServiceType.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
 
                     // and execute it, passing the message and expecting a Task as return.
                     var task = (Task)actionMethod.Invoke(svc, new object[] { message });
@@ -116,6 +116,33 @@ namespace RtlTvMazeScraper.Core.Support
             }
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+
+        private static void SubscriptionSanityCheck<TService, TMessage>(string methodName)
+        {
+            if (string.IsNullOrWhiteSpace(methodName))
+            {
+                throw new ArgumentNullException(nameof(methodName), "The subscription needs a method to call.");
+            }
+
+            var method = typeof(TService).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
+
+            if (method == null)
+            {
+                throw new InvalidOperationException($"The method '{methodName}' is not found. It must be a public instance method.");
+            }
+
+            var parms = method.GetParameters();
+            if (parms.Length != 1 || !parms[0].ParameterType.IsAssignableFrom(typeof(TMessage)))
+            {
+                throw new InvalidOperationException($"The method '{methodName}' should accept 1 parameter, of type {typeof(TMessage).Name}");
+            }
+
+            var ret = method.ReturnType;
+            if (ret != typeof(Task))
+            {
+                throw new InvalidOperationException($"The method '{methodName}' should return a Task.");
+            }
         }
     }
 }

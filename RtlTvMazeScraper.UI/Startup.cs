@@ -116,7 +116,7 @@ namespace RtlTvMazeScraper.UI
                                     });
             var host1 = this.Configuration.GetSection("Config")["tvmaze"];
 
-            // on http status 429, wait and retry (using Polly)
+            // TVMaze: on http status 429, wait and retry (using Polly)
             services.AddHttpClient(Constants.TvMazeClientWithRetry, client =>
             {
                 client.BaseAddress = new Uri(host1);
@@ -124,12 +124,13 @@ namespace RtlTvMazeScraper.UI
             })
             .AddPolicyHandler(retryPolicy);
 
+            // OMDb: no retry policy useful (max 1000 per day)
             var host2 = this.Configuration.GetSection("Config")["omdbapi"];
             services.AddHttpClient(Constants.OmdbClient, client =>
             {
                 client.BaseAddress = new Uri(host2);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
-            }); // no retry policy (max 1000 per day)
+            });
 
             services.AddSignalR();
 
@@ -167,9 +168,13 @@ namespace RtlTvMazeScraper.UI
             });
 
             // apikey is stored as "secret"
-            OmdbService.ApiKey = this.Configuration["omdbApiKey"];
+            OmdbService.ApiKey = this.Configuration["omdbApiKey"] ?? throw new InvalidOperationException("The secret omdbApiKey is missing");
         }
 
+        /// <summary>
+        /// Configures the mapping between various types.
+        /// </summary>
+        /// <returns>A configuration.</returns>
         private static MapperConfiguration ConfigureMapping()
         {
             var config = new MapperConfiguration(cfg =>
@@ -182,6 +187,9 @@ namespace RtlTvMazeScraper.UI
             return config;
         }
 
+        /// <summary>
+        /// Configures the <see cref="MessageHub"/> subscriptions.
+        /// </summary>
         private static void ConfigureSubscriptions()
         {
             MessageHub.Subscribe<IOmdbService, ShowStoredEvent>(nameof(IOmdbService.EnrichShowWithRating));
@@ -190,7 +198,7 @@ namespace RtlTvMazeScraper.UI
         /// <summary>
         /// Configures the dependency injector.
         /// </summary>
-        /// <param name="services">The services.</param>
+        /// <param name="services">The services collection to add to.</param>
         private void ConfigureDependencyInjection(IServiceCollection services)
         {
             // repositories
@@ -216,7 +224,7 @@ namespace RtlTvMazeScraper.UI
                     break;
 
                 default:
-                    throw new InvalidOperationException($"Persitance type not supported: {persistence}.");
+                    throw new InvalidOperationException($"Persistence type not supported: {persistence}.");
             }
 
             // other
@@ -240,7 +248,7 @@ namespace RtlTvMazeScraper.UI
                     return Storage.MongoDB;
             }
 
-            throw new InvalidOperationException($"Wrong 'persisting' configuration. Expected 'sql' or 'mongo', got '{storage}'.");
+            throw new InvalidOperationException($"Wrong 'persisting' configuration. Expected 'sql' or 'mongo', but got '{storage}'.");
         }
     }
 }
