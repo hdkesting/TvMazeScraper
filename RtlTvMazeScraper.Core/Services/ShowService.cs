@@ -12,7 +12,7 @@ namespace RtlTvMazeScraper.Core.Services
     using Microsoft.Extensions.Logging;
     using RtlTvMazeScraper.Core.DTO;
     using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Support;
+    using RtlTvMazeScraper.Core.Support.Events;
     using RtlTvMazeScraper.Core.Transfer;
 
     /// <summary>
@@ -23,7 +23,7 @@ namespace RtlTvMazeScraper.Core.Services
     {
         private readonly IShowRepository showRepository;
         private readonly ILogger<ShowService> logger;
-        private readonly MessageHub messageHub;
+        private readonly IMessageHub messageHub;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShowService" /> class.
@@ -31,7 +31,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// <param name="showRepository">The show repository.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="messageHub">The message hub.</param>
-        public ShowService(IShowRepository showRepository, ILogger<ShowService> logger, MessageHub messageHub)
+        public ShowService(IShowRepository showRepository, ILogger<ShowService> logger, IMessageHub messageHub)
         {
             this.showRepository = showRepository;
             this.logger = logger;
@@ -135,7 +135,7 @@ namespace RtlTvMazeScraper.Core.Services
 
                 foreach (var show in list.Where(s => !string.IsNullOrEmpty(s.ImdbId)))
                 {
-                    await this.messageHub.Publish(new Support.Events.ShowStoredEvent(show.Id, show.ImdbId)).ConfigureAwait(false);
+                    await this.messageHub.Publish(new ShowStoredEvent(show.Id, show.ImdbId)).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)

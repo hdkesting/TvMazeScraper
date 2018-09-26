@@ -5,6 +5,7 @@
 namespace RtlTvMazeScraper.Core.Interfaces
 {
     using System.Threading.Tasks;
+    using RtlTvMazeScraper.Core.Support.Events;
 
     /// <summary>
     /// The service that calls the Open Movie Database API.
@@ -14,11 +15,10 @@ namespace RtlTvMazeScraper.Core.Interfaces
         /// <summary>
         /// Enriches the show, by getting the IMDb rating.
         /// </summary>
-        /// <param name="showId">The show identifier.</param>
-        /// <param name="imdbId">The IMDb identifier.</param>
+        /// <param name="message">The message detailing the show to enrich.</param>
         /// <returns>
         /// A <see cref="Task" />.
         /// </returns>
-        Task EnrichShowWithRating(int showId, string imdbId);
+        Task EnrichShowWithRating(ShowStoredEvent message);
     }
 }

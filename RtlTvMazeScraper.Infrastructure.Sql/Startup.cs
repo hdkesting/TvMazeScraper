@@ -24,7 +24,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql
             services.AddTransient<IShowRepository, ShowRepository>();
 
             // db context
-            services.AddScoped<IShowContext, ShowContext>();
+            services.AddTransient<IShowContext, ShowContext>();
         }
     }
 }

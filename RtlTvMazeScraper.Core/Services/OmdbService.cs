@@ -16,25 +16,20 @@ namespace RtlTvMazeScraper.Core.Services
     /// </summary>
     /// <seealso cref="RtlTvMazeScraper.Core.Interfaces.IOmdbService" />
     /// <seealso cref="System.IDisposable" />
-    public sealed class OmdbService : IOmdbService, IDisposable
+    public sealed class OmdbService : IOmdbService
     {
-        private readonly Guid subscription;
-        private readonly MessageHub messageHub;
         private readonly IShowService showService;
         private readonly IApiRepository apiRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OmdbService" /> class.
         /// </summary>
-        /// <param name="messageHub">The message hub.</param>
         /// <param name="showService">The show service.</param>
         /// <param name="apiRepository">The API repository.</param>
-        public OmdbService(MessageHub messageHub, IShowService showService, IApiRepository apiRepository)
+        public OmdbService(IShowService showService, IApiRepository apiRepository)
         {
-            this.messageHub = messageHub;
             this.showService = showService;
             this.apiRepository = apiRepository;
-            this.subscription = this.messageHub.Subscribe<ShowStoredEvent>(msg => this.EnrichShowWithRating(msg.ShowId, msg.ImdbId));
         }
 
         /// <summary>
@@ -46,24 +41,15 @@ namespace RtlTvMazeScraper.Core.Services
         public static string ApiKey { get; set; }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            this.messageHub.Unsubscribe(this.subscription);
-        }
-
-        /// <summary>
         /// Enriches the show, by getting the IMDb rating.
         /// </summary>
-        /// <param name="showId">The show identifier.</param>
-        /// <param name="imdbId">The IMDb identifier.</param>
+        /// <param name="message">The message detailing the show to enrich.</param>
         /// <returns>
         /// A <see cref="Task" />.
         /// </returns>
-        public async Task EnrichShowWithRating(int showId, string imdbId)
+        public async Task EnrichShowWithRating(ShowStoredEvent message)
         {
-            var uri = new Uri($"?apikey={ApiKey}&i={imdbId}", UriKind.Relative);
+            var uri = new Uri($"?apikey={ApiKey}&i={message.ImdbId}", UriKind.Relative);
             var response = await this.apiRepository.RequestJsonForOmdb(uri).ConfigureAwait(false);
 
             if (response.Status != System.Net.HttpStatusCode.OK)
@@ -75,7 +61,7 @@ namespace RtlTvMazeScraper.Core.Services
 
             decimal rating = json.imdbRating;
 
-            await this.showService.SetRating(showId, rating).ConfigureAwait(false);
+            await this.showService.SetRating(message.ShowId, rating).ConfigureAwait(false);
         }
     }
 }

@@ -17,12 +17,28 @@ namespace RtlTvMazeScraper.Core.Support
         private interface IMessageSubscription
         {
             /// <summary>
-            /// Gets the type of the event.
+            /// Gets the type of the service to perform the action on.
+            /// </summary>
+            /// <value>
+            /// The type of the service.
+            /// </value>
+            Type ServiceType { get; }
+
+            /// <summary>
+            /// Gets the type of the event to subscribe to.
             /// </summary>
             /// <value>
             /// The type of the event.
             /// </value>
             Type EventType { get; }
+
+            /// <summary>
+            /// Gets the method to execute.
+            /// </summary>
+            /// <value>
+            /// The action.
+            /// </value>
+            string MethodName { get; }
 
             /// <summary>
             /// Gets the token.

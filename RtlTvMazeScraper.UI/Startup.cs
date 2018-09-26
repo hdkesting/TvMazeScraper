@@ -18,6 +18,7 @@ namespace RtlTvMazeScraper.UI
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Services;
     using RtlTvMazeScraper.Core.Support;
+    using RtlTvMazeScraper.Core.Support.Events;
     using RtlTvMazeScraper.Infrastructure.Repositories.Local;
     using RtlTvMazeScraper.Infrastructure.Repositories.Remote;
     using RtlTvMazeScraper.Infrastructure.Sql.Model;
@@ -132,7 +133,9 @@ namespace RtlTvMazeScraper.UI
 
             services.AddSignalR();
 
-            this.ConfigureDI(services);
+            this.ConfigureDependencyInjection(services);
+
+            ConfigureSubscriptions();
         }
 
 #pragma warning disable CA1822 // Mark members as static
@@ -165,8 +168,6 @@ namespace RtlTvMazeScraper.UI
 
             // apikey is stored as "secret"
             OmdbService.ApiKey = this.Configuration["omdbApiKey"];
-
-            var omdbSingleton = app.ApplicationServices.GetService<IOmdbService>(); // to have it register with the message hub
         }
 
         private static MapperConfiguration ConfigureMapping()
@@ -181,22 +182,27 @@ namespace RtlTvMazeScraper.UI
             return config;
         }
 
+        private static void ConfigureSubscriptions()
+        {
+            MessageHub.Subscribe<IOmdbService, ShowStoredEvent>(nameof(IOmdbService.EnrichShowWithRating));
+        }
+
         /// <summary>
         /// Configures the dependency injector.
         /// </summary>
         /// <param name="services">The services.</param>
-        private void ConfigureDI(IServiceCollection services)
+        private void ConfigureDependencyInjection(IServiceCollection services)
         {
             // repositories
             services.AddTransient<IApiRepository, ApiRepository>();
             services.AddSingleton<ISettingRepository, SettingRepository>(sp => new SettingRepository(this.Configuration));
 
             // services
-            services.AddSingleton(new MessageHub());
-            services.AddSingleton<IShowService, ShowService>();
+            services.AddTransient<IMessageHub, MessageHub>();
+            services.AddScoped<IShowService, ShowService>();
             services.AddScoped<ITvMazeService, TvMazeService>();
 
-            services.AddSingleton<IOmdbService, OmdbService>();
+            services.AddTransient<IOmdbService, OmdbService>();
 
             var persistence = this.GetStorageType();
             switch (persistence)

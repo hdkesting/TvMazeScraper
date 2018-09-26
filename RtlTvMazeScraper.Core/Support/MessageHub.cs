@@ -7,7 +7,10 @@ namespace RtlTvMazeScraper.Core.Support
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.DependencyInjection;
+    using RtlTvMazeScraper.Core.Interfaces;
 
     /// <summary>
     /// A MessageBus implementation.
@@ -24,9 +27,19 @@ namespace RtlTvMazeScraper.Core.Support
     /// <code>private readonly List&lt;Guid&gt; eventTokens = new List&lt;Guid&gt;();</code>
     /// <code>this.eventTokens.ForEach(Support.MessageHub.Instance.Unsubscribe);</code>
     /// </example>
-    public sealed partial class MessageHub
+    public sealed partial class MessageHub : IMessageHub
     {
-        private readonly List<IMessageSubscription> subscriptions = new List<IMessageSubscription>();
+        private static readonly List<IMessageSubscription> Subscriptions = new List<IMessageSubscription>();
+        private readonly IServiceProvider services;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageHub"/> class.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        public MessageHub(IServiceProvider services)
+        {
+            this.services = services;
+        }
 
         /// <summary>
         /// Gets the subscription count.
@@ -34,20 +47,25 @@ namespace RtlTvMazeScraper.Core.Support
         /// <value>
         /// The subscription count.
         /// </value>
-        public int SubscriptionCount => this.subscriptions.Count;
+        public static int SubscriptionCount => Subscriptions.Count;
 
         /// <summary>
         /// Subscribes to events of the specified type to execute the specified action.
         /// </summary>
-        /// <typeparam name="T">The type of the event.</typeparam>
-        /// <param name="action">The async action to perform.</param>
-        /// <returns>The token for the subscription.</returns>
-        public Guid Subscribe<T>(Func<T, Task> action)
+        /// <typeparam name="TService">The type of the service (or -interface) to activate.</typeparam>
+        /// <typeparam name="TMessage">The type of the message to subscribe to.</typeparam>
+        /// <param name="methodName">Name of the method in the service, that accepts a single TMessage parameter and returns a Task.</param>
+        /// <returns>
+        /// The token for the subscription.
+        /// </returns>
+        public static Guid Subscribe<TService, TMessage>(string methodName)
         {
-            lock (this.subscriptions)
+            //// TODO inspect the input: does the method exist and use the correct params?
+
+            lock (Subscriptions)
             {
-                var sub = new MessageSubscription<T>(action);
-                this.subscriptions.Add(sub);
+                var sub = new MessageSubscription<TService, TMessage>(methodName);
+                Subscriptions.Add(sub);
                 return sub.Token;
             }
         }
@@ -56,35 +74,45 @@ namespace RtlTvMazeScraper.Core.Support
         /// Unsubscribes the action with the specified token.
         /// </summary>
         /// <param name="token">The token to unsubscribe.</param>
-        public void Unsubscribe(Guid token)
+        public static void Unsubscribe(Guid token)
         {
-            lock (this.subscriptions)
+            lock (Subscriptions)
             {
-                this.subscriptions.RemoveAll(ms => ms.Token == token);
+                Subscriptions.RemoveAll(ms => ms.Token == token);
             }
         }
 
         /// <summary>
         /// Publishes the specified message to any subscriber.
         /// </summary>
-        /// <typeparam name="T">Type of the message.</typeparam>
-        /// <param name="message">The message.</param>
+        /// <typeparam name="TMessage">Type of the message.</typeparam>
+        /// <param name="message">The message instance.</param>
         /// <returns>A Task.</returns>
-        public async Task Publish<T>(T message)
+        public async Task Publish<TMessage>(TMessage message)
         {
-            List<Task> tasks;
+            var tasks = new List<Task>();
 
             // first get back to the UI thread
             await Task.Yield();
 
             // then process this event
-            lock (this.subscriptions)
+            lock (Subscriptions)
             {
-                tasks = this.subscriptions
-                    .Where(s => s.EventType == typeof(T))
-                    .Select(s => (MessageSubscription<T>)s)
-                    .Select(ts => ts.Action(message))
-                    .ToList();
+                foreach (var sub in Subscriptions.Where(s => s.EventType == typeof(TMessage)))
+                {
+                    // get a fresh instance of the service
+                    var svcType = sub.ServiceType;
+                    var svc = this.services.GetService(sub.ServiceType);
+
+                    // get the method to execute
+                    var methodName = sub.MethodName;
+                    var actionMethod = sub.ServiceType.GetMethod(methodName);
+
+                    // and execute it, passing the message and expecting a Task as return.
+                    var task = (Task)actionMethod.Invoke(svc, new object[] { message });
+
+                    tasks.Add(task);
+                }
             }
 
             await Task.WhenAll(tasks).ConfigureAwait(false);

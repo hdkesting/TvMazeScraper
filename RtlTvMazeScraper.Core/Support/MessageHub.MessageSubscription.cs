@@ -5,7 +5,6 @@
 namespace RtlTvMazeScraper.Core.Support
 {
     using System;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// <see cref="MessageHub"/>, the class to use to store event subscriptions.
@@ -15,20 +14,31 @@ namespace RtlTvMazeScraper.Core.Support
         /// <summary>
         /// Subscription to an event message.
         /// </summary>
-        /// <typeparam name="T">The type of the event.</typeparam>
+        /// <typeparam name="TService">The type of the service.</typeparam>
+        /// <typeparam name="TMessage">The type of the message.</typeparam>
         /// <seealso cref="IMessageSubscription" />
-        private sealed class MessageSubscription<T> : IMessageSubscription
+        private sealed class MessageSubscription<TService, TMessage> : IMessageSubscription
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="MessageSubscription{T}"/> class.
+            /// Initializes a new instance of the <see cref="MessageSubscription{TService, TMessage}" /> class.
             /// </summary>
-            /// <param name="action">The action.</param>
-            public MessageSubscription(Func<T, Task> action)
+            /// <param name="methodName">Name of the method.</param>
+            /// <exception cref="ArgumentNullException"><paramref name="methodName"/> is not supplied.</exception>
+            public MessageSubscription(string methodName)
             {
-                this.EventType = typeof(T);
+                this.EventType = typeof(TMessage);
+                this.ServiceType = typeof(TService);
                 this.Token = Guid.NewGuid();
-                this.Action = action ?? throw new ArgumentNullException(nameof(action));
+                this.MethodName = methodName ?? throw new ArgumentNullException(nameof(methodName));
             }
+
+            /// <summary>
+            /// Gets the type of the service to perform the action on.
+            /// </summary>
+            /// <value>
+            /// The type of the service.
+            /// </value>
+            public Type ServiceType { get; }
 
             /// <summary>
             /// Gets the type of the event.
@@ -39,12 +49,12 @@ namespace RtlTvMazeScraper.Core.Support
             public Type EventType { get; }
 
             /// <summary>
-            /// Gets the action to perform.
+            /// Gets the method to execute.
             /// </summary>
             /// <value>
             /// The action.
             /// </value>
-            public Func<T, Task> Action { get; }
+            public string MethodName { get; }
 
             /// <summary>
             /// Gets the token.
