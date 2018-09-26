@@ -54,3 +54,17 @@ Example response:
     }
 ]
 ```
+
+## Additions
+Later extensions of the original assignment.
+
+### SignalR
+Add a SignalR system to communicate between a background scraper and the browser. Add "start" and "stop" buttons.
+
+
+### MongoDB
+Use MongoDB as storage medium instead of SqlServer. Switch between them through a configuration setting.
+
+### Enrich data through other system
+When a Show is stored with data from TvMaze, fire an event that causes this show to be enriched with data from another webservice.
+Use the OMDb API to get the IMDb rating and store it as part of the show.
