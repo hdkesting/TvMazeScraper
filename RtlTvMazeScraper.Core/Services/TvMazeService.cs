@@ -65,7 +65,7 @@ namespace RtlTvMazeScraper.Core.Services
         public async Task<List<ShowDto>> ScrapeShowsBySearch(string searchWord, CancellationToken cancellationToken = default)
         {
             // note: not documented, but apparently returns just the first 10 results
-            var (status, json) = await this.apiRepository.RequestJson(
+            var (status, json) = await this.apiRepository.RequestJsonForTvMaze(
                     new Uri($"/search/shows?q={searchWord}", UriKind.Relative),
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -113,7 +113,7 @@ namespace RtlTvMazeScraper.Core.Services
         /// </returns>
         public async Task<List<CastMemberDto>> ScrapeCastMembers(int showid, CancellationToken cancellationToken = default)
         {
-            var (status, json) = await this.apiRepository.RequestJson(
+            var (status, json) = await this.apiRepository.RequestJsonForTvMaze(
                     new Uri($"/shows/{showid}/cast", UriKind.Relative),
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -195,7 +195,7 @@ namespace RtlTvMazeScraper.Core.Services
         public async Task<ScrapeResult> ScrapeSingleShowById(int showId, CancellationToken cancellationToken = default)
         {
             var sw = Stopwatch.StartNew();
-            var (status, json) = await this.apiRepository.RequestJson(
+            var (status, json) = await this.apiRepository.RequestJsonForTvMaze(
                     new Uri($"/shows/{showId}?embed=cast", UriKind.Relative),
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -216,6 +216,7 @@ namespace RtlTvMazeScraper.Core.Services
                 {
                     Id = jshow.id,
                     Name = jshow.name,
+                    ImdbId = jshow.externals?.imdb,
                 };
 
                 var embedded = jshow._embedded;

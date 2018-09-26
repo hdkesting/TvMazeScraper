@@ -17,6 +17,8 @@ namespace RtlTvMazeScraper.UI
     using Polly;
     using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Services;
+    using RtlTvMazeScraper.Core.Support;
+    using RtlTvMazeScraper.Core.Support.Events;
     using RtlTvMazeScraper.Infrastructure.Repositories.Local;
     using RtlTvMazeScraper.Infrastructure.Repositories.Remote;
     using RtlTvMazeScraper.Infrastructure.Sql.Model;
@@ -42,6 +44,13 @@ namespace RtlTvMazeScraper.UI
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+
+            if (env.IsDevelopment())
+            {
+                // https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-2.1&tabs=windows
+                builder.AddUserSecrets<Startup>();
+            }
+
             this.Configuration = builder.Build();
         }
 
@@ -52,7 +61,7 @@ namespace RtlTvMazeScraper.UI
         {
             Unknown,
             Sql,
-            Mongo,
+            MongoDB,
         }
 
         /// <summary>
@@ -89,32 +98,45 @@ namespace RtlTvMazeScraper.UI
                         x => x.MigrationsAssembly("RtlTvMazeScraper.Infrastructure.Sql")));
                     break;
 
-                case Storage.Mongo:
+                case Storage.MongoDB:
                     Infrastructure.Mongo.Startup.Configure(this.Configuration.GetConnectionString("MongoConnection"));
                     break;
+
+                default:
+                    throw new InvalidOperationException("Unknown storage type");
             }
 
             // "at least 20 calls every 10 seconds"
-            var retryPolicy = Policy.HandleResult<HttpResponseMessage>(resp => resp.StatusCode == Core.Support.Constants.ServerTooBusy)
+            var retryPolicy = Policy.HandleResult<HttpResponseMessage>(resp => resp.StatusCode == Constants.ServerTooBusy)
                                     .WaitAndRetryAsync(new[]
                                     {
                                         TimeSpan.FromSeconds(5),
                                         TimeSpan.FromSeconds(5),
                                         TimeSpan.FromSeconds(10),
                                     });
-            var host = this.Configuration.GetSection("Config")["tvmaze"];
+            var host1 = this.Configuration.GetSection("Config")["tvmaze"];
 
-            // on http status 429, wait and retry (using Polly)
-            services.AddHttpClient(Core.Support.Constants.TvMazeClientWithRetry, client =>
+            // TVMaze: on http status 429, wait and retry (using Polly)
+            services.AddHttpClient(Constants.TvMazeClientWithRetry, client =>
             {
-                client.BaseAddress = new Uri(host);
+                client.BaseAddress = new Uri(host1);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
             })
             .AddPolicyHandler(retryPolicy);
 
+            // OMDb: no retry policy useful (max 1000 per day)
+            var host2 = this.Configuration.GetSection("Config")["omdbapi"];
+            services.AddHttpClient(Constants.OmdbClient, client =>
+            {
+                client.BaseAddress = new Uri(host2);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
             services.AddSignalR();
 
-            this.ConfigureDI(services);
+            this.ConfigureDependencyInjection(services);
+
+            ConfigureSubscriptions();
         }
 
 #pragma warning disable CA1822 // Mark members as static
@@ -144,8 +166,15 @@ namespace RtlTvMazeScraper.UI
             {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
+
+            // apikey is stored as "secret"
+            OmdbService.ApiKey = this.Configuration["omdbApiKey"] ?? throw new InvalidOperationException("The secret omdbApiKey is missing");
         }
 
+        /// <summary>
+        /// Configures the mapping between various types.
+        /// </summary>
+        /// <returns>A configuration.</returns>
         private static MapperConfiguration ConfigureMapping()
         {
             var config = new MapperConfiguration(cfg =>
@@ -159,18 +188,29 @@ namespace RtlTvMazeScraper.UI
         }
 
         /// <summary>
+        /// Configures the <see cref="MessageHub"/> subscriptions.
+        /// </summary>
+        private static void ConfigureSubscriptions()
+        {
+            MessageHub.Subscribe<IOmdbService, ShowStoredEvent>(nameof(IOmdbService.EnrichShowWithRating));
+        }
+
+        /// <summary>
         /// Configures the dependency injector.
         /// </summary>
-        /// <param name="services">The services.</param>
-        private void ConfigureDI(IServiceCollection services)
+        /// <param name="services">The services collection to add to.</param>
+        private void ConfigureDependencyInjection(IServiceCollection services)
         {
             // repositories
             services.AddTransient<IApiRepository, ApiRepository>();
             services.AddSingleton<ISettingRepository, SettingRepository>(sp => new SettingRepository(this.Configuration));
 
             // services
+            services.AddTransient<IMessageHub, MessageHub>();
             services.AddScoped<IShowService, ShowService>();
             services.AddScoped<ITvMazeService, TvMazeService>();
+
+            services.AddTransient<IOmdbService, OmdbService>();
 
             var persistence = this.GetStorageType();
             switch (persistence)
@@ -179,12 +219,12 @@ namespace RtlTvMazeScraper.UI
                     Infrastructure.Sql.Startup.ConfigureDI(services);
                     break;
 
-                case Storage.Mongo:
+                case Storage.MongoDB:
                     Infrastructure.Mongo.Startup.ConfigureDI(services);
                     break;
 
                 default:
-                    throw new InvalidOperationException($"Persitance type not supported: {persistence}.");
+                    throw new InvalidOperationException($"Persistence type not supported: {persistence}.");
             }
 
             // other
@@ -205,10 +245,10 @@ namespace RtlTvMazeScraper.UI
                     return Storage.Sql;
 
                 case "mongo":
-                    return Storage.Mongo;
+                    return Storage.MongoDB;
             }
 
-            throw new InvalidOperationException($"Wrong 'persisting' configuration. Expected 'sql' or 'mongo', got '{storage}'.");
+            throw new InvalidOperationException($"Wrong 'persisting' configuration. Expected 'sql' or 'mongo', but got '{storage}'.");
         }
     }
 }

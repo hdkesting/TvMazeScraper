@@ -7,7 +7,13 @@
 <h2>Start or resume scraping</h2>
 
 <ul>
-    <li><a href="@Url.Action("Scrape")">Start scraping from ID 1</a></li>
-    <li><a href="@Url.Action("Scrape",new { start = Model })">Start scraping from ID @Model</a></li>
-    <li><a href="@Url.Action("ScrapeAlpha")">Use alphabet to perform an initial sampling scrape</a></li>
+    <li><a href="@Url.Action("Scrape")" class="btn btn-info">Start scraping from ID 1</a></li>
+    <li><a href="@Url.Action("Scrape",new { start = Model })" class="btn btn-info">Start scraping from ID @Model</a></li>
+    <li><a href="@Url.Action("ScrapeAlpha")" class="btn btn-info">Use alphabet to perform an initial sampling scrape</a></li>
+    <li>
+        <form method="get" action="@Url.Action("Scrape")">
+            <button type="submit">Scrape from:</button>
+            <input type="number" name="start" />
+        </form>
+    </li>
 </ul>

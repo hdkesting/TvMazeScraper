@@ -6,11 +6,13 @@ namespace RtlTvMazeScraper.Core.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using RtlTvMazeScraper.Core.DTO;
     using RtlTvMazeScraper.Core.Interfaces;
+    using RtlTvMazeScraper.Core.Support.Events;
     using RtlTvMazeScraper.Core.Transfer;
 
     /// <summary>
@@ -21,16 +23,19 @@ namespace RtlTvMazeScraper.Core.Services
     {
         private readonly IShowRepository showRepository;
         private readonly ILogger<ShowService> logger;
+        private readonly IMessageHub messageHub;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShowService" /> class.
         /// </summary>
         /// <param name="showRepository">The show repository.</param>
         /// <param name="logger">The logger.</param>
-        public ShowService(IShowRepository showRepository, ILogger<ShowService> logger)
+        /// <param name="messageHub">The message hub.</param>
+        public ShowService(IShowRepository showRepository, ILogger<ShowService> logger, IMessageHub messageHub)
         {
             this.showRepository = showRepository;
             this.logger = logger;
+            this.messageHub = messageHub;
         }
 
         /// <summary>
@@ -127,6 +132,11 @@ namespace RtlTvMazeScraper.Core.Services
             try
             {
                 await this.showRepository.StoreShowList(list, getCastOfShow).ConfigureAwait(false);
+
+                foreach (var show in list.Where(s => !string.IsNullOrEmpty(s.ImdbId)))
+                {
+                    await this.messageHub.Publish(new ShowStoredEvent(show.Id, show.ImdbId)).ConfigureAwait(false);
+                }
             }
             catch (Exception ex)
             {
@@ -150,6 +160,19 @@ namespace RtlTvMazeScraper.Core.Services
                 this.logger.LogError(ex, "Couldn't get show #{id}.", id);
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Sets the IMDb rating of the specified show.
+        /// </summary>
+        /// <param name="showId">The show identifier.</param>
+        /// <param name="rating">The IMDb rating.</param>
+        /// <returns>
+        /// A <see cref="Task" />.
+        /// </returns>
+        public Task SetRating(int showId, decimal rating)
+        {
+            return this.showRepository.SetRating(showId, rating);
         }
     }
 }

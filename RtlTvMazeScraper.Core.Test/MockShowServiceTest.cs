@@ -39,7 +39,7 @@ namespace RtlTvMazeScraper.Core.Test
             var showRepo = new ShowRepository(repologger, this.context);
 
             var svclogger = new DebugLogger<ShowService>();
-            this.showService = new ShowService(showRepo, svclogger);
+            this.showService = new ShowService(showRepo, svclogger, new MockMessageHub());
         }
 
         /// <summary>

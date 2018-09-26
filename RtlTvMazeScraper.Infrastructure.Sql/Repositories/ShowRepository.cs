@@ -219,6 +219,26 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
             return this.ConvertShow(localshow);
         }
 
+
+        /// <summary>
+        /// Sets the rating of the specified show.
+        /// </summary>
+        /// <param name="showId">The show identifier.</param>
+        /// <param name="rating">The rating.</param>
+        /// <returns>
+        /// A <see cref="Task" />.
+        /// </returns>
+        public async Task SetRating(int showId, decimal rating)
+        {
+            var show = await this.showContext.Shows.SingleOrDefaultAsync(s => s.Id == showId).ConfigureAwait(false);
+
+            if (show != null)
+            {
+                show.ImdbRating = rating;
+                await this.showContext.SaveChangesAsync().ConfigureAwait(false);
+            }
+        }
+
         private Task<Show> GetLocalShowById(int id)
         {
             return this.showContext.Shows

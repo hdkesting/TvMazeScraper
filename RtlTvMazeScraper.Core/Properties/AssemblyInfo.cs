@@ -2,4 +2,4 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-[assembly: System.CLSCompliant(true)]
+[assembly: System.CLSCompliant(false)]

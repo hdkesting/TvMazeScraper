@@ -9,13 +9,14 @@ namespace RtlTvMazeScraper.Test.Mock
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using RtlTvMazeScraper.Core.Interfaces;
     using RtlTvMazeScraper.Core.Transfer;
 
     /// <summary>
     /// Mock version of TvMaze API repository, reading from a Stream (usually an embedded resource).
     /// </summary>
     /// <seealso cref="RtlTvMazeScraper.Core.Interfaces.IApiRepository" />
-    public class MockApiRepository : Core.Interfaces.IApiRepository
+    public class MockApiRepository : IApiRepository
     {
         private string contentToReturn;
 
@@ -38,13 +39,26 @@ namespace RtlTvMazeScraper.Test.Mock
         {
             if (contentStream is null)
             {
-                throw new System.ArgumentNullException(nameof(contentStream));
+                throw new ArgumentNullException(nameof(contentStream));
             }
 
             using (var sr = new StreamReader(contentStream))
             {
                 this.contentToReturn = sr.ReadToEnd();
             }
+        }
+
+        /// <summary>
+        /// Requests the json from the specified URL, for OMDb.
+        /// </summary>
+        /// <param name="relativePath">The relative URL.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation. Defaults to <see cref="P:System.Threading.CancellationToken.None" />.</param>
+        /// <returns>
+        /// The response status and the json (if any).
+        /// </returns>
+        public Task<ApiResponse> RequestJsonForOmdb(Uri relativePath, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return Task.FromResult(new ApiResponse(this.StatusToReturn, this.contentToReturn));
         }
 
         /// <summary>
@@ -55,7 +69,7 @@ namespace RtlTvMazeScraper.Test.Mock
         /// <returns>
         /// The response status and the json (if any).
         /// </returns>
-        public Task<ApiResponse> RequestJson(Uri relativePath, CancellationToken cancellation = default(CancellationToken))
+        public Task<ApiResponse> RequestJsonForTvMaze(Uri relativePath, CancellationToken cancellation = default(CancellationToken))
         {
             return Task.FromResult(new ApiResponse(this.StatusToReturn, this.contentToReturn));
         }

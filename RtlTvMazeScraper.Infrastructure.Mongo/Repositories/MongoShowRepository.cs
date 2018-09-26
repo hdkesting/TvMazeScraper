@@ -89,7 +89,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
             var filter = Builders<ShowWithCast>.Filter.Eq(s => s.Id, id);
             var show = await this.collection.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
 
-            return ConvertShow(show);
+            return ConvertShowToDto(show);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
 
             var shows = await this.collection.Find(filter).ToListAsync().ConfigureAwait(false);
 
-            return shows.Select(ConvertShow).ToList();
+            return shows.Select(ConvertShowToDto).ToList();
         }
 
         /// <summary>
@@ -134,16 +134,48 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
         /// </returns>
         public async Task StoreShowList(List<ShowDto> list, Func<int, Task<List<CastMemberDto>>> getCastOfShow)
         {
-            var mongolist = new List<ShowWithCast>(list.Count);
+            var mongoinsertlist = new List<ShowWithCast>(list.Count);
+            var mongoupdatelist = new List<ShowWithCast>(list.Count);
 
             foreach (var orgshow in list)
             {
-                var show = new ShowWithCast
-                {
-                    Id = orgshow.Id,
-                    Name = orgshow.Name,
-                };
+                var filter = Builders<ShowWithCast>.Filter.Eq(s => s.Id, orgshow.Id);
+                var storedShow = await this.collection.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
 
+                if (storedShow == null)
+                {
+                    var show = new ShowWithCast
+                    {
+                        Id = orgshow.Id,
+                        Name = orgshow.Name,
+                        ImdbId = orgshow.ImdbId,
+                        ImdbRating = orgshow.ImdbRating,
+                    };
+
+                    await ReplaceCast(orgshow, show).ConfigureAwait(false);
+
+                    mongoinsertlist.Add(show);
+                }
+                else
+                {
+                    storedShow.Name = orgshow.Name;
+                    storedShow.ImdbId = orgshow.ImdbId;
+                    storedShow.ImdbRating = orgshow.ImdbRating;
+
+                    await ReplaceCast(orgshow, storedShow).ConfigureAwait(false);
+
+                    await this.collection.ReplaceOneAsync(filter, storedShow).ConfigureAwait(false);
+                }
+            }
+
+            // then store the shows including their cast
+            if (mongoinsertlist.Any())
+            {
+                await this.collection.InsertManyAsync(mongoinsertlist).ConfigureAwait(false);
+            }
+
+            async Task ReplaceCast(ShowDto orgshow, ShowWithCast show)
+            {
                 if (!(orgshow.CastMembers is null) && orgshow.CastMembers.Any())
                 {
                     show.Cast.AddRange(orgshow.CastMembers);
@@ -153,18 +185,38 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
                     var cast = await getCastOfShow(show.Id).ConfigureAwait(false);
                     show.Cast = cast;
                 }
-
-                mongolist.Add(show);
             }
-
-            // then store the shows including their cast
-            await this.collection.InsertManyAsync(mongolist).ConfigureAwait(false);
         }
 
-        private static ShowDto ConvertShow(ShowWithCast mongoShow)
+        /// <summary>
+        /// Sets the rating of the specified show.
+        /// </summary>
+        /// <param name="showId">The show identifier.</param>
+        /// <param name="rating">The rating.</param>
+        /// <returns>
+        /// A <see cref="Task" />.
+        /// </returns>
+        public async Task SetRating(int showId, decimal rating)
+        {
+            var filter = Builders<ShowWithCast>.Filter.Eq(s => s.Id, showId);
+            var show = await this.collection.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
+            if (show != null)
+            {
+                show.ImdbRating = rating;
+                await this.collection.ReplaceOneAsync(filter, show).ConfigureAwait(false);
+            }
+        }
+
+        private static ShowDto ConvertShowToDto(ShowWithCast mongoShow)
         {
             // remove the n:m relation
-            var show = new ShowDto { Id = mongoShow.Id, Name = mongoShow.Name };
+            var show = new ShowDto
+            {
+                Id = mongoShow.Id,
+                Name = mongoShow.Name,
+                ImdbId = mongoShow.ImdbId,
+                ImdbRating = mongoShow.ImdbRating,
+            };
             show.CastMembers.AddRange(mongoShow.Cast);
 
             return show;

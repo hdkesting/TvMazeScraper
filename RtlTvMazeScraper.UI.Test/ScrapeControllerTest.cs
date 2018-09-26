@@ -42,7 +42,7 @@ namespace RtlTvMazeScraper.UI.Test
             var showRepo = new ShowRepository(this.showRepoLogger, this.context);
 
             var svclogger = new DebugLogger<ShowService>();
-            this.showService = new ShowService(showRepo, svclogger);
+            this.showService = new ShowService(showRepo, svclogger, new MockMessageHub());
         }
 
         /// <summary>
@@ -53,15 +53,15 @@ namespace RtlTvMazeScraper.UI.Test
         public async Task TestDefaultAction()
         {
             // arrange
-            var s1 = new Infrastructure.Sql.Model.Show { Id = 42, Name = "HitchHikers Guide to the Galaxy" };
-            var m = new Infrastructure.Sql.Model.CastMember { Id = 1, Name = "Ford Prefect", Birthdate = new DateTime(1500, 1, 1) };
+            var s1 = new Show { Id = 42, Name = "HitchHikers Guide to the Galaxy" };
+            var m = new CastMember { Id = 1, Name = "Ford Prefect", Birthdate = new DateTime(1500, 1, 1) };
             s1.ShowCastMembers.Add(new ShowCastMember { Show = s1, CastMember = m });
-            m = new Infrastructure.Sql.Model.CastMember { Id = 2, Name = "Arthur Dent", Birthdate = new DateTime(1960, 12, 31) };
+            m = new CastMember { Id = 2, Name = "Arthur Dent", Birthdate = new DateTime(1960, 12, 31) };
             s1.ShowCastMembers.Add(new ShowCastMember { Show = s1, CastMember = m });
             this.context.Shows.Add(s1);
 
-            var s2 = new Infrastructure.Sql.Model.Show { Id = 12, Name = "Some other show" };
-            m = new Infrastructure.Sql.Model.CastMember { Id = 5, Name = "Someone", Birthdate = new DateTime(1980, 12, 31) };
+            var s2 = new Show { Id = 12, Name = "Some other show" };
+            m = new CastMember { Id = 5, Name = "Someone", Birthdate = new DateTime(1980, 12, 31) };
             s2.ShowCastMembers.Add(new ShowCastMember { Show = s2, CastMember = m });
             this.context.Shows.Add(s2);
             this.context.SaveChanges();
