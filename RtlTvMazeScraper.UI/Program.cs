@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.UI
+namespace TvMazeScraper.UI
 {
     using System;
     using System.IO;

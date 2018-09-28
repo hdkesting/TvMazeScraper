@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Test
+namespace TvMazeScraper.Core.Test
 {
     using System.Linq;
     using System.Threading;
@@ -10,10 +10,10 @@ namespace RtlTvMazeScraper.Core.Test
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using RtlTvMazeScraper.Core.Services;
-    using RtlTvMazeScraper.Infrastructure.Sql.Model;
-    using RtlTvMazeScraper.Infrastructure.Sql.Repositories;
-    using RtlTvMazeScraper.Test.Mock;
+    using TvMazeScraper.Core.Services;
+    using TvMazeScraper.Infrastructure.Sql.Model;
+    using TvMazeScraper.Infrastructure.Sql.Repositories;
+    using TvMazeScraper.Test.Mock;
 
     /// <summary>
     /// Test the <see cref="ShowService"/> against a live (local) database.

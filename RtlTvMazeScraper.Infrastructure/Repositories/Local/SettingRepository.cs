@@ -2,11 +2,11 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Infrastructure.Repositories.Local
+namespace TvMazeScraper.Infrastructure.Repositories.Local
 {
     using System;
     using Microsoft.Extensions.Configuration;
-    using RtlTvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Interfaces;
 
     /// <summary>
     /// A repository for settings.

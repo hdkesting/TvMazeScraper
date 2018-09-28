@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Interfaces
+namespace TvMazeScraper.Core.Interfaces
 {
     using System.Threading.Tasks;
 

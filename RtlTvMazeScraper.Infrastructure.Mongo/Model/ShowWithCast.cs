@@ -2,10 +2,10 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Infrastructure.Mongo.Model
+namespace TvMazeScraper.Infrastructure.Mongo.Model
 {
     using System.Collections.Generic;
-    using RtlTvMazeScraper.Core.DTO;
+    using TvMazeScraper.Core.DTO;
 
     /// <summary>
     /// The show with plain list of cast members.

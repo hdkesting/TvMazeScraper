@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Support
+namespace TvMazeScraper.Core.Support
 {
     using System.Net;
 

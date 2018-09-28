@@ -39,10 +39,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RtlTvMazeScraper.Core\RtlTvMazeScraper.Core.csproj" />
+    <ProjectReference Include="..\RtlTvMazeScraper.Core\TvMazeScraper.Core.csproj" />
     <ProjectReference Include="..\RtlTvMazeScraper.Infrastructure.Sql\RtlTvMazeScraper.Infrastructure.Sql.csproj" />
     <ProjectReference Include="..\RtlTvMazeScraper.Infrastructure\RtlTvMazeScraper.Infrastructure.csproj" />
-    <ProjectReference Include="..\RtlTvMazeScraper.Test.Mock\RtlTvMazeScraper.Test.Mock.csproj" />
+    <ProjectReference Include="..\RtlTvMazeScraper.Test.Mock\TvMazeScraper.Test.Mock.csproj" />
   </ItemGroup>
 
   <ItemGroup>

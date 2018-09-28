@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
+namespace TvMazeScraper.Infrastructure.Mongo.Repositories
 {
     using System;
     using System.Collections.Generic;
@@ -11,16 +11,16 @@ namespace RtlTvMazeScraper.Infrastructure.Mongo.Repositories
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using MongoDB.Driver;
-    using RtlTvMazeScraper.Core.DTO;
-    using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Transfer;
-    using RtlTvMazeScraper.Infrastructure.Mongo.Model;
+    using TvMazeScraper.Core.DTO;
+    using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Transfer;
+    using TvMazeScraper.Infrastructure.Mongo.Model;
 
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes, because it is instantiated through DI.
     /// <summary>
     /// Repository for shows, using MongoDB as back-end.
     /// </summary>
-    /// <seealso cref="RtlTvMazeScraper.Core.Interfaces.IShowRepository" />
+    /// <seealso cref="TvMazeScraper.Core.Interfaces.IShowRepository" />
     internal class MongoShowRepository : IShowRepository
 #pragma warning restore CA1812 // Avoid uninstantiated internal classes
     {

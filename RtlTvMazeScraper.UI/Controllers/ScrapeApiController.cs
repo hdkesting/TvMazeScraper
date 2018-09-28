@@ -2,12 +2,12 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.UI.Controllers
+namespace TvMazeScraper.UI.Controllers
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.UI.Workers;
+    using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.UI.Workers;
 
     /// <summary>
     /// An API controller to start/stop scraping.

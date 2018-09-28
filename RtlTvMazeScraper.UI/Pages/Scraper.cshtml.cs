@@ -2,10 +2,10 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.UI.Pages
+namespace TvMazeScraper.UI.Pages
 {
     using Microsoft.AspNetCore.Mvc.RazorPages;
-    using RtlTvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Interfaces;
 
 #pragma warning disable SA1649 // File name should match first type name
     /// <summary>

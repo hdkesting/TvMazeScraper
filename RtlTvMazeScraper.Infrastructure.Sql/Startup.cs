@@ -3,12 +3,12 @@
 // </copyright>
 
 using Microsoft.Extensions.DependencyInjection;
-using RtlTvMazeScraper.Core.Interfaces;
-using RtlTvMazeScraper.Infrastructure.Sql.Interfaces;
-using RtlTvMazeScraper.Infrastructure.Sql.Model;
-using RtlTvMazeScraper.Infrastructure.Sql.Repositories;
+using TvMazeScraper.Core.Interfaces;
+using TvMazeScraper.Infrastructure.Sql.Interfaces;
+using TvMazeScraper.Infrastructure.Sql.Model;
+using TvMazeScraper.Infrastructure.Sql.Repositories;
 
-namespace RtlTvMazeScraper.Infrastructure.Sql
+namespace TvMazeScraper.Infrastructure.Sql
 {
     /// <summary>
     /// Statup as relates to this project.

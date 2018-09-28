@@ -2,11 +2,11 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Infrastructure.Mongo
+namespace TvMazeScraper.Infrastructure.Mongo
 {
     using Microsoft.Extensions.DependencyInjection;
-    using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Infrastructure.Mongo.Repositories;
+    using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Infrastructure.Mongo.Repositories;
 
     /// <summary>
     /// Statup as relates to this project.

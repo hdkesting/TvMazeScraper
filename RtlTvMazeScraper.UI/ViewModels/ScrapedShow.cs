@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.UI.ViewModels
+namespace TvMazeScraper.UI.ViewModels
 {
     /// <summary>
     /// A scraped show, to report about it.

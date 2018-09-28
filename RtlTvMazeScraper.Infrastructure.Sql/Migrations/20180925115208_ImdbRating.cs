@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace RtlTvMazeScraper.Infrastructure.Sql.Migrations
+namespace TvMazeScraper.Infrastructure.Sql.Migrations
 {
     /// <summary>
     /// Migration to add columns for IMDb rating.

@@ -2,12 +2,12 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.UI.Hubs
+namespace TvMazeScraper.UI.Hubs
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.SignalR;
     using Microsoft.Extensions.Logging;
-    using RtlTvMazeScraper.UI.ViewModels;
+    using TvMazeScraper.UI.ViewModels;
 
     /// <summary>
     /// Hub to report interact with the scraper.

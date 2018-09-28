@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.UI.Controllers
+namespace TvMazeScraper.UI.Controllers
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -11,9 +11,9 @@ namespace RtlTvMazeScraper.UI.Controllers
     using AutoMapper;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using RtlTvMazeScraper.Core.DTO;
-    using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.UI.ViewModels;
+    using TvMazeScraper.Core.DTO;
+    using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.UI.ViewModels;
 
     /// <summary>
     /// Give list of shows and their cast.

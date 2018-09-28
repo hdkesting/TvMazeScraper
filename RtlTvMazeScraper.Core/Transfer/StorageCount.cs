@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Transfer
+namespace TvMazeScraper.Core.Transfer
 {
     /// <summary>
     /// Holds the counts of the various entities in storage.

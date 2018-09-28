@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Infrastructure.Sql.Migrations
+namespace TvMazeScraper.Infrastructure.Sql.Migrations
 {
     using Microsoft.EntityFrameworkCore.Migrations;
 

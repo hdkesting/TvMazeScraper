@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.UI
+namespace TvMazeScraper.UI
 {
     using System;
     using System.Net.Http;
@@ -15,16 +15,16 @@ namespace RtlTvMazeScraper.UI
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Polly;
-    using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Services;
-    using RtlTvMazeScraper.Core.Support;
-    using RtlTvMazeScraper.Core.Support.Events;
-    using RtlTvMazeScraper.Infrastructure.Repositories.Local;
-    using RtlTvMazeScraper.Infrastructure.Repositories.Remote;
-    using RtlTvMazeScraper.Infrastructure.Sql.Model;
-    using RtlTvMazeScraper.UI.Hubs;
-    using RtlTvMazeScraper.UI.ViewModels;
-    using RtlTvMazeScraper.UI.Workers;
+    using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Services;
+    using TvMazeScraper.Core.Support;
+    using TvMazeScraper.Core.Support.Events;
+    using TvMazeScraper.Infrastructure.Repositories.Local;
+    using TvMazeScraper.Infrastructure.Repositories.Remote;
+    using TvMazeScraper.Infrastructure.Sql.Model;
+    using TvMazeScraper.UI.Hubs;
+    using TvMazeScraper.UI.ViewModels;
+    using TvMazeScraper.UI.Workers;
 
     /// <summary>
     /// The initialization class of the web app.
@@ -95,7 +95,7 @@ namespace RtlTvMazeScraper.UI
                 case Storage.Sql:
                     services.AddDbContext<ShowContext>(opt => opt.UseSqlServer(
                         this.Configuration.GetConnectionString("ShowConnection"),
-                        x => x.MigrationsAssembly("RtlTvMazeScraper.Infrastructure.Sql")));
+                        x => x.MigrationsAssembly("TvMazeScraper.Infrastructure.Sql")));
                     break;
 
                 case Storage.MongoDB:

@@ -2,10 +2,10 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Transfer
+namespace TvMazeScraper.Core.Transfer
 {
     using System.Net;
-    using RtlTvMazeScraper.Core.DTO;
+    using TvMazeScraper.Core.DTO;
 
     /// <summary>
     /// The result of a single scrape action.

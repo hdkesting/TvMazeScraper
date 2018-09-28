@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Services
+namespace TvMazeScraper.Core.Services
 {
     using System;
     using System.Collections.Generic;
@@ -10,10 +10,10 @@ namespace RtlTvMazeScraper.Core.Services
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
-    using RtlTvMazeScraper.Core.DTO;
-    using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Support.Events;
-    using RtlTvMazeScraper.Core.Transfer;
+    using TvMazeScraper.Core.DTO;
+    using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Support.Events;
+    using TvMazeScraper.Core.Transfer;
 
     /// <summary>
     /// Service to access shows.

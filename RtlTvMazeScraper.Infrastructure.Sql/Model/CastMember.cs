@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Infrastructure.Sql.Model
+namespace TvMazeScraper.Infrastructure.Sql.Model
 {
     using System;
     using System.Collections.Generic;

@@ -2,10 +2,10 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Interfaces
+namespace TvMazeScraper.Core.Interfaces
 {
     using System.Threading.Tasks;
-    using RtlTvMazeScraper.Core.Support.Events;
+    using TvMazeScraper.Core.Support.Events;
 
     /// <summary>
     /// The service that calls the Open Movie Database API.

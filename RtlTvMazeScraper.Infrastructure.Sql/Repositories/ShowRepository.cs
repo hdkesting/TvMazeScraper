@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
+namespace TvMazeScraper.Infrastructure.Sql.Repositories
 {
     using System;
     using System.Collections.Generic;
@@ -11,11 +11,11 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Repositories
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
-    using RtlTvMazeScraper.Core.DTO;
-    using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Transfer;
-    using RtlTvMazeScraper.Infrastructure.Sql.Interfaces;
-    using RtlTvMazeScraper.Infrastructure.Sql.Model;
+    using TvMazeScraper.Core.DTO;
+    using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Transfer;
+    using TvMazeScraper.Infrastructure.Sql.Interfaces;
+    using TvMazeScraper.Infrastructure.Sql.Model;
 
     /// <summary>
     /// A repository for locally stored shows.

@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.UI.Controllers
+namespace TvMazeScraper.UI.Controllers
 {
     using System;
     using System.Globalization;
@@ -11,8 +11,8 @@ namespace RtlTvMazeScraper.UI.Controllers
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.UI.ViewModels;
+    using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.UI.ViewModels;
 
     /// <summary>
     /// A controller that performs the scraping of the TvMaze site.

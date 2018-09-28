@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.UI.Workers
+namespace TvMazeScraper.UI.Workers
 {
     using System;
     using System.Collections.Generic;
@@ -10,9 +10,9 @@ namespace RtlTvMazeScraper.UI.Workers
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.SignalR;
     using Microsoft.Extensions.Logging;
-    using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.UI.Hubs;
-    using RtlTvMazeScraper.UI.ViewModels;
+    using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.UI.Hubs;
+    using TvMazeScraper.UI.ViewModels;
 
     /// <summary>
     /// Scraper worker process.

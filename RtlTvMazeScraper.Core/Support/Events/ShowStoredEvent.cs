@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Support.Events
+namespace TvMazeScraper.Core.Support.Events
 {
     /// <summary>
     /// A show has been stored, so the rating should be updated.

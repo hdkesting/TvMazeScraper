@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.UI.Test
+namespace TvMazeScraper.UI.Test
 {
     using System;
     using System.Threading.Tasks;
@@ -10,13 +10,13 @@ namespace RtlTvMazeScraper.UI.Test
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Services;
-    using RtlTvMazeScraper.Infrastructure.Sql.Model;
-    using RtlTvMazeScraper.Infrastructure.Sql.Repositories;
-    using RtlTvMazeScraper.Test.Mock;
-    using RtlTvMazeScraper.UI.Controllers;
-    using RtlTvMazeScraper.UI.ViewModels;
+    using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Services;
+    using TvMazeScraper.Infrastructure.Sql.Model;
+    using TvMazeScraper.Infrastructure.Sql.Repositories;
+    using TvMazeScraper.Test.Mock;
+    using TvMazeScraper.UI.Controllers;
+    using TvMazeScraper.UI.ViewModels;
 
     /// <summary>
     /// Tests for the <see cref="ScrapeController"/>.

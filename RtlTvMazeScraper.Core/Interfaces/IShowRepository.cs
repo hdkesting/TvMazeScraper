@@ -2,14 +2,14 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Interfaces
+namespace TvMazeScraper.Core.Interfaces
 {
     using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using RtlTvMazeScraper.Core.DTO;
-    using RtlTvMazeScraper.Core.Transfer;
+    using TvMazeScraper.Core.DTO;
+    using TvMazeScraper.Core.Transfer;
 
     /// <summary>
     /// Repository to read shows.

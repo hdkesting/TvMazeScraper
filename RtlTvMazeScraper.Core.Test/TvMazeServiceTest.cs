@@ -2,15 +2,15 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Test
+namespace TvMazeScraper.Core.Test
 {
     using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Services;
-    using RtlTvMazeScraper.Test.Mock;
+    using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Services;
+    using TvMazeScraper.Test.Mock;
 
     /// <summary>
     /// Tests the <see cref="TvMazeService"/> against mock data.

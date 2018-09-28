@@ -5,7 +5,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace RtlTvMazeScraper.Infrastructure.Sql.Model
+namespace TvMazeScraper.Infrastructure.Sql.Model
 {
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes. Disable because it is used by Migrations.
     /// <summary>

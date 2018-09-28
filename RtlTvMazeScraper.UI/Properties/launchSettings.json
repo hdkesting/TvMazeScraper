@@ -16,7 +16,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "RtlTvMazeScraper.UI": {
+    "TvMazeScraper.UI": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "",

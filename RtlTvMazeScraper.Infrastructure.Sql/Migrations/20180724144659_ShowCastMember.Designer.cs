@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RtlTvMazeScraper.Infrastructure.Sql.Model;
+using TvMazeScraper.Infrastructure.Sql.Model;
 
-namespace RtlTvMazeScraper.Infrastructure.Sql.Migrations
+namespace TvMazeScraper.Infrastructure.Sql.Migrations
 {
     [DbContext(typeof(ShowContext))]
     [Migration("20180724144659_ShowCastMember")]
@@ -25,7 +25,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("RtlTvMazeScraper.Core.Model.CastMember", b =>
+            modelBuilder.Entity("TvMazeScraper.Core.Model.CastMember", b =>
                 {
                     b.Property<int>("Id");
 
@@ -38,7 +38,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Migrations
                     b.ToTable("CastMembers");
                 });
 
-            modelBuilder.Entity("RtlTvMazeScraper.Core.Model.Show", b =>
+            modelBuilder.Entity("TvMazeScraper.Core.Model.Show", b =>
                 {
                     b.Property<int>("Id");
 
@@ -49,7 +49,7 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Migrations
                     b.ToTable("Shows");
                 });
 
-            modelBuilder.Entity("RtlTvMazeScraper.Core.Model.ShowCastMember", b =>
+            modelBuilder.Entity("TvMazeScraper.Core.Model.ShowCastMember", b =>
                 {
                     b.Property<int>("ShowId");
 
@@ -62,14 +62,14 @@ namespace RtlTvMazeScraper.Infrastructure.Sql.Migrations
                     b.ToTable("ShowCastMembers");
                 });
 
-            modelBuilder.Entity("RtlTvMazeScraper.Core.Model.ShowCastMember", b =>
+            modelBuilder.Entity("TvMazeScraper.Core.Model.ShowCastMember", b =>
                 {
-                    b.HasOne("RtlTvMazeScraper.Core.Model.CastMember", "CastMember")
+                    b.HasOne("TvMazeScraper.Core.Model.CastMember", "CastMember")
                         .WithMany("ShowCastMembers")
                         .HasForeignKey("CastMemberId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("RtlTvMazeScraper.Core.Model.Show", "Show")
+                    b.HasOne("TvMazeScraper.Core.Model.Show", "Show")
                         .WithMany("ShowCastMembers")
                         .HasForeignKey("ShowId")
                         .OnDelete(DeleteBehavior.Cascade);

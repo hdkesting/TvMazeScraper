@@ -2,12 +2,12 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Infrastructure.Sql.Interfaces
+namespace TvMazeScraper.Infrastructure.Sql.Interfaces
 {
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
-    using RtlTvMazeScraper.Infrastructure.Sql.Model;
+    using TvMazeScraper.Infrastructure.Sql.Model;
 
     /// <summary>
     /// Interface for DbContext of shows.

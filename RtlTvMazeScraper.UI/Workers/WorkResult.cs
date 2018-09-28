@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.UI.Workers
+namespace TvMazeScraper.UI.Workers
 {
     /// <summary>
     /// Result of a workunit.

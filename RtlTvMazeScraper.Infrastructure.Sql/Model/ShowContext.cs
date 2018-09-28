@@ -2,10 +2,10 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Infrastructure.Sql.Model
+namespace TvMazeScraper.Infrastructure.Sql.Model
 {
     using Microsoft.EntityFrameworkCore;
-    using RtlTvMazeScraper.Infrastructure.Sql.Interfaces;
+    using TvMazeScraper.Infrastructure.Sql.Interfaces;
 
     /// <summary>
     /// The DB context for the show database.

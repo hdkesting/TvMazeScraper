@@ -2,12 +2,12 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.UI.Controllers
+namespace TvMazeScraper.UI.Controllers
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using RtlTvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Interfaces;
 
     /// <summary>
     /// The default controller.

@@ -1,8 +1,8 @@
 ﻿
-namespace RtlTvMazeScraper.Test.Mock
+namespace TvMazeScraper.Test.Mock
 {
     using System.Threading.Tasks;
-    using RtlTvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Interfaces;
 
     public class MockMessageHub : IMessageHub
     {

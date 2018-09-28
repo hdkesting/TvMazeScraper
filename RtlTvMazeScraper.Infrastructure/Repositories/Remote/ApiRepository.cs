@@ -2,16 +2,16 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Infrastructure.Repositories.Remote
+namespace TvMazeScraper.Infrastructure.Repositories.Remote
 {
     using System;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using RtlTvMazeScraper.Core.Interfaces;
-    using RtlTvMazeScraper.Core.Support;
-    using RtlTvMazeScraper.Core.Transfer;
+    using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Support;
+    using TvMazeScraper.Core.Transfer;
 
     /// <summary>
     /// A respository to access a remote webAPI endpoint.

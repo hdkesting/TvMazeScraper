@@ -2,14 +2,14 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Support
+namespace TvMazeScraper.Core.Support
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
-    using RtlTvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Interfaces;
 
     /// <summary>
     /// A MessageBus implementation.

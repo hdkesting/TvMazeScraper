@@ -2,10 +2,10 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.Transfer
+namespace TvMazeScraper.Core.Transfer
 {
     using System.Collections.Generic;
-    using RtlTvMazeScraper.Core.DTO;
+    using TvMazeScraper.Core.DTO;
 
     /// <summary>
     /// Result of scraping a batch of shows.

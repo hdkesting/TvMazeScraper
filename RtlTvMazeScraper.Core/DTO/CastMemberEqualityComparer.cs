@@ -2,7 +2,7 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace RtlTvMazeScraper.Core.DTO
+namespace TvMazeScraper.Core.DTO
 {
     using System.Collections.Generic;
 
