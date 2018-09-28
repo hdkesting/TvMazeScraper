@@ -27,6 +27,14 @@ namespace TvMazeScraper.UI.ViewModels
         /// </value>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Gets or sets the IMDb rating.
+        /// </summary>
+        /// <value>
+        /// The imdb rating (0.0 - 10.0).
+        /// </value>
+        public decimal ImdbRating { get; set; }
+
 #pragma warning disable CA2227 // Collection properties should be read only
         /// <summary>
         /// Gets or sets the show's cast.

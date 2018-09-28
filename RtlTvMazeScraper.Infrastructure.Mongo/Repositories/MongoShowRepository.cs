@@ -178,6 +178,7 @@ namespace TvMazeScraper.Infrastructure.Mongo.Repositories
             {
                 if (!(orgshow.CastMembers is null) && orgshow.CastMembers.Any())
                 {
+                    show.Cast.Clear();
                     show.Cast.AddRange(orgshow.CastMembers);
                 }
                 else if (!(getCastOfShow is null))
