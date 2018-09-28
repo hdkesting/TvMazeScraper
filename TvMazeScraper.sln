@@ -12,21 +12,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RtlTvMazeScraper.UI", "RtlTvMazeScraper.UI\RtlTvMazeScraper.UI.csproj", "{EBB11B1C-C277-47DA-A686-0F8301C284F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvMazeScraper.UI", "RtlTvMazeScraper.UI\TvMazeScraper.UI.csproj", "{EBB11B1C-C277-47DA-A686-0F8301C284F1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvMazeScraper.Core", "RtlTvMazeScraper.Core\TvMazeScraper.Core.csproj", "{CACFDCE0-7096-4580-BE15-AF3DA2A5AAE4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RtlTvMazeScraper.Infrastructure", "RtlTvMazeScraper.Infrastructure\RtlTvMazeScraper.Infrastructure.csproj", "{271730F8-730E-43F0-B893-4726F6D811DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvMazeScraper.Infrastructure", "RtlTvMazeScraper.Infrastructure\TvMazeScraper.Infrastructure.csproj", "{271730F8-730E-43F0-B893-4726F6D811DA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvMazeScraper.Core.Test", "RtlTvMazeScraper.Core.Test\TvMazeScraper.Core.Test.csproj", "{2A16D067-52FF-439B-95DF-F2F7E8D7034B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RtlTvMazeScraper.UI.Test", "RtlTvMazeScraper.UI.Test\RtlTvMazeScraper.UI.Test.csproj", "{CF068B39-4BE3-4B4B-9BA8-ADC1DA618D71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvMazeScraper.UI.Test", "RtlTvMazeScraper.UI.Test\TvMazeScraper.UI.Test.csproj", "{CF068B39-4BE3-4B4B-9BA8-ADC1DA618D71}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvMazeScraper.Test.Mock", "RtlTvMazeScraper.Test.Mock\TvMazeScraper.Test.Mock.csproj", "{B9522763-D06F-4A63-A6A1-7CF96A210B57}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RtlTvMazeScraper.Infrastructure.Mongo", "RtlTvMazeScraper.Infrastructure.Mongo\RtlTvMazeScraper.Infrastructure.Mongo.csproj", "{CBFB5EAC-B62B-4038-ADAB-6FC5A6FAACDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvMazeScraper.Infrastructure.Mongo", "RtlTvMazeScraper.Infrastructure.Mongo\TvMazeScraper.Infrastructure.Mongo.csproj", "{CBFB5EAC-B62B-4038-ADAB-6FC5A6FAACDD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RtlTvMazeScraper.Infrastructure.Sql", "RtlTvMazeScraper.Infrastructure.Sql\RtlTvMazeScraper.Infrastructure.Sql.csproj", "{93EBC8FF-9D26-4706-BB9F-C40689E82B08}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvMazeScraper.Infrastructure.Sql", "RtlTvMazeScraper.Infrastructure.Sql\TvMazeScraper.Infrastructure.Sql.csproj", "{93EBC8FF-9D26-4706-BB9F-C40689E82B08}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{78C192DB-EDE2-4E0B-934F-8FED73DDB2C1}"
 EndProject

@@ -31,7 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RtlTvMazeScraper.Test.Mock\TvMazeScraper.Test.Mock.csproj" />
-    <ProjectReference Include="..\RtlTvMazeScraper.UI\RtlTvMazeScraper.UI.csproj" />
+    <ProjectReference Include="..\RtlTvMazeScraper.UI\TvMazeScraper.UI.csproj" />
   </ItemGroup>
 
 </Project>

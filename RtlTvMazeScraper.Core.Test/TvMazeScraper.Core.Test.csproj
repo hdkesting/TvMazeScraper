@@ -40,8 +40,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RtlTvMazeScraper.Core\TvMazeScraper.Core.csproj" />
-    <ProjectReference Include="..\RtlTvMazeScraper.Infrastructure.Sql\RtlTvMazeScraper.Infrastructure.Sql.csproj" />
-    <ProjectReference Include="..\RtlTvMazeScraper.Infrastructure\RtlTvMazeScraper.Infrastructure.csproj" />
+    <ProjectReference Include="..\RtlTvMazeScraper.Infrastructure.Sql\TvMazeScraper.Infrastructure.Sql.csproj" />
+    <ProjectReference Include="..\RtlTvMazeScraper.Infrastructure\TvMazeScraper.Infrastructure.csproj" />
     <ProjectReference Include="..\RtlTvMazeScraper.Test.Mock\TvMazeScraper.Test.Mock.csproj" />
   </ItemGroup>
 
