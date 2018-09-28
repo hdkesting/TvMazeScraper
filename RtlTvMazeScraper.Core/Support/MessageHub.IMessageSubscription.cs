@@ -7,7 +7,7 @@ namespace RtlTvMazeScraper.Core.Support
     using System;
 
     /// <summary>
-    /// <see cref="MessageHub"/>, the interface to use to store event subscriptions.
+    /// <see cref="MessageHub"/>, the non-generic interface to use to store event subscriptions.
     /// </summary>
     public partial class MessageHub
     {

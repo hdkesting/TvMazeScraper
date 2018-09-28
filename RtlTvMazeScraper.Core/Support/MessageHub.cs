@@ -17,15 +17,6 @@ namespace RtlTvMazeScraper.Core.Support
     /// <remarks>
     /// No persistence required, no errorhandling implemented.
     /// </remarks>
-    /// <example>
-    /// Publish:
-    /// <code>await Support.MessageHub.Instance.Publish(new Support.Events.BoardIsFinished());</code>
-    /// Subscribe (usually in ctor):
-    /// <code>Support.MessageHub.Instance.Subscribe&lt;Support.Events.BoardIsFinished&gt;(m => this.gameBoard.FlashAllGroups());</code>
-    /// Note that Subscribe returns a token (<see cref="Guid"/>), remember that to clean up in Dispose:
-    /// <code>private readonly List&lt;Guid&gt; eventTokens = new List&lt;Guid&gt;();</code>
-    /// <code>this.eventTokens.ForEach(Support.MessageHub.Instance.Unsubscribe);</code>
-    /// </example>
     public sealed partial class MessageHub : IMessageHub
     {
         private static readonly List<IMessageSubscription> Subscriptions = new List<IMessageSubscription>();
