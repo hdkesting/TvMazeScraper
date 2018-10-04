@@ -219,7 +219,6 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
             return this.ConvertShow(localshow);
         }
 
-
         /// <summary>
         /// Sets the rating of the specified show.
         /// </summary>
@@ -268,8 +267,8 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
                     {
                         Id = cm.Id,
                         Name = cm.Name,
-                        Birthdate = cm.Birthdate
-                    }
+                        Birthdate = cm.Birthdate,
+                    },
                 }));
             return modelshow;
         }

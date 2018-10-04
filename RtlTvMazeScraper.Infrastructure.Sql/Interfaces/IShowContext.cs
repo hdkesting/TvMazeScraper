@@ -39,7 +39,7 @@ namespace TvMazeScraper.Infrastructure.Sql.Interfaces
         /// <summary>
         /// Saves the changes asynchronously.
         /// </summary>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation. Default <see cref="CancellationToken.None"/></param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation. Default <see cref="CancellationToken.None"/>.</param>
         /// <returns>
         /// Number of changes.
         /// </returns>

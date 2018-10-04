@@ -1,18 +1,18 @@
-﻿// <copyright file="IShowContext.cs" company="Hans Keﬆing">
+﻿// <copyright file="ShowContextFactory.cs" company="Hans Keﬆing">
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-
 namespace TvMazeScraper.Infrastructure.Sql.Model
 {
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Design;
+
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes. Disable because it is used by Migrations.
     /// <summary>
     /// Creates a <see cref="ShowContext"/> for use by "Migrations".
     /// </summary>
     /// <remarks>
-    /// https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/dbcontext-creation
+    /// https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/dbcontext-creation.
     /// </remarks>
     /// <seealso cref="Microsoft.EntityFrameworkCore.Design.IDesignTimeDbContextFactory{TContext}" />
     /// <seealso cref="ShowContext"/>

@@ -1,7 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿// <copyright file="20180925115208_ImdbRating.cs" company="Hans Keﬆing">
+// Copyright (c) Hans Keﬆing. All rights reserved.
+// </copyright>
 
 namespace TvMazeScraper.Infrastructure.Sql.Migrations
 {
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     /// <summary>
     /// Migration to add columns for IMDb rating.
     /// </summary>
