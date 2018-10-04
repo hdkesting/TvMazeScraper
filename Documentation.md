@@ -5,11 +5,11 @@ This document describes an overview of the implementation of various aspects.
 ## Solution architecture
 
 1. TvMazeScraper.Core -- this contains the business logic of the application. It contains things like:
-    * Model classes to use in the database interaction.
+    * DTO classes to use in the interaction between the parts.
     * Services that implement business logic.
     * Interfaces of repositories etc. The actual instances are to be injected into the services.
 2. TvMazeScraper.Infrastructure -- the connection to the outside world.
-    * Repositories.
+    * Repositories. The alternates (SqlServer and MongoDB) are in their own projects.
 3. TvMazeScraper.UI -- the UI project hosting an ASP.Net Core MVC application.
     * Controllers and Views, static web content would be here.
     * Initialization of the Dependency Injection container etc.
@@ -17,9 +17,9 @@ This document describes an overview of the implementation of various aspects.
     * Mock versions of Infrastructure components.
 
 
-## Dependecy Injection
+## Dependency Injection
 
-The native dependecy injection of .net core is used.
+The native dependency injection of .net core is used.
 
 The constructors of the various controllers and services state the (interfaces of) the various components they need. DI provides the correct implementations, based on the configuration.
 
