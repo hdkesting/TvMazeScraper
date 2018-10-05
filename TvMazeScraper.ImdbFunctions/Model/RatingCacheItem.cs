@@ -13,6 +13,11 @@ namespace TvMazeScraper.ImdbFunctions.Model
     public class RatingCacheItem : TableEntity
     {
         /// <summary>
+        /// The partition key for the ratings.
+        /// </summary>
+        public const string RatingsPartitionKey = "ratings";
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="RatingCacheItem"/> class.
         /// </summary>
         /// <remarks>
@@ -20,6 +25,7 @@ namespace TvMazeScraper.ImdbFunctions.Model
         /// </remarks>
         public RatingCacheItem()
         {
+            this.PartitionKey = RatingsPartitionKey;
         }
 
         /// <summary>
@@ -28,8 +34,9 @@ namespace TvMazeScraper.ImdbFunctions.Model
         /// <param name="imdbId">The imdb identifier.</param>
         /// <param name="rating">The rating.</param>
         public RatingCacheItem(string imdbId, decimal rating)
+            : this()
         {
-            this.ImdbId = imdbId;
+            this.ImdbId = this.RowKey = imdbId;
             this.Rating = rating;
             this.RetrievalDate = DateTimeOffset.Now;
         }

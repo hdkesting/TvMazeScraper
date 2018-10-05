@@ -10,6 +10,7 @@ namespace TvMazeScraper.ImdbFunctions
     using System.Threading.Tasks;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Host;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.WindowsAzure.Storage.Queue;
     using Microsoft.WindowsAzure.Storage.Table;
@@ -23,9 +24,6 @@ namespace TvMazeScraper.ImdbFunctions
     /// </summary>
     public static class ImdbQueueProcessor
     {
-        private const string RatingsPartitionKey = "ratings";
-        private const string ConfigPartitionKey = "config";
-        private const string OmdbBlockKey = "omdb-block";
         private static readonly TimeSpan RatingMaxAge = TimeSpan.FromDays(10);
         private static readonly TimeSpan OmdbDelay = TimeSpan.FromHours(4);
 
@@ -36,15 +34,18 @@ namespace TvMazeScraper.ImdbFunctions
         /// <param name="tableCache">The Azure table cache with known ratings.</param>
         /// <param name="queueClient">The queue client.</param>
         /// <param name="log">The log to write messages to.</param>
+        /// <param name="context">The execution context.</param>
+        /// <returns>A Task.</returns>
         [FunctionName("ImdbQueueProcessor")]
-        public static async void Run(
+        public static async Task Run(
             [QueueTrigger("imdbratingqueue", Connection = "imdbrating")]
             CloudQueueMessage queueItem,
             [Table("imdbratingcache", Connection = "imdbrating")]
             CloudTable tableCache,
             [Queue("imdbratingqueue", Connection = "imdbrating")]
             CloudQueue queueClient,
-            ILogger log)
+            ILogger log,
+            ExecutionContext context)
         {
             log.LogInformation($"C# Queue trigger to process: {queueItem}");
 
@@ -81,23 +82,31 @@ namespace TvMazeScraper.ImdbFunctions
             }
             else
             {
-                var ratingResponse = await QueryOmdbForRating(request.ImdbId).ConfigureAwait(false);
+                // https://stackoverflow.com/questions/43556311/reading-settings-from-a-azure-function
+                var config = new ConfigurationBuilder()
+                    .SetBasePath(context.FunctionAppDirectory)
+                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                    .AddEnvironmentVariables()
+                    .Build();
 
-                if (ratingResponse.status == HttpStatusCode.OK)
+                string apiKey = config["omdbapikey"];
+                var (status, newrating) = await QueryOmdbForRating(apiKey, request.ImdbId).ConfigureAwait(false);
+
+                if (status == HttpStatusCode.OK)
                 {
-                    log.LogInformation($"Found a rating of {ratingResponse.rating} for {request.ImdbId}.");
+                    log.LogInformation($"Found a rating of {newrating} for {request.ImdbId}.");
 
-                    await StoreRatingInTable(tableCache, request.ImdbId, ratingResponse.rating).ConfigureAwait(false);
+                    await StoreRatingInTable(tableCache, request.ImdbId, newrating).ConfigureAwait(false);
                     await SendRatingMessage(request.ShowId, rating.Rating).ConfigureAwait(false);
                 }
-                else if (ratingResponse.status == HttpStatusCode.NotFound)
+                else if (status == HttpStatusCode.NotFound)
                 {
                     log.LogInformation($"Found NO rating for {request.ImdbId}. Ignoring.");
                 }
                 else
                 {
                     // apparently recieved an error, probably "too much"
-                    log.LogWarning($"Got a response of {ratingResponse.status} ({(int)ratingResponse.status}) for {request.ImdbId}. Blocking for {OmdbDelay.TotalHours} hours.");
+                    log.LogWarning($"Got a response of {status} ({(int)status}) for {request.ImdbId}. Blocking for {OmdbDelay.TotalHours} hours.");
                     await SetOmdbBlocked(tableCache).ConfigureAwait(false);
                     await RequeueMessage(queueClient, json).ConfigureAwait(false);
                 }
@@ -112,19 +121,25 @@ namespace TvMazeScraper.ImdbFunctions
             await queueClient.AddMessageAsync(message: cqm, timeToLive: null, initialVisibilityDelay: OmdbDelay, options: null, operationContext: null).ConfigureAwait(false);
         }
 
-        private static async Task<(HttpStatusCode status, decimal rating)> QueryOmdbForRating(string imdbId)
+        private static async Task<(HttpStatusCode status, decimal rating)> QueryOmdbForRating(string apiKey, string imdbId)
         {
-            string apiKey = "40204b22"; // TODO read from config!
             var uri = new Uri($"?apikey={apiKey}&i={imdbId}", UriKind.Relative);
-            var response = await GetJsonText(uri).ConfigureAwait(false);
+            var (status, text) = await GetJsonText(uri).ConfigureAwait(false);
 
-            if (response.status != HttpStatusCode.OK)
+            if (status != HttpStatusCode.OK)
             {
                 // either "404 not found" or "429 too much"(?)
-                return (response.status, 0);
+                return (status, 0);
             }
 
-            dynamic json = JObject.Parse(response.text);
+            dynamic json = JObject.Parse(text);
+
+            string response = json.Response;
+
+            if (response == "False")
+            {
+                return (HttpStatusCode.NotFound, 0);
+            }
 
             decimal rating = json.imdbRating;
 
@@ -158,7 +173,7 @@ namespace TvMazeScraper.ImdbFunctions
         /// <returns>A value indicating whether OMDb is considered blocked.</returns>
         private static async Task<bool> OmdbIsBlocked(CloudTable tableCache)
         {
-            var getOperation = TableOperation.Retrieve<OmdbBlock>(ConfigPartitionKey, OmdbBlockKey);
+            var getOperation = TableOperation.Retrieve<OmdbBlock>(OmdbBlock.ConfigPartitionKey, OmdbBlock.OmdbBlockKey);
 
             var result = await tableCache.ExecuteAsync(getOperation).ConfigureAwait(false);
 
@@ -175,8 +190,6 @@ namespace TvMazeScraper.ImdbFunctions
         {
             var block = new OmdbBlock
             {
-                PartitionKey = ConfigPartitionKey,
-                RowKey = OmdbBlockKey,
                 BlockedUntil = DateTimeOffset.Now + OmdbDelay,
             };
             var operation = TableOperation.InsertOrReplace(block);
@@ -204,7 +217,8 @@ namespace TvMazeScraper.ImdbFunctions
         {
             // TODO add parameter for message bus
             // TODO use that service bus to send the message
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -217,7 +231,7 @@ namespace TvMazeScraper.ImdbFunctions
         /// </returns>
         private static async Task<RatingCacheItem> GetRatingFromTable(CloudTable table, string imdbId)
         {
-            var getOperation = TableOperation.Retrieve<RatingCacheItem>(RatingsPartitionKey, imdbId);
+            var getOperation = TableOperation.Retrieve<RatingCacheItem>(RatingCacheItem.RatingsPartitionKey, imdbId);
 
             var result = await table.ExecuteAsync(getOperation).ConfigureAwait(false);
 
@@ -235,8 +249,6 @@ namespace TvMazeScraper.ImdbFunctions
         private static async Task StoreRatingInTable(CloudTable table, string imdbId, decimal rating)
         {
             var cacheItem = new RatingCacheItem(imdbId, rating);
-            cacheItem.PartitionKey = RatingsPartitionKey;
-            cacheItem.RowKey = imdbId;
 
             var operation = TableOperation.InsertOrReplace(cacheItem);
 

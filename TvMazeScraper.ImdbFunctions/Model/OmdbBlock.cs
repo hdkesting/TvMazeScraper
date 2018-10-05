@@ -14,6 +14,25 @@ namespace TvMazeScraper.ImdbFunctions.Model
     public class OmdbBlock : TableEntity
     {
         /// <summary>
+        /// The partition key for configuration.
+        /// </summary>
+        public const string ConfigPartitionKey = "config";
+
+        /// <summary>
+        /// The row key for the single <see cref="OmdbBlock"/> entry.
+        /// </summary>
+        public const string OmdbBlockKey = "omdb-block";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OmdbBlock"/> class.
+        /// </summary>
+        public OmdbBlock()
+        {
+            this.PartitionKey = ConfigPartitionKey;
+            this.RowKey = OmdbBlockKey;
+        }
+
+        /// <summary>
         /// Gets or sets the date until Omdb is considered blocked.
         /// </summary>
         /// <value>

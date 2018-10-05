@@ -36,7 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{2E372395-89F3-
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microservices", "Microservices", "{F4116452-EEE9-41ED-854E-3B49FBD16D06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvMazeScraper.ImdbFunctions", "TvMazeScraper.ImdbFunctions\TvMazeScraper.ImdbFunctions.csproj", "{FBCABC59-2C12-4149-8B37-3C67006EB5CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvMazeScraper.ImdbFunctions", "TvMazeScraper.ImdbFunctions\TvMazeScraper.ImdbFunctions.csproj", "{FBCABC59-2C12-4149-8B37-3C67006EB5CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
