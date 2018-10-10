@@ -169,13 +169,13 @@ namespace TvMazeScraper.ImdbFunctions
         /// <summary>
         /// Determines whether it is already known that OMDb is blocked.
         /// </summary>
-        /// <param name="tableCache">The table cache.</param>
+        /// <param name="table">The Azure Table to read from.</param>
         /// <returns>A value indicating whether OMDb is considered blocked.</returns>
-        private static async Task<bool> OmdbIsBlocked(CloudTable tableCache)
+        private static async Task<bool> OmdbIsBlocked(CloudTable table)
         {
             var getOperation = TableOperation.Retrieve<OmdbBlock>(OmdbBlock.ConfigPartitionKey, OmdbBlock.OmdbBlockKey);
 
-            var result = await tableCache.ExecuteAsync(getOperation).ConfigureAwait(false);
+            var result = await table.ExecuteAsync(getOperation).ConfigureAwait(false);
 
             if (result.Result is null)
             {
@@ -186,6 +186,11 @@ namespace TvMazeScraper.ImdbFunctions
             return ((OmdbBlock)result.Result).BlockedUntil > DateTimeOffset.Now;
         }
 
+        /// <summary>
+        /// Sets the omdb service as blocked for some time.
+        /// </summary>
+        /// <param name="table">The Azure Table to store in.</param>
+        /// <returns>A Task.</returns>
         private static async Task SetOmdbBlocked(CloudTable table)
         {
             var block = new OmdbBlock

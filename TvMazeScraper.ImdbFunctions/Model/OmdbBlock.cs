@@ -10,6 +10,9 @@ namespace TvMazeScraper.ImdbFunctions.Model
     /// <summary>
     /// A config entry to state whether OMDb is blocked.
     /// </summary>
+    /// <remarks>
+    /// This functions as a time-limited "circuit breaker" in the processing pipeline.
+    /// </remarks>
     /// <seealso cref="Microsoft.WindowsAzure.Storage.Table.TableEntity" />
     public class OmdbBlock : TableEntity
     {
