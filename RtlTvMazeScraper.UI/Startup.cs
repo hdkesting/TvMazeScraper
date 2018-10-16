@@ -19,6 +19,7 @@ namespace TvMazeScraper.UI
     using TvMazeScraper.Core.Services;
     using TvMazeScraper.Core.Support;
     using TvMazeScraper.Core.Support.Events;
+    using TvMazeScraper.Core.Workers;
     using TvMazeScraper.Infrastructure.Repositories.Local;
     using TvMazeScraper.Infrastructure.Repositories.Remote;
     using TvMazeScraper.Infrastructure.Sql.Model;
@@ -231,11 +232,14 @@ namespace TvMazeScraper.UI
             var mappingConfig = ConfigureMapping();
             services.AddSingleton<IMapper, IMapper>(sp => mappingConfig.CreateMapper());
 
-            // background services
+            // background services: signalR based scraper
             services.AddScoped<IScraperWorker, ScraperWorker>();
             services.AddHostedService<ShowLoaderHostedService>();
 
-            // TODO add hosted service+scope for message bus reader
+            // background services: rating queue processing
+            services.AddScoped<IIncomingRatingProcessor, IncomingRatingProcessor>();
+            services.AddTransient<IIncomingRatingRepository, IncomingRatingQueueRepository>();
+            services.AddHostedService<RatingQueueHostedService>();
         }
 
         private Storage GetStorageType()
