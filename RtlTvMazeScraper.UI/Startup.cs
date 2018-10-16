@@ -233,7 +233,9 @@ namespace TvMazeScraper.UI
 
             // background services
             services.AddScoped<IScraperWorker, ScraperWorker>();
-            services.AddHostedService<TimedHostedService>();
+            services.AddHostedService<ShowLoaderHostedService>();
+
+            // TODO add hosted service+scope for message bus reader
         }
 
         private Storage GetStorageType()

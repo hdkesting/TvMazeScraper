@@ -11,6 +11,7 @@ namespace TvMazeScraper.UI.Workers
     using Microsoft.AspNetCore.SignalR;
     using Microsoft.Extensions.Logging;
     using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Support;
     using TvMazeScraper.UI.Hubs;
     using TvMazeScraper.UI.ViewModels;
 

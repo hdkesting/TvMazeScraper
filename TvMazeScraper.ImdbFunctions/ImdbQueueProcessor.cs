@@ -32,10 +32,13 @@ namespace TvMazeScraper.ImdbFunctions
         /// </summary>
         /// <param name="queueItem">The queue item that triggered this function.</param>
         /// <param name="tableCache">The Azure table cache with known ratings.</param>
-        /// <param name="queueClient">The queue client.</param>
+        /// <param name="incomingQueueClient">The queue client for incoming requests.</param>
+        /// <param name="resultQueueClient">The queue client for the rating result.</param>
         /// <param name="log">The log to write messages to.</param>
         /// <param name="context">The execution context.</param>
-        /// <returns>A Task.</returns>
+        /// <returns>
+        /// A Task.
+        /// </returns>
         [FunctionName("ImdbQueueProcessor")]
         public static async Task Run(
             [QueueTrigger("imdbratingqueue", Connection = "imdbrating")]
@@ -43,7 +46,9 @@ namespace TvMazeScraper.ImdbFunctions
             [Table("imdbratingcache", Connection = "imdbrating")]
             CloudTable tableCache,
             [Queue("imdbratingqueue", Connection = "imdbrating")]
-            CloudQueue queueClient,
+            CloudQueue incomingQueueClient,
+            [Queue("ratingresultqueue", Connection = "imdbrating")]
+            CloudQueue resultQueueClient,
             ILogger log,
             ExecutionContext context)
         {
@@ -61,7 +66,7 @@ namespace TvMazeScraper.ImdbFunctions
                 log.LogInformation($"Got a rating of {rating.Rating} from {rating.RetrievalDate}.");
 
                 // I got *some* rating. Just send it anyway, then maybe get a more recent one.
-                await SendRatingMessage(request.ShowId, rating.Rating).ConfigureAwait(false);
+                await SendRatingMessage(resultQueueClient, request.ShowId, rating.Rating).ConfigureAwait(false);
 
                 if (IsRecentEnough(rating.RetrievalDate))
                 {
@@ -78,7 +83,7 @@ namespace TvMazeScraper.ImdbFunctions
                 log.LogWarning($"OMDb was blocked, postponing request for {OmdbDelay.TotalHours} hours.");
 
                 // re-enter in queue with updated timeout
-                await RequeueMessage(queueClient, json).ConfigureAwait(false);
+                await RequeueMessage(incomingQueueClient, json).ConfigureAwait(false);
             }
             else
             {
@@ -97,7 +102,7 @@ namespace TvMazeScraper.ImdbFunctions
                     log.LogInformation($"Found a rating of {newrating} for {request.ImdbId}.");
 
                     await StoreRatingInTable(tableCache, request.ImdbId, newrating).ConfigureAwait(false);
-                    await SendRatingMessage(request.ShowId, rating.Rating).ConfigureAwait(false);
+                    await SendRatingMessage(resultQueueClient, request.ShowId, rating.Rating).ConfigureAwait(false);
                 }
                 else if (status == HttpStatusCode.NotFound)
                 {
@@ -108,7 +113,7 @@ namespace TvMazeScraper.ImdbFunctions
                     // apparently recieved an error, probably "too much"
                     log.LogWarning($"Got a response of {status} ({(int)status}) for {request.ImdbId}. Blocking for {OmdbDelay.TotalHours} hours.");
                     await SetOmdbBlocked(tableCache).ConfigureAwait(false);
-                    await RequeueMessage(queueClient, json).ConfigureAwait(false);
+                    await RequeueMessage(incomingQueueClient, json).ConfigureAwait(false);
                 }
             }
 
@@ -167,7 +172,7 @@ namespace TvMazeScraper.ImdbFunctions
         }
 
         /// <summary>
-        /// Determines whether it is already known that OMDb is blocked.
+        /// Determines whether it is already known that OMDb is blocked ("circuit breaker").
         /// </summary>
         /// <param name="table">The Azure Table to read from.</param>
         /// <returns>A value indicating whether OMDb is considered blocked.</returns>
@@ -218,12 +223,14 @@ namespace TvMazeScraper.ImdbFunctions
         /// </summary>
         /// <param name="showId">The show identifier.</param>
         /// <param name="rating">The rating.</param>
-        private static Task SendRatingMessage(int showId, decimal rating)
+        private static async Task SendRatingMessage(CloudQueue resultQueueClient, int showId, decimal rating)
         {
-            // TODO add parameter for message bus
-            // TODO use that service bus to send the message
-            //throw new NotImplementedException();
-            return Task.CompletedTask;
+            // create JSON
+            var json = $"{{ \"showid\": {showId}, \"rating\": {rating} }}";
+
+            // add to the queue, visible immediately
+            var cqm = new CloudQueueMessage(json);
+            await resultQueueClient.AddMessageAsync(message: cqm, timeToLive: null, initialVisibilityDelay: null, options: null, operationContext: null).ConfigureAwait(false);
         }
 
         /// <summary>

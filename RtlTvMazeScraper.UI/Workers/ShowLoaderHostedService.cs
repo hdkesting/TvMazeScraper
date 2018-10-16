@@ -1,4 +1,4 @@
-﻿// <copyright file="TimedHostedService.cs" company="Hans Keﬆing">
+﻿// <copyright file="ShowLoaderHostedService.cs" company="Hans Keﬆing">
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
@@ -11,26 +11,28 @@ namespace TvMazeScraper.UI.Workers
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Support;
 
     /// <summary>
     /// A timed service to trigger loading shows.
     /// </summary>
     /// <seealso cref="Microsoft.Extensions.Hosting.IHostedService" />
     /// <seealso cref="System.IDisposable" />
-    public sealed class TimedHostedService : IHostedService, IDisposable
+    public sealed class ShowLoaderHostedService : IHostedService, IDisposable
     {
         private readonly IServiceProvider services;
-        private readonly ILogger<TimedHostedService> logger;
+        private readonly ILogger<ShowLoaderHostedService> logger;
         private Timer timer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TimedHostedService"/> class.
+        /// Initializes a new instance of the <see cref="ShowLoaderHostedService"/> class.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="logger">The logger.</param>
-        public TimedHostedService(
+        public ShowLoaderHostedService(
             IServiceProvider services,
-            ILogger<TimedHostedService> logger)
+            ILogger<ShowLoaderHostedService> logger)
         {
             this.services = services;
             this.logger = logger;

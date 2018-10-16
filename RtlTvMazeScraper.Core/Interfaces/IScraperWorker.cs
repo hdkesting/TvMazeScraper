@@ -2,14 +2,15 @@
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
-namespace TvMazeScraper.UI.Workers
+namespace TvMazeScraper.Core.Interfaces
 {
     using System.Threading.Tasks;
+    using TvMazeScraper.Core.Support;
 
     /// <summary>
     /// Interface for scraper worker process.
     /// </summary>
-    internal interface IScraperWorker
+    public interface IScraperWorker
     {
         /// <summary>
         /// Does the work.
