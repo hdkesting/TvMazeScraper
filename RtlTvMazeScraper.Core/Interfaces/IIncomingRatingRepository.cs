@@ -16,7 +16,10 @@ namespace TvMazeScraper.Core.Interfaces
         /// <summary>
         /// Gets the queued ratings.
         /// </summary>
-        /// <returns>A Task of (possibly empty) list of ratings.</returns>
-        Task<List<ShowRating>> GetQueuedRatings();
+        /// <param name="maxCount">The maximum number of messages to read.</param>
+        /// <returns>
+        /// A Task of (possibly empty) list of ratings.
+        /// </returns>
+        Task<List<ShowRating>> GetQueuedRatings(int maxCount);
     }
 }

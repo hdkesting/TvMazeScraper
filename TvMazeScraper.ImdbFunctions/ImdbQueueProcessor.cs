@@ -117,6 +117,8 @@ namespace TvMazeScraper.ImdbFunctions
                 }
             }
 
+            // delete the current message as we are done with it (either processed or requeued as new message)
+            await incomingQueueClient.DeleteMessageAsync(queueItem).ConfigureAwait(false);
             log.LogInformation("Done processing this item.");
         }
 

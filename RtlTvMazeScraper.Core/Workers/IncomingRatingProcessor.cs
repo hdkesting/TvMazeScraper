@@ -6,8 +6,10 @@ namespace TvMazeScraper.Core.Workers
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using TvMazeScraper.Core.Interfaces;
 
     /// <summary>
@@ -16,20 +18,26 @@ namespace TvMazeScraper.Core.Workers
     /// <seealso cref="TvMazeScraper.Core.Interfaces.IIncomingRatingProcessor" />
     public class IncomingRatingProcessor : IIncomingRatingProcessor
     {
+        private const int RatingsPerTry = 20;
+
         private readonly IIncomingRatingRepository repository;
         private readonly IShowService showService;
+        private readonly ILogger<IncomingRatingProcessor> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IncomingRatingProcessor" /> class.
         /// </summary>
         /// <param name="repository">The repository for incoming ratings.</param>
         /// <param name="showService">The show service.</param>
+        /// <param name="logger">The logger.</param>
         public IncomingRatingProcessor(
             IIncomingRatingRepository repository,
-            IShowService showService)
+            IShowService showService,
+            ILogger<IncomingRatingProcessor> logger)
         {
             this.repository = repository;
             this.showService = showService;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -38,10 +46,19 @@ namespace TvMazeScraper.Core.Workers
         /// <returns>
         /// A Task.
         /// </returns>
-        public Task ProcessIncomingRatings()
+        public async Task ProcessIncomingRatings()
         {
-            // TODO: read queue (possibly with a limit) and store all ratings found (using ShowService)
-            throw new NotImplementedException();
+            // read queue and store all ratings found (using ShowService)
+            var ratings = await this.repository.GetQueuedRatings(RatingsPerTry)
+                .ConfigureAwait(false);
+            this.logger.LogInformation("Found {count} fresh ratings", ratings.Count);
+
+            foreach (var rating in ratings)
+            {
+                await this.showService.SetRating(rating.ShowId, rating.Rating).ConfigureAwait(false);
+            }
+
+            this.logger.LogInformation("Updated {count} fresh ratings", ratings.Count);
         }
     }
 }

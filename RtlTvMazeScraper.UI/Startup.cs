@@ -238,7 +238,7 @@ namespace TvMazeScraper.UI
 
             // background services: rating queue processing
             services.AddScoped<IIncomingRatingProcessor, IncomingRatingProcessor>();
-            services.AddTransient<IIncomingRatingRepository, IncomingRatingQueueRepository>();
+            services.AddTransient<IIncomingRatingRepository, IncomingRatingQueueRepository>(sp => new IncomingRatingQueueRepository(this.Configuration));
             services.AddHostedService<RatingQueueHostedService>();
         }
 
