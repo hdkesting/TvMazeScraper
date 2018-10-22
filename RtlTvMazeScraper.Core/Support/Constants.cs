@@ -25,5 +25,10 @@ namespace TvMazeScraper.Core.Support
         /// The key for the omdb client.
         /// </summary>
         public static readonly string OmdbClient = "omdbapi";
+
+        /// <summary>
+        /// The key for the omdb micro service.
+        /// </summary>
+        public static readonly string OmdbMicroService = "OmdbMicroService";
     }
 }

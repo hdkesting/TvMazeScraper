@@ -7,6 +7,7 @@ namespace TvMazeScraper.Core.Interfaces
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using TvMazeScraper.Core.Support.Events;
     using TvMazeScraper.Core.Transfer;
 
     /// <summary>
@@ -33,5 +34,15 @@ namespace TvMazeScraper.Core.Interfaces
         /// The response status and the json (if any).
         /// </returns>
         Task<ApiResponse> RequestJsonForOmdb(Uri relativePath, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Starts the enriching of the show data.
+        /// </summary>
+        /// <remarks>
+        /// It may take a while (hours, days) for the answer to arrive.
+        /// </remarks>
+        /// <param name="message">The message.</param>
+        /// <returns>A Task with a value indicating whether the operation was succesful.</returns>
+        Task<bool> StartEnrichingShow(ShowStoredEvent message);
     }
 }

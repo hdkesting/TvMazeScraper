@@ -24,7 +24,9 @@ namespace TvMazeScraper.Core.Services
         /// </summary>
         /// <param name="showService">The show service.</param>
         /// <param name="apiRepository">The API repository.</param>
-        public OmdbService(IShowService showService, IApiRepository apiRepository)
+        public OmdbService(
+            IShowService showService,
+            IApiRepository apiRepository)
         {
             this.showService = showService;
             this.apiRepository = apiRepository;
@@ -39,13 +41,28 @@ namespace TvMazeScraper.Core.Services
         public static string ApiKey { get; set; }
 
         /// <summary>
-        /// Enriches the show, by getting the IMDb rating.
+        /// Enriches the show, by queueing a request for the IMDb rating.
         /// </summary>
         /// <param name="message">The message detailing the show to enrich.</param>
         /// <returns>
         /// A <see cref="Task" />.
         /// </returns>
         public async Task EnrichShowWithRating(ShowStoredEvent message)
+        {
+            var success = await this.apiRepository.StartEnrichingShow(message).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Enriches the show, by getting the IMDb rating.
+        /// </summary>
+        /// <remarks>
+        /// Will silently fail if omdb is blocked (after 1000 request per day).
+        /// </remarks>
+        /// <param name="message">The message detailing the show to enrich.</param>
+        /// <returns>
+        /// A <see cref="Task" />.
+        /// </returns>
+        public async Task EnrichShowWithRatingThoughDirectOmdbCall(ShowStoredEvent message)
         {
             var uri = new Uri($"?apikey={ApiKey}&i={message.ImdbId}", UriKind.Relative);
             var response = await this.apiRepository.RequestJsonForOmdb(uri).ConfigureAwait(false);

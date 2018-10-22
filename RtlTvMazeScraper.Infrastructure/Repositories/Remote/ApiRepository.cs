@@ -9,8 +9,10 @@ namespace TvMazeScraper.Infrastructure.Repositories.Remote
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using TvMazeScraper.Core.Interfaces;
     using TvMazeScraper.Core.Support;
+    using TvMazeScraper.Core.Support.Events;
     using TvMazeScraper.Core.Transfer;
 
     /// <summary>
@@ -19,14 +21,17 @@ namespace TvMazeScraper.Infrastructure.Repositories.Remote
     public class ApiRepository : IApiRepository
     {
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly ILogger<ApiRepository> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiRepository" /> class.
         /// </summary>
         /// <param name="httpClientFactory">The HTTP client factory.</param>
-        public ApiRepository(IHttpClientFactory httpClientFactory)
+        /// <param name="logger">The logger.</param>
+        public ApiRepository(IHttpClientFactory httpClientFactory, ILogger<ApiRepository> logger)
         {
             this.httpClientFactory = httpClientFactory;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -53,6 +58,33 @@ namespace TvMazeScraper.Infrastructure.Repositories.Remote
         public Task<ApiResponse> RequestJsonForOmdb(Uri relativePath, CancellationToken cancellationToken = default(CancellationToken))
         {
             return this.RequestJson(Constants.OmdbClient, relativePath, cancellationToken);
+        }
+
+        /// <summary>
+        /// Starts the enriching of the show data.
+        /// </summary>
+        /// <remarks>
+        /// It may take a while (hours, days) for the answer to arrive.
+        /// </remarks>
+        /// <param name="message">The message.</param>
+        /// <returns>A Task with a value indicating whether the operation was succesful.</returns>
+        public async Task<bool> StartEnrichingShow(ShowStoredEvent message)
+        {
+            try
+            {
+                using (var httpClient = this.httpClientFactory.CreateClient(Constants.OmdbMicroService))
+                {
+                    var relUri = new Uri($"api/SubmitToQueue?imdbid={message.ImdbId}&showid={message.ShowId}", UriKind.Relative);
+                    var response = await httpClient.GetAsync(relUri).ConfigureAwait(false);
+
+                    return response.IsSuccessStatusCode;
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogCritical(ex, "Some issue in using client factory");
+                return false;
+            }
         }
 
         /// <summary>

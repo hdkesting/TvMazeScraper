@@ -10,6 +10,7 @@ namespace TvMazeScraper.Test.Mock
     using System.Threading;
     using System.Threading.Tasks;
     using TvMazeScraper.Core.Interfaces;
+    using TvMazeScraper.Core.Support.Events;
     using TvMazeScraper.Core.Transfer;
 
     /// <summary>
@@ -72,6 +73,18 @@ namespace TvMazeScraper.Test.Mock
         public Task<ApiResponse> RequestJsonForTvMaze(Uri relativePath, CancellationToken cancellation = default(CancellationToken))
         {
             return Task.FromResult(new ApiResponse(this.StatusToReturn, this.contentToReturn));
+        }
+
+        /// <summary>
+        /// Starts the enriching of the show data.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <returns>
+        /// A Task with a value indicating whether the operation was succesful.
+        /// </returns>
+        public Task<bool> StartEnrichingShow(ShowStoredEvent message)
+        {
+            return Task.FromResult(true);
         }
     }
 }

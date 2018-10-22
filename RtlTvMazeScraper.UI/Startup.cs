@@ -125,12 +125,19 @@ namespace TvMazeScraper.UI
             })
             .AddPolicyHandler(retryPolicy);
 
-            // OMDb: no retry policy useful (max 1000 per day)
+            // OMDb: no retry policy useful (max 1000 per day) - obsolete (use own microservice)
             var host2 = this.Configuration.GetSection("Config")["omdbapi"];
             services.AddHttpClient(Constants.OmdbClient, client =>
             {
                 client.BaseAddress = new Uri(host2);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            // OMDb microservice
+            var host3 = this.Configuration.GetSection("Config")["omdbsvc"];
+            services.AddHttpClient(Constants.OmdbMicroService, client =>
+            {
+                client.BaseAddress = new Uri(host3);
             });
 
             services.AddSignalR();

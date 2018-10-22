@@ -61,8 +61,10 @@ namespace TvMazeScraper.ImdbFunctions
 
             var rating = await GetRatingFromTable(tableCache, request.ImdbId).ConfigureAwait(false);
 
-            if (!(rating is null))
+            bool earlyexit = false;
+            if (!(rating is null) && rating.Rating > 0m)
             {
+                // there is a useful rating (I don't accept 0.0 as rating)
                 log.LogInformation($"Got a rating of {rating.Rating} from {rating.RetrievalDate}.");
 
                 // I got *some* rating. Just send it anyway, then maybe get a more recent one.
@@ -72,48 +74,56 @@ namespace TvMazeScraper.ImdbFunctions
                 {
                     // I got a recent rating, so there is no need to request it again.
                     log.LogInformation("Done quickly processing this item.");
-                    return;
-                }
-
-                log.LogInformation("Rating was old, so try and get fresh one.");
-            }
-
-            if (await OmdbIsBlocked(tableCache).ConfigureAwait(false))
-            {
-                log.LogWarning($"OMDb was blocked, postponing request for {OmdbDelay.TotalHours} hours.");
-
-                // re-enter in queue with updated timeout
-                await RequeueMessage(incomingQueueClient, json).ConfigureAwait(false);
-            }
-            else
-            {
-                // https://stackoverflow.com/questions/43556311/reading-settings-from-a-azure-function
-                var config = new ConfigurationBuilder()
-                    .SetBasePath(context.FunctionAppDirectory)
-                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                    .AddEnvironmentVariables()
-                    .Build();
-
-                string apiKey = config["omdbapikey"];
-                var (status, newrating) = await QueryOmdbForRating(apiKey, request.ImdbId).ConfigureAwait(false);
-
-                if (status == HttpStatusCode.OK)
-                {
-                    log.LogInformation($"Found a rating of {newrating} for {request.ImdbId}.");
-
-                    await StoreRatingInTable(tableCache, request.ImdbId, newrating).ConfigureAwait(false);
-                    await SendRatingMessage(resultQueueClient, request.ShowId, rating.Rating).ConfigureAwait(false);
-                }
-                else if (status == HttpStatusCode.NotFound)
-                {
-                    log.LogInformation($"Found NO rating for {request.ImdbId}. Ignoring.");
+                    earlyexit = true;
                 }
                 else
                 {
-                    // apparently recieved an error, probably "too much"
-                    log.LogWarning($"Got a response of {status} ({(int)status}) for {request.ImdbId}. Blocking for {OmdbDelay.TotalHours} hours.");
-                    await SetOmdbBlocked(tableCache).ConfigureAwait(false);
+                    log.LogInformation("Rating was old, so try and get fresh one.");
+                }
+            }
+
+            if (!earlyexit)
+            {
+                if (await OmdbIsBlocked(tableCache).ConfigureAwait(false))
+                {
+                    log.LogWarning($"OMDb was blocked, postponing request for {OmdbDelay.TotalHours} hours.");
+
+                    // re-enter in queue with updated timeout
                     await RequeueMessage(incomingQueueClient, json).ConfigureAwait(false);
+                }
+                else
+                {
+                    // https://stackoverflow.com/questions/43556311/reading-settings-from-a-azure-function
+                    var config = new ConfigurationBuilder()
+                        .SetBasePath(context.FunctionAppDirectory)
+                        .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                        .AddEnvironmentVariables()
+                        .Build();
+
+                    string apiKey = config["omdbapikey"];
+                    var (status, newrating) = await QueryOmdbForRating(apiKey, request.ImdbId).ConfigureAwait(false);
+
+                    if (status == HttpStatusCode.OK)
+                    {
+                        log.LogInformation($"Found a rating of {newrating} for {request.ImdbId}.");
+
+                        if (newrating > 0m)
+                        {
+                            await StoreRatingInTable(tableCache, request.ImdbId, newrating).ConfigureAwait(false);
+                            await SendRatingMessage(resultQueueClient, request.ShowId, rating.Rating).ConfigureAwait(false);
+                        }
+                    }
+                    else if (status == HttpStatusCode.NotFound)
+                    {
+                        log.LogInformation($"Found NO rating for {request.ImdbId}. Ignoring.");
+                    }
+                    else
+                    {
+                        // apparently recieved an error, probably "too much"
+                        log.LogWarning($"Got a response of {status} ({(int)status}) for {request.ImdbId}. Blocking for {OmdbDelay.TotalHours} hours.");
+                        await SetOmdbBlocked(tableCache).ConfigureAwait(false);
+                        await RequeueMessage(incomingQueueClient, json).ConfigureAwait(false);
+                    }
                 }
             }
 
