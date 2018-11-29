@@ -17,6 +17,7 @@ namespace TvMazeScraper.Infrastructure.Mongo.Repositories
     using TvMazeScraper.Infrastructure.Mongo.Model;
 
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes, because it is instantiated through DI.
+
     /// <summary>
     /// Repository for shows, using MongoDB as back-end.
     /// </summary>
@@ -206,6 +207,24 @@ namespace TvMazeScraper.Infrastructure.Mongo.Repositories
                 show.ImdbRating = rating;
                 await this.collection.ReplaceOneAsync(filter, show).ConfigureAwait(false);
             }
+        }
+
+        /// <summary>
+        /// Gets <paramref name="count" /> shows without rating.
+        /// </summary>
+        /// <param name="count">The max number of shows to return.</param>
+        /// <returns>
+        /// A list of shows.
+        /// </returns>
+        public async Task<List<ShowDto>> GetShowsWithoutRating(int count)
+        {
+            var filter = Builders<ShowWithCast>.Filter.Eq(s => s.ImdbRating, null);
+            var shows = await this.collection.Find(filter)
+                .SortBy(s => s.Id)
+                .ToListAsync().ConfigureAwait(false);
+
+            // TODO add the "Take" to the query, so I don't get *all*
+            return shows.Take(count).Select(ConvertShowToDto).ToList();
         }
 
         private static ShowDto ConvertShowToDto(ShowWithCast mongoShow)

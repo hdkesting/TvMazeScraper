@@ -238,6 +238,24 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
             }
         }
 
+        /// <summary>
+        /// Gets <paramref name="count" /> shows without rating.
+        /// </summary>
+        /// <param name="count">The max number of shows to return.</param>
+        /// <returns>
+        /// A list of shows.
+        /// </returns>
+        public async Task<List<ShowDto>> GetShowsWithoutRating(int count)
+        {
+            var shows = await this.showContext.Shows
+                .Where(s => !s.ImdbRating.HasValue)
+                .OrderBy(s => s.Id)
+                .Take(count)
+                .ToListAsync().ConfigureAwait(false);
+
+            return shows.Select(this.ConvertShow).ToList();
+        }
+
         private Task<Show> GetLocalShowById(int id)
         {
             return this.showContext.Shows
@@ -249,7 +267,7 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
         private ShowDto ConvertShow(Show localshow)
         {
             // TODO use mapper
-            var coreshow = new ShowDto { Id = localshow.Id, Name = localshow.Name };
+            var coreshow = new ShowDto { Id = localshow.Id, Name = localshow.Name, ImdbId = localshow.ImdbId, ImdbRating = localshow.ImdbRating };
             coreshow.CastMembers.AddRange(localshow.ShowCastMembers
                 .Select(scm => scm.CastMember)
                 .Select(cm => new CastMemberDto { Id = cm.Id, Name = cm.Name, Birthdate = cm.Birthdate }));
@@ -258,7 +276,7 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
 
         private Show ConvertShow(ShowDto coreshow)
         {
-            var modelshow = new Show { Id = coreshow.Id, Name = coreshow.Name };
+            var modelshow = new Show { Id = coreshow.Id, Name = coreshow.Name, ImdbId = coreshow.ImdbId, ImdbRating = coreshow.ImdbRating };
             modelshow.ShowCastMembers.AddRange(coreshow.CastMembers
                 .Select(cm => new ShowCastMember
                 {

@@ -62,7 +62,7 @@ namespace TvMazeScraper.ImdbFunctions
                 // there is a useful rating (I don't accept 0.0 as rating)
                 log.LogInformation($"Got a rating of {rating.Rating} from {rating.RetrievalDate}.");
 
-                if (cacheTableService.IsRecentEnough(rating.RetrievalDate))
+                if (CacheTableService.IsRecentEnough(rating.RetrievalDate))
                 {
                     // I got a recent rating, so there is no need to request it again.
                     log.LogInformation("Done quickly processing this item.");

@@ -59,7 +59,7 @@ namespace TvMazeScraper.ImdbFunctions
                 // there is a rating (might be "unknown")
                 log.LogInformation($"Got a rating of {rating.Rating} from {rating.RetrievalDate}.");
 
-                if (!cacheTableService.IsRecentEnough(rating.RetrievalDate))
+                if (!CacheTableService.IsRecentEnough(rating.RetrievalDate))
                 {
                     log.LogInformation("Rating was old, so try and get fresh one.");
                     await queueService.QueueMessage(new RatingRequest { ImdbId = imdbId }).ConfigureAwait(false);

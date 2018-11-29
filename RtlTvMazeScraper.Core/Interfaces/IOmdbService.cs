@@ -4,12 +4,14 @@
 
 namespace TvMazeScraper.Core.Interfaces
 {
+    using System;
     using System.Threading.Tasks;
     using TvMazeScraper.Core.Support.Events;
 
     /// <summary>
     /// The service that calls the Open Movie Database API.
     /// </summary>
+    [Obsolete("Use function call", true)]
     public interface IOmdbService
     {
         /// <summary>

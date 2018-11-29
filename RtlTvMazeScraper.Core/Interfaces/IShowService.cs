@@ -77,5 +77,12 @@ namespace TvMazeScraper.Core.Interfaces
         /// <param name="rating">The IMDb rating.</param>
         /// <returns>A <see cref="Task"/>.</returns>
         Task SetRating(int showId, decimal rating);
+
+        /// <summary>
+        /// Gets <paramref name="count"/> shows without rating.
+        /// </summary>
+        /// <param name="count">The max number of shows to return.</param>
+        /// <returns>A list of shows.</returns>
+        Task<List<ShowDto>> GetShowsWithoutRating(int count);
     }
 }

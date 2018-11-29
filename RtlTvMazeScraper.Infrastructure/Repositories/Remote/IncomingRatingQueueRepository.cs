@@ -18,6 +18,7 @@ namespace TvMazeScraper.Infrastructure.Repositories.Remote
     /// Repository to access the Azure Queue that stores the ratings.
     /// </summary>
     /// <seealso cref="TvMazeScraper.Core.Interfaces.IIncomingRatingRepository" />
+    [Obsolete("replace by a call to QueryRating", true)]
     public class IncomingRatingQueueRepository : IIncomingRatingRepository
     {
         private readonly CloudQueue queue;

@@ -4,6 +4,7 @@
 
 namespace TvMazeScraper.Core.Interfaces
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using TvMazeScraper.Core.Transfer;
@@ -11,6 +12,7 @@ namespace TvMazeScraper.Core.Interfaces
     /// <summary>
     /// Access queued ratings.
     /// </summary>
+    [Obsolete("replace by a call to QueryRating", true)]
     public interface IIncomingRatingRepository
     {
         /// <summary>

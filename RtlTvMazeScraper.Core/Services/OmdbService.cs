@@ -14,6 +14,7 @@ namespace TvMazeScraper.Core.Services
     /// The service that calls the Open Movie Database API.
     /// </summary>
     /// <seealso cref="IOmdbService" />
+    [Obsolete("Use function call", true)]
     public sealed class OmdbService : IOmdbService
     {
         private readonly IShowService showService;

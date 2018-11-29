@@ -1,4 +1,4 @@
-﻿// <copyright file="RatingQueueHostedService.cs" company="Hans Keﬆing">
+﻿// <copyright file="RatingHostedService.cs" company="Hans Keﬆing">
 // Copyright (c) Hans Keﬆing. All rights reserved.
 // </copyright>
 
@@ -15,27 +15,26 @@ namespace TvMazeScraper.UI.Workers
     using TvMazeScraper.Core.Interfaces;
 
     /// <summary>
-    /// Queue reader to store fresh ratings.
+    /// Hosted service to add ratings to stored shows.
     /// </summary>
-    /// <seealso cref="IHostedService" />
+    /// <seealso cref="Microsoft.Extensions.Hosting.IHostedService" />
     /// <seealso cref="System.IDisposable" />
-    [Obsolete("replace by a call to QueryRating", true)]
-    public sealed class RatingQueueHostedService : IHostedService, IDisposable
+    public sealed class RatingHostedService : IHostedService, IDisposable
     {
-        private static readonly TimeSpan CheckInterval = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan CheckInterval = TimeSpan.FromMinutes(6);
 
         private readonly IServiceProvider services;
-        private readonly ILogger<RatingQueueHostedService> logger;
+        private readonly ILogger<RatingHostedService> logger;
         private Timer timer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RatingQueueHostedService"/> class.
+        /// Initializes a new instance of the <see cref="RatingHostedService"/> class.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="logger">The logger.</param>
-        public RatingQueueHostedService(
+        public RatingHostedService(
             IServiceProvider services,
-            ILogger<RatingQueueHostedService> logger)
+            ILogger<RatingHostedService> logger)
         {
             this.services = services;
             this.logger = logger;
@@ -90,11 +89,22 @@ namespace TvMazeScraper.UI.Workers
         {
             using (var scope = this.services.CreateScope())
             {
-                var ratingProcessor =
-                    scope.ServiceProvider
-                        .GetRequiredService<IIncomingRatingProcessor>();
+                ////var ratingProcessor =
+                ////    scope.ServiceProvider
+                ////        .GetRequiredService<IIncomingRatingProcessor>();
 
-                await ratingProcessor.ProcessIncomingRatings().ConfigureAwait(false);
+                ////await ratingProcessor.ProcessIncomingRatings().ConfigureAwait(false);
+
+                /* show service: get number of shows without rating
+                 * loop through list, trying to get rating (service that calls Infrastructure.Remote.RatingQueryRepository)
+                 * if found, set (using show service)
+                 */
+
+                var showService = scope.ServiceProvider.GetRequiredService<IShowService>();
+
+                var shows = await showService.GetShowsWithoutRating(20).ConfigureAwait(false);
+
+                // TODO process them
             }
         }
     }

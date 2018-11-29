@@ -34,6 +34,18 @@ namespace TvMazeScraper.ImdbFunctions.Services
         }
 
         /// <summary>
+        /// Determines whether the specified retrieval date of the rating is recent enough so that we don't need to request it again.
+        /// </summary>
+        /// <param name="retrievalDate">The retrieval date.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified retrieval date is recent enough; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsRecentEnough(DateTimeOffset retrievalDate)
+        {
+            return DateTimeOffset.Now - retrievalDate < RatingMaxAge;
+        }
+
+        /// <summary>
         /// Gets the rating for the specified IMDB Id, if known.
         /// </summary>
         /// <param name="imdbId">The imdb identifier.</param>
@@ -95,18 +107,6 @@ namespace TvMazeScraper.ImdbFunctions.Services
             };
             var operation = TableOperation.InsertOrReplace(block);
             await this.tableCache.ExecuteAsync(operation).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Determines whether the specified retrieval date of the rating is recent enough so that we don't need to request it again.
-        /// </summary>
-        /// <param name="retrievalDate">The retrieval date.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified retrieval date is recent enough; otherwise, <c>false</c>.
-        /// </returns>
-        public bool IsRecentEnough(DateTimeOffset retrievalDate)
-        {
-            return DateTimeOffset.Now - retrievalDate < RatingMaxAge;
         }
     }
 }

@@ -16,6 +16,7 @@ namespace TvMazeScraper.Core.Workers
     /// Processes the ratings as written to the Azure queue.
     /// </summary>
     /// <seealso cref="TvMazeScraper.Core.Interfaces.IIncomingRatingProcessor" />
+    [Obsolete("replace by a call to QueryRating", true)]
     public class IncomingRatingProcessor : IIncomingRatingProcessor
     {
         private const int RatingsPerTry = 20;

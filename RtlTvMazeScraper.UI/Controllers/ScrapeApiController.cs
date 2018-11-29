@@ -10,7 +10,7 @@ namespace TvMazeScraper.UI.Controllers
     using TvMazeScraper.UI.Workers;
 
     /// <summary>
-    /// An API controller to start/stop scraping.
+    /// An API controller to start/stop scraping by a background service.
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route("api/scraper")]

@@ -16,7 +16,7 @@ namespace TvMazeScraper.UI.Workers
     using TvMazeScraper.UI.ViewModels;
 
     /// <summary>
-    /// Scraper worker process.
+    /// Worker process to scrape the TvMaze site.
     /// </summary>
     public sealed class ScraperWorker : IScraperWorker
     {

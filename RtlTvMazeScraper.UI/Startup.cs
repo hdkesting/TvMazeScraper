@@ -176,7 +176,7 @@ namespace TvMazeScraper.UI
             });
 
             // apikey is stored as "secret"
-            OmdbService.ApiKey = this.Configuration["omdbApiKey"] ?? throw new InvalidOperationException("The secret omdbApiKey is missing");
+            ////OmdbService.ApiKey = this.Configuration["omdbApiKey"] ?? throw new InvalidOperationException("The secret omdbApiKey is missing");
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace TvMazeScraper.UI
         /// </summary>
         private static void ConfigureSubscriptions()
         {
-            MessageHub.Subscribe<IOmdbService, ShowStoredEvent>(nameof(IOmdbService.EnrichShowWithRating));
+            ////MessageHub.Subscribe<IOmdbService, ShowStoredEvent>(nameof(IOmdbService.EnrichShowWithRating));
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace TvMazeScraper.UI
             services.AddScoped<IShowService, ShowService>();
             services.AddScoped<ITvMazeService, TvMazeService>();
 
-            services.AddTransient<IOmdbService, OmdbService>();
+            ////services.AddTransient<IOmdbService, OmdbService>();
 
             var persistence = this.GetStorageType();
             switch (persistence)
@@ -244,9 +244,9 @@ namespace TvMazeScraper.UI
             services.AddHostedService<ShowLoaderHostedService>();
 
             // background services: rating queue processing
-            services.AddScoped<IIncomingRatingProcessor, IncomingRatingProcessor>();
-            services.AddTransient<IIncomingRatingRepository, IncomingRatingQueueRepository>(sp => new IncomingRatingQueueRepository(this.Configuration));
-            services.AddHostedService<RatingQueueHostedService>();
+            ////services.AddScoped<IIncomingRatingProcessor, IncomingRatingProcessor>();
+            ////services.AddTransient<IIncomingRatingRepository, IncomingRatingQueueRepository>(sp => new IncomingRatingQueueRepository(this.Configuration));
+            ////services.AddHostedService<RatingQueueHostedService>();
         }
 
         private Storage GetStorageType()

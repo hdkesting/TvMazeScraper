@@ -174,5 +174,17 @@ namespace TvMazeScraper.Core.Services
         {
             return this.showRepository.SetRating(showId, rating);
         }
+
+        /// <summary>
+        /// Gets <paramref name="count" /> shows without rating.
+        /// </summary>
+        /// <param name="count">The max number of shows to return.</param>
+        /// <returns>
+        /// A list of shows.
+        /// </returns>
+        public Task<List<ShowDto>> GetShowsWithoutRating(int count)
+        {
+            return this.showRepository.GetShowsWithoutRating(count);
+        }
     }
 }

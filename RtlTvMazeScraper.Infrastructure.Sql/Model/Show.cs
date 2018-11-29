@@ -4,6 +4,7 @@
 
 namespace TvMazeScraper.Infrastructure.Sql.Model
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -47,6 +48,14 @@ namespace TvMazeScraper.Infrastructure.Sql.Model
         /// The IMDb rating, a value between 1.0 and 10.0.
         /// </value>
         public decimal? ImdbRating { get; set; }
+
+        /// <summary>
+        /// Gets or sets date/time this show was last modified.
+        /// </summary>
+        /// <value>
+        /// The last modified date.
+        /// </value>
+        public DateTimeOffset LastModified { get; set; } = new DateTimeOffset(2018, 10, 1, 0, 0, 0, TimeSpan.Zero);
 
         /// <summary>
         /// Gets the show's cast.
