@@ -7,6 +7,7 @@ namespace TvMazeScraper.Core.Test
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AutoMapper;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,7 +17,7 @@ namespace TvMazeScraper.Core.Test
     using TvMazeScraper.Test.Mock;
 
     /// <summary>
-    /// Test the <see cref="ShowService"/> against a live (local) database.
+    /// Test the <see cref="ShowService"/> against a live (local) database. This means it depends on stored data!
     /// </summary>
     /// <remarks>
     /// The service just passes the requests through to the repository, so when I mock that repository, there is nothing left to test. 
@@ -48,7 +49,13 @@ namespace TvMazeScraper.Core.Test
             var context = new ShowContext(options);
 
             var repologger = new DebugLogger<ShowRepository>();
-            var showRepo = new ShowRepository(repologger, context);
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+                Infrastructure.Sql.Startup.ConfigureMapping(cfg);
+            });
+            var mapper = mapperConfig.CreateMapper();
+
+            var showRepo = new ShowRepository(repologger, context, mapper);
 
             this.showServiceLogger = new DebugLogger<ShowService>();
             this.showService = new ShowService(showRepo, this.showServiceLogger, new MockMessageHub());
@@ -123,7 +130,7 @@ namespace TvMazeScraper.Core.Test
         [TestMethod]
         public async Task GetSingleShow()
         {
-            var show = await this.showService.GetShowById(42).ConfigureAwait(false);
+            var show = await this.showService.GetShowById(21).ConfigureAwait(false);
 
             show.Should().NotBeNull();
             show.Id.Should().BeGreaterThan(0);

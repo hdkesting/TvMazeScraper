@@ -6,6 +6,7 @@ namespace TvMazeScraper.UI.Test
 {
     using System;
     using System.Threading.Tasks;
+    using AutoMapper;
     using FluentAssertions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
@@ -39,7 +40,17 @@ namespace TvMazeScraper.UI.Test
                                  .Options;
             this.context = new ShowContext(options);
             this.showRepoLogger = new DebugLogger<ShowRepository>();
-            var showRepo = new ShowRepository(this.showRepoLogger, this.context);
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Core.DTO.ShowDto, ShowForJson>()
+                   .ForMember(dest => dest.Cast, opt => opt.MapFrom(src => src.CastMembers));
+                cfg.CreateMap<Core.DTO.CastMemberDto, CastMemberForJson>();
+
+                Infrastructure.Sql.Startup.ConfigureMapping(cfg);
+            });
+            var mapper = mapperConfig.CreateMapper();
+
+            var showRepo = new ShowRepository(this.showRepoLogger, this.context, mapper);
 
             var svclogger = new DebugLogger<ShowService>();
             this.showService = new ShowService(showRepo, svclogger, new MockMessageHub());

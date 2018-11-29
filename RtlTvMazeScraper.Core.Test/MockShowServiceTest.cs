@@ -8,6 +8,7 @@ namespace TvMazeScraper.Core.Test
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AutoMapper;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -36,7 +37,13 @@ namespace TvMazeScraper.Core.Test
                                  .Options;
             this.context = new ShowContext(options);
             var repologger = new DebugLogger<ShowRepository>();
-            var showRepo = new ShowRepository(repologger, this.context);
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+                Infrastructure.Sql.Startup.ConfigureMapping(cfg);
+            });
+            var mapper = mapperConfig.CreateMapper();
+
+            var showRepo = new ShowRepository(repologger, context, mapper);
 
             var svclogger = new DebugLogger<ShowService>();
             this.showService = new ShowService(showRepo, svclogger, new MockMessageHub());
