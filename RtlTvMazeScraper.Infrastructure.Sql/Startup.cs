@@ -4,6 +4,8 @@
 
 namespace TvMazeScraper.Infrastructure.Sql
 {
+    using System.Linq;
+    using AutoMapper;
     using Microsoft.Extensions.DependencyInjection;
     using TvMazeScraper.Core.Interfaces;
     using TvMazeScraper.Infrastructure.Sql.Interfaces;
@@ -16,7 +18,7 @@ namespace TvMazeScraper.Infrastructure.Sql
     public static class Startup
     {
         /// <summary>
-        /// Configures the dependecy injection, specific for this project.
+        /// Configures the dependency injection, specific for this project.
         /// </summary>
         /// <param name="services">The services.</param>
         public static void ConfigureDI(IServiceCollection services)
@@ -25,6 +27,25 @@ namespace TvMazeScraper.Infrastructure.Sql
 
             // db context
             services.AddTransient<IShowContext, ShowContext>();
+        }
+
+        /// <summary>
+        /// Configures AutoMapper for local types.
+        /// </summary>
+        /// <param name="cfg">The CFG.</param>
+        public static void ConfigureMapping(IMapperConfigurationExpression cfg)
+        {
+            ////cfg.CreateMap<Core.DTO.ShowDto, ShowForJson>()
+            ////    .ForMember(dest => dest.Cast, opt => opt.MapFrom(src => src.CastMembers));
+            ////cfg.CreateMap<Core.DTO.CastMemberDto, CastMemberForJson>();
+
+            cfg.CreateMap<Show, Core.DTO.ShowDto>();
+            cfg.CreateMap<Core.DTO.ShowDto, Show>();
+
+            cfg.CreateMap<CastMember, Core.DTO.CastMemberDto>();
+            cfg.CreateMap<Core.DTO.CastMemberDto, CastMember>();
+
+            // TODO cast members
         }
     }
 }

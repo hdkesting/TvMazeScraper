@@ -5,6 +5,7 @@
     <Authors>Hans Kesting</Authors>
     <Company>Hans Kesting</Company>
     <Product>RTL TVMaze Scraper - Test Mocks</Product>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

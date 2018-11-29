@@ -183,13 +183,27 @@ namespace TvMazeScraper.UI
         /// Configures the mapping between various types.
         /// </summary>
         /// <returns>A configuration.</returns>
-        private static MapperConfiguration ConfigureMapping()
+        private static MapperConfiguration ConfigureMapping(Storage persistence)
         {
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Core.DTO.ShowDto, ShowForJson>()
                     .ForMember(dest => dest.Cast, opt => opt.MapFrom(src => src.CastMembers));
                 cfg.CreateMap<Core.DTO.CastMemberDto, CastMemberForJson>();
+
+                switch (persistence)
+                {
+                    case Storage.Sql:
+                        Infrastructure.Sql.Startup.ConfigureMapping(cfg);
+                        break;
+
+                    case Storage.MongoDB:
+                        Infrastructure.Mongo.Startup.ConfigureMapping(cfg);
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Unsupported storage type for mapping: " + persistence);
+                }
             });
 
             return config;
@@ -236,7 +250,7 @@ namespace TvMazeScraper.UI
             }
 
             // other
-            var mappingConfig = ConfigureMapping();
+            var mappingConfig = ConfigureMapping(persistence);
             services.AddSingleton<IMapper, IMapper>(sp => mappingConfig.CreateMapper());
 
             // background services: signalR based scraper

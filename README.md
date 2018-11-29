@@ -2,7 +2,7 @@
 
 A sample application that scrapes data about (TV) shows and their cast from TVMaze, stores it locally and can return it (paged) as JSON.
 
-This should showcase industry-standard practices in coding style.
+This should investigate industry-standard practices in coding style and modern application structure.
 
 ## Background
 For a new metadata ingester we need a service that provides the cast of all the tv shows in the TVMaze database, so we can enrich our metadata system with this information. The TVMaze database provides a public REST API that you can query for this data:
@@ -64,7 +64,11 @@ Add a SignalR system to communicate between a background scraper and the browser
 
 ### MongoDB
 Use MongoDB as storage medium instead of SqlServer. Switch between them through a configuration setting.
+Some configuration depends on the specific storage medium used.
 
 ### Enrich data through other system
 When a Show is stored with data from TvMaze, fire an event that causes this show to be enriched with data from another webservice.
 Use the OMDb API to get the IMDb rating and store it as part of the show.
+
+As the OMDB API accepts at most 1000 requests per day, add this rating asynchrounously. 
+Use an Azure Function between this application and OMDB that can queue queries and cache the results.

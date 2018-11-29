@@ -4,6 +4,7 @@
 
 namespace TvMazeScraper.Infrastructure.Mongo.Model
 {
+    using System;
     using System.Collections.Generic;
     using TvMazeScraper.Core.DTO;
 
@@ -47,6 +48,14 @@ namespace TvMazeScraper.Infrastructure.Mongo.Model
         /// The IMDb rating, a value between 1.0 and 10.0.
         /// </value>
         public decimal? ImdbRating { get; set; }
+
+        /// <summary>
+        /// Gets or sets date/time this show was last modified.
+        /// </summary>
+        /// <value>
+        /// The last modified date.
+        /// </value>
+        public DateTimeOffset LastModified { get; set; } = new DateTimeOffset(2018, 10, 1, 0, 0, 0, TimeSpan.Zero);
 
 #pragma warning disable CA2227 // Collection properties should be read only - MongoDB needs to be able to write to it.
 

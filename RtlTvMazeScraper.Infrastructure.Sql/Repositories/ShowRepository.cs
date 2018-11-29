@@ -9,6 +9,7 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AutoMapper;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using TvMazeScraper.Core.DTO;
@@ -25,6 +26,7 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
     {
         private readonly ILogger<ShowRepository> logger;
         private readonly IShowContext showContext;
+        private readonly IMapper mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShowRepository" /> class.
@@ -33,10 +35,12 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
         /// <param name="showContext">The show context.</param>
         public ShowRepository(
             ILogger<ShowRepository> logger,
-            IShowContext showContext)
+            IShowContext showContext,
+            IMapper mapper)
         {
             this.logger = logger;
             this.showContext = showContext;
+            this.mapper = mapper;
         }
 
         /// <summary>
@@ -128,6 +132,7 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
                     }
 
                     var localshow = this.ConvertShow(show);
+                    localshow.LastModified = DateTimeOffset.Now;
                     var existingShow = await this.GetLocalShowById(show.Id).ConfigureAwait(false);
 
                     if (existingShow is null)
@@ -234,6 +239,7 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
             if (show != null)
             {
                 show.ImdbRating = rating;
+                show.LastModified = DateTimeOffset.Now;
                 await this.showContext.SaveChangesAsync().ConfigureAwait(false);
             }
         }
@@ -256,39 +262,36 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
             return shows.Select(this.ConvertShow).ToList();
         }
 
+        private ShowDto ConvertShow(Show localshow)
+        {
+            var coreshow = this.mapper.Map<ShowDto>(localshow);
+            ////new ShowDto { Id = localshow.Id, Name = localshow.Name, ImdbId = localshow.ImdbId, ImdbRating = localshow.ImdbRating };
+
+            coreshow.CastMembers.AddRange(localshow.ShowCastMembers
+                .Select(scm => this.mapper.Map<CastMemberDto>(scm.CastMember)));
+            return coreshow;
+        }
+
+        private Show ConvertShow(ShowDto coreshow)
+        {
+            var modelshow = this.mapper.Map<Show>(coreshow);
+            ////new Show { Id = coreshow.Id, Name = coreshow.Name, ImdbId = coreshow.ImdbId, ImdbRating = coreshow.ImdbRating };
+
+            modelshow.ShowCastMembers.AddRange(coreshow.CastMembers
+                .Select(cm => new ShowCastMember
+                {
+                    Show = modelshow,
+                    CastMember = this.mapper.Map<CastMember>(cm),
+                }));
+            return modelshow;
+        }
+
         private Task<Show> GetLocalShowById(int id)
         {
             return this.showContext.Shows
                 .Include(s => s.ShowCastMembers)
                 .ThenInclude(scm => scm.CastMember)
                 .FirstOrDefaultAsync(s => s.Id == id);
-        }
-
-        private ShowDto ConvertShow(Show localshow)
-        {
-            // TODO use mapper
-            var coreshow = new ShowDto { Id = localshow.Id, Name = localshow.Name, ImdbId = localshow.ImdbId, ImdbRating = localshow.ImdbRating };
-            coreshow.CastMembers.AddRange(localshow.ShowCastMembers
-                .Select(scm => scm.CastMember)
-                .Select(cm => new CastMemberDto { Id = cm.Id, Name = cm.Name, Birthdate = cm.Birthdate }));
-            return coreshow;
-        }
-
-        private Show ConvertShow(ShowDto coreshow)
-        {
-            var modelshow = new Show { Id = coreshow.Id, Name = coreshow.Name, ImdbId = coreshow.ImdbId, ImdbRating = coreshow.ImdbRating };
-            modelshow.ShowCastMembers.AddRange(coreshow.CastMembers
-                .Select(cm => new ShowCastMember
-                {
-                    Show = modelshow,
-                    CastMember = new CastMember
-                    {
-                        Id = cm.Id,
-                        Name = cm.Name,
-                        Birthdate = cm.Birthdate,
-                    },
-                }));
-            return modelshow;
         }
 
         private Task AddShow(Show show)

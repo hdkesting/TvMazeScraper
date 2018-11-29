@@ -10,6 +10,8 @@
     <Company>Hans Kesting</Company>
 
     <Product>RTL TVMaze Scraper - Core UnitTest</Product>
+
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

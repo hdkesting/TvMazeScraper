@@ -11,6 +11,6 @@ Create a new migration
 Directly update the configured database
 > PM> Update-Database
 
-Generate an update script
-> PM> Script-Migration
+Generate an update script to upgrade from "original migration" (leave out to start from zero)
+> PM> Script-Migration *original migration*
 
