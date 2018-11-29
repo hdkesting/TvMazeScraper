@@ -267,3 +267,5 @@ __pycache__/
 
 RtlTvMazeScraper/Web.Release.config
 RtlTvMazeScraper/Web.Debug.config
+.Development.json
+RtlTvMazeScraper.UI/appsettings.Development.json
