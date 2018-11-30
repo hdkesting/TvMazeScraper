@@ -18,7 +18,7 @@ namespace TvMazeScraper.ImdbFunctions.Model
         public string ImdbId { get; set; }
 
         /// <summary>
-        /// Gets or sets the (TvMaze) show identifier.
+        /// Gets or sets the (TvMaze) show identifier. Not used anymore.
         /// </summary>
         /// <value>
         /// The show identifier.

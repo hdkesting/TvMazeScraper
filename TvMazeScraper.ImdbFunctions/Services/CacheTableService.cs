@@ -52,7 +52,7 @@ namespace TvMazeScraper.ImdbFunctions.Services
         /// <returns>A Task of <see cref="RatingCacheItem"/>.</returns>
         public async Task<RatingCacheItem> GetRating(string imdbId)
         {
-            var getOperation = TableOperation.Retrieve<RatingCacheItem>(RatingCacheItem.RatingsPartitionKey, imdbId);
+            var getOperation = TableOperation.Retrieve<RatingCacheItem>(RatingCacheItem.GetPartitionKeyForImdbId(imdbId), imdbId);
 
             var result = await this.tableCache.ExecuteAsync(getOperation).ConfigureAwait(false);
 
@@ -91,7 +91,7 @@ namespace TvMazeScraper.ImdbFunctions.Services
                 return false;
             }
 
-            return ((OmdbBlock)result.Result).BlockedUntil > DateTimeOffset.Now;
+            return ((OmdbBlock)result.Result).Date > DateTimeOffset.Now;
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace TvMazeScraper.ImdbFunctions.Services
         {
             var block = new OmdbBlock
             {
-                BlockedUntil = DateTimeOffset.Now + OmdbDelay,
+                Date = DateTimeOffset.Now + OmdbDelay,
             };
             var operation = TableOperation.InsertOrReplace(block);
             await this.tableCache.ExecuteAsync(operation).ConfigureAwait(false);

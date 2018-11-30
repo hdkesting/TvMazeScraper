@@ -15,7 +15,7 @@ namespace TvMazeScraper.ImdbFunctions.Model
         /// <summary>
         /// The partition key for the ratings.
         /// </summary>
-        public const string RatingsPartitionKey = "ratings";
+        private const string RatingsPartitionKey = "ratings";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RatingCacheItem"/> class.
@@ -36,9 +36,10 @@ namespace TvMazeScraper.ImdbFunctions.Model
         public RatingCacheItem(string imdbId, decimal rating)
             : this()
         {
+            this.PartitionKey = GetPartitionKeyForImdbId(imdbId);
             this.ImdbId = this.RowKey = imdbId;
-            this.Rating = rating;
-            this.RetrievalDate = DateTimeOffset.Now;
+            this.ScaledRating = (int)(rating * 100);
+            this.Date = DateTimeOffset.Now;
         }
 
         /// <summary>
@@ -50,12 +51,12 @@ namespace TvMazeScraper.ImdbFunctions.Model
         public string ImdbId { get; set; }
 
         /// <summary>
-        /// Gets or sets the IMDb rating.
+        /// Gets or sets the scaled (0..100) IMDb rating.
         /// </summary>
         /// <value>
         /// The rating.
         /// </value>
-        public decimal Rating { get; set; }
+        public int ScaledRating { get; set; }
 
         /// <summary>
         /// Gets or sets the date the rating was retrieved.
@@ -63,6 +64,16 @@ namespace TvMazeScraper.ImdbFunctions.Model
         /// <value>
         /// The retrieval date.
         /// </value>
-        public DateTimeOffset RetrievalDate { get; set; }
+        public DateTimeOffset Date { get; set; }
+
+        /// <summary>
+        /// Gets the partition key for the specified IMDB id.
+        /// </summary>
+        /// <param name="imdbId">The imdb identifier.</param>
+        /// <returns>A key value.</returns>
+        public static string GetPartitionKeyForImdbId(string imdbId)
+        {
+            return imdbId?.Substring(0, 5);
+        }
     }
 }

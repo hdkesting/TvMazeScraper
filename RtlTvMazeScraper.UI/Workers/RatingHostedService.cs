@@ -21,7 +21,7 @@ namespace TvMazeScraper.UI.Workers
     /// <seealso cref="System.IDisposable" />
     public sealed class RatingHostedService : IHostedService, IDisposable
     {
-        private static readonly TimeSpan CheckInterval = TimeSpan.FromMinutes(6);
+        private static readonly TimeSpan CheckInterval = TimeSpan.FromMinutes(1);
 
         private readonly IServiceProvider services;
         private readonly ILogger<RatingHostedService> logger;

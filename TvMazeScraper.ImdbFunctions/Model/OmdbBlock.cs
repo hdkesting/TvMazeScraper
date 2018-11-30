@@ -41,6 +41,6 @@ namespace TvMazeScraper.ImdbFunctions.Model
         /// <value>
         /// The blocked-until date.
         /// </value>
-        public DateTimeOffset BlockedUntil { get; set; }
+        public DateTimeOffset Date { get; set; }
     }
 }

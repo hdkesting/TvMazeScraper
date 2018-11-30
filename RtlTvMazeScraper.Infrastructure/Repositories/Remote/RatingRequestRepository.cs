@@ -5,6 +5,7 @@
 namespace TvMazeScraper.Infrastructure.Repositories.Remote
 {
     using System;
+    using System.Globalization;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
@@ -55,7 +56,7 @@ namespace TvMazeScraper.Infrastructure.Repositories.Remote
                     var text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     this.logger.LogInformation("Found rating {Rating} for {ImdbId}", text, imdbId);
 
-                    if (decimal.TryParse(text, out decimal value))
+                    if (decimal.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out decimal value))
                     {
                         return value;
                     }

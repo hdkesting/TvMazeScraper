@@ -62,12 +62,12 @@ namespace TvMazeScraper.ImdbFunctions
             var rating = await cacheTableService.GetRating(request.ImdbId).ConfigureAwait(false);
 
             bool earlyexit = false;
-            if (!(rating is null) && rating.Rating > 0m)
+            if (!(rating is null) && rating.ScaledRating > 0)
             {
                 // there is a useful rating (I don't accept 0.0 as rating)
-                log.LogInformation($"Got a rating of {rating.Rating} from {rating.RetrievalDate}.");
+                log.LogInformation($"Got a rating of {rating.ScaledRating} from {rating.Date}.");
 
-                if (CacheTableService.IsRecentEnough(rating.RetrievalDate))
+                if (CacheTableService.IsRecentEnough(rating.Date))
                 {
                     // I got a recent rating, so there is no need to request it again.
                     log.LogInformation("Done quickly processing this item.");
