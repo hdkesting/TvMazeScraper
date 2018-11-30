@@ -18,8 +18,6 @@ namespace TvMazeScraper.UI
     using TvMazeScraper.Core.Interfaces;
     using TvMazeScraper.Core.Services;
     using TvMazeScraper.Core.Support;
-    using TvMazeScraper.Core.Support.Events;
-    using TvMazeScraper.Core.Workers;
     using TvMazeScraper.Infrastructure.Repositories.Local;
     using TvMazeScraper.Infrastructure.Repositories.Remote;
     using TvMazeScraper.Infrastructure.Sql.Model;
@@ -125,19 +123,11 @@ namespace TvMazeScraper.UI
             })
             .AddPolicyHandler(retryPolicy);
 
-            ////// OMDb: no retry policy useful (max 1000 per day) - OBSOLETE (use own microservice)
-            ////var host2 = this.Configuration.GetSection("Config")["omdbapi"];
-            ////services.AddHttpClient(Constants.OmdbClient, client =>
-            ////{
-            ////    client.BaseAddress = new Uri(host2);
-            ////    client.DefaultRequestHeaders.Add("Accept", "application/json");
-            ////});
-
             // OMDb microservice
-            var host3 = this.Configuration.GetValue<string>("Config:omdbsvc");
+            var host2 = this.Configuration.GetValue<string>("Config:omdbsvc");
             services.AddHttpClient(Constants.OmdbMicroService, client =>
             {
-                client.BaseAddress = new Uri(host3);
+                client.BaseAddress = new Uri(host2);
             });
 
             services.AddSignalR();

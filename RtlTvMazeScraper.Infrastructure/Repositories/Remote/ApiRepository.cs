@@ -48,20 +48,6 @@ namespace TvMazeScraper.Infrastructure.Repositories.Remote
         }
 
         /// <summary>
-        /// Requests the json from the specified URL, for OMDb.
-        /// </summary>
-        /// <param name="relativePath">The relative URL.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation. Default <see cref="CancellationToken.None"/>.</param>
-        /// <returns>
-        /// The response status and the json (if any).
-        /// </returns>
-        [Obsolete("use microservice")]
-        public Task<ApiResponse> RequestJsonForOmdb(Uri relativePath, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return this.RequestJson(Constants.OmdbClient, relativePath, cancellationToken);
-        }
-
-        /// <summary>
         /// Starts the enriching of the show data.
         /// </summary>
         /// <remarks>

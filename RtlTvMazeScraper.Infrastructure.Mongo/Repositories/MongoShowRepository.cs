@@ -243,6 +243,8 @@ namespace TvMazeScraper.Infrastructure.Mongo.Repositories
                 .Limit(count)
                 .ToListAsync().ConfigureAwait(false);
 
+            // TODO also require imdb id
+
             return shows.Select(ConvertShowToDto).ToList();
         }
 
