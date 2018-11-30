@@ -4,18 +4,14 @@
 
 namespace TvMazeScraper.ImdbFunctions
 {
-    using System;
-    using System.IO;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
-    using Microsoft.Azure.WebJobs.Host;
     using Microsoft.Extensions.Logging;
     using Microsoft.WindowsAzure.Storage.Queue;
     using Microsoft.WindowsAzure.Storage.Table;
-    using Newtonsoft.Json;
     using TvMazeScraper.ImdbFunctions.Model;
     using TvMazeScraper.ImdbFunctions.Services;
 
@@ -27,32 +23,43 @@ namespace TvMazeScraper.ImdbFunctions
         /// <summary>
         /// Runs the specified request.
         /// </summary>
-        /// <param name="req">The req.</param>
-        /// <param name="cacheTableService">The cache table service.</param>
-        /// <param name="queueService">The queue service.</param>
-        /// <param name="log">The log.</param>
-        /// <returns>A rating, if found.</returns>
+        /// <param name="req">The incoming request.</param>
+        /// <param name="tableCache">The table cache.</param>
+        /// <param name="queueClient">The queue client.</param>
+        /// <param name="log">The logger.</param>
+        /// <returns>
+        /// A rating, if found.
+        /// </returns>
         [FunctionName("QueryRating")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]
             HttpRequest req,
-            CacheTableService cacheTableService,
-            QueueService queueService,
+            [Table("imdbratingcache", Connection = "imdbrating")]
+            CloudTable tableCache,
+            [Queue("imdbratingqueue", Connection = "imdbrating")]
+            CloudQueue queueClient,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-
             string imdbId = req.Query["imdbid"];
+            log.LogInformation($"C# HTTP trigger function {nameof(QueryRating)} processed a request for '{imdbId}'.");
 
             if (string.IsNullOrWhiteSpace(imdbId))
             {
                 return new BadRequestResult();
             }
 
+            var cacheTableService = new CacheTableService(tableCache);
+            var queueService = new QueueService(queueClient);
+
             var rating = await cacheTableService.GetRating(imdbId).ConfigureAwait(false);
 
             if (rating is null)
             {
+                // no rating, so add to queue and terurn nothing. Come back later, maybe there is info then.
+                log.LogInformation("No rating found, so request will be queued.");
+                await queueService.QueueMessage(new RatingRequest { ImdbId = imdbId }).ConfigureAwait(false);
+
+                return new NoContentResult();
             }
             else
             {
@@ -64,17 +71,8 @@ namespace TvMazeScraper.ImdbFunctions
                     log.LogInformation("Rating was old, so try and get fresh one.");
                     await queueService.QueueMessage(new RatingRequest { ImdbId = imdbId }).ConfigureAwait(false);
                 }
-            }
 
-            decimal? ratingValue = rating?.Rating;
-
-            if (ratingValue.HasValue)
-            {
-                return new OkObjectResult(ratingValue.Value);
-            }
-            else
-            {
-                return new NoContentResult();
+                return new OkObjectResult(rating.Rating);
             }
         }
     }

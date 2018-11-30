@@ -89,22 +89,9 @@ namespace TvMazeScraper.UI.Workers
         {
             using (var scope = this.services.CreateScope())
             {
-                ////var ratingProcessor =
-                ////    scope.ServiceProvider
-                ////        .GetRequiredService<IIncomingRatingProcessor>();
+                var ratingService = scope.ServiceProvider.GetRequiredService<IRatingService>();
 
-                ////await ratingProcessor.ProcessIncomingRatings().ConfigureAwait(false);
-
-                /* show service: get number of shows without rating
-                 * loop through list, trying to get rating (service that calls Infrastructure.Remote.RatingQueryRepository)
-                 * if found, set (using show service)
-                 */
-
-                var showService = scope.ServiceProvider.GetRequiredService<IShowService>();
-
-                var shows = await showService.GetShowsWithoutRating(20).ConfigureAwait(false);
-
-                // TODO process them
+                await ratingService.ProcessSomeRatings(20).ConfigureAwait(false);
             }
         }
     }

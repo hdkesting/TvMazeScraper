@@ -55,6 +55,7 @@ namespace TvMazeScraper.Infrastructure.Repositories.Remote
         /// <returns>
         /// The response status and the json (if any).
         /// </returns>
+        [Obsolete("use microservice")]
         public Task<ApiResponse> RequestJsonForOmdb(Uri relativePath, CancellationToken cancellationToken = default(CancellationToken))
         {
             return this.RequestJson(Constants.OmdbClient, relativePath, cancellationToken);

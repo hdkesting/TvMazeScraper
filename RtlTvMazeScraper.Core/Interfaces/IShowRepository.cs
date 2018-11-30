@@ -78,5 +78,12 @@ namespace TvMazeScraper.Core.Interfaces
         /// A list of shows.
         /// </returns>
         Task<List<ShowDto>> GetShowsWithoutRating(int count);
+
+        /// <summary>
+        /// Gets the oldest shows based on last modified date.
+        /// </summary>
+        /// <param name="count">The max count.</param>
+        /// <returns>A list of shows.</returns>
+        Task<List<ShowDto>> GetOldestShows(int count);
     }
 }

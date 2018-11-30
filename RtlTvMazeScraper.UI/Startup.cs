@@ -115,7 +115,7 @@ namespace TvMazeScraper.UI
                                         TimeSpan.FromSeconds(5),
                                         TimeSpan.FromSeconds(10),
                                     });
-            var host1 = this.Configuration.GetSection("Config")["tvmaze"];
+            var host1 = this.Configuration.GetValue<string>("Config:tvmaze");
 
             // TVMaze: on http status 429, wait and retry (using Polly)
             services.AddHttpClient(Constants.TvMazeClientWithRetry, client =>
@@ -125,16 +125,16 @@ namespace TvMazeScraper.UI
             })
             .AddPolicyHandler(retryPolicy);
 
-            // OMDb: no retry policy useful (max 1000 per day) - obsolete (use own microservice)
-            var host2 = this.Configuration.GetSection("Config")["omdbapi"];
-            services.AddHttpClient(Constants.OmdbClient, client =>
-            {
-                client.BaseAddress = new Uri(host2);
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
-            });
+            ////// OMDb: no retry policy useful (max 1000 per day) - OBSOLETE (use own microservice)
+            ////var host2 = this.Configuration.GetSection("Config")["omdbapi"];
+            ////services.AddHttpClient(Constants.OmdbClient, client =>
+            ////{
+            ////    client.BaseAddress = new Uri(host2);
+            ////    client.DefaultRequestHeaders.Add("Accept", "application/json");
+            ////});
 
             // OMDb microservice
-            var host3 = this.Configuration.GetSection("Config")["omdbsvc"];
+            var host3 = this.Configuration.GetValue<string>("Config:omdbsvc");
             services.AddHttpClient(Constants.OmdbMicroService, client =>
             {
                 client.BaseAddress = new Uri(host3);
@@ -226,13 +226,13 @@ namespace TvMazeScraper.UI
             // repositories
             services.AddTransient<IApiRepository, ApiRepository>();
             services.AddSingleton<ISettingRepository, SettingRepository>(sp => new SettingRepository(this.Configuration));
+            services.AddTransient<IRatingRequestRepository, RatingRequestRepository>();
 
             // services
             services.AddTransient<IMessageHub, MessageHub>();
             services.AddScoped<IShowService, ShowService>();
             services.AddScoped<ITvMazeService, TvMazeService>();
-
-            ////services.AddTransient<IOmdbService, OmdbService>();
+            services.AddScoped<IRatingService, RatingService>();
 
             var persistence = this.GetStorageType();
             switch (persistence)
@@ -256,16 +256,12 @@ namespace TvMazeScraper.UI
             // background services: signalR based scraper
             services.AddScoped<IScraperWorker, ScraperWorker>();
             services.AddHostedService<ShowLoaderHostedService>();
-
-            // background services: rating queue processing
-            ////services.AddScoped<IIncomingRatingProcessor, IncomingRatingProcessor>();
-            ////services.AddTransient<IIncomingRatingRepository, IncomingRatingQueueRepository>(sp => new IncomingRatingQueueRepository(this.Configuration));
-            ////services.AddHostedService<RatingQueueHostedService>();
+            services.AddHostedService<RatingHostedService>();
         }
 
         private Storage GetStorageType()
         {
-            var storage = this.Configuration.GetSection("Config")["persisting"];
+            var storage = this.Configuration.GetValue<string>("Config:persisting");
             switch (storage)
             {
                 case "sql":

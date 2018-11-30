@@ -221,10 +221,29 @@ namespace TvMazeScraper.Infrastructure.Mongo.Repositories
             var filter = Builders<ShowWithCast>.Filter.Eq(s => s.ImdbRating, null);
             var shows = await this.collection.Find(filter)
                 .SortBy(s => s.Id)
+                .Limit(count)
                 .ToListAsync().ConfigureAwait(false);
 
-            // TODO add the "Take" to the query, so I don't get *all*
-            return shows.Take(count).Select(ConvertShowToDto).ToList();
+            // TODO also require imdb id
+
+            return shows.Select(ConvertShowToDto).ToList();
+        }
+
+        /// <summary>
+        /// Gets the oldest shows based on last modified date.
+        /// </summary>
+        /// <param name="count">The max count.</param>
+        /// <returns>
+        /// A list of shows.
+        /// </returns>
+        public async Task<List<ShowDto>> GetOldestShows(int count)
+        {
+            var shows = await this.collection.Find(null)
+                .SortBy(s => s.LastModified)
+                .Limit(count)
+                .ToListAsync().ConfigureAwait(false);
+
+            return shows.Select(ConvertShowToDto).ToList();
         }
 
         private static ShowDto ConvertShowToDto(ShowWithCast mongoShow)

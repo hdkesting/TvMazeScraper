@@ -33,6 +33,7 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="showContext">The show context.</param>
+        /// <param name="mapper">The DTO mapper.</param>
         public ShowRepository(
             ILogger<ShowRepository> logger,
             IShowContext showContext,
@@ -254,8 +255,26 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
         public async Task<List<ShowDto>> GetShowsWithoutRating(int count)
         {
             var shows = await this.showContext.Shows
-                .Where(s => !s.ImdbRating.HasValue)
+                .Where(s => !s.ImdbRating.HasValue && !string.IsNullOrEmpty(s.ImdbId))
                 .OrderBy(s => s.Id)
+                .Take(count)
+                .ToListAsync().ConfigureAwait(false);
+
+            return shows.Select(this.ConvertShow).ToList();
+        }
+
+        /// <summary>
+        /// Gets the oldest shows based on last modified date.
+        /// </summary>
+        /// <param name="count">The max count.</param>
+        /// <returns>
+        /// A list of shows.
+        /// </returns>
+        public async Task<List<ShowDto>> GetOldestShows(int count)
+        {
+            var shows = await this.showContext.Shows
+                .Where(s => !string.IsNullOrEmpty(s.ImdbId))
+                .OrderByDescending(s => s.LastModified)
                 .Take(count)
                 .ToListAsync().ConfigureAwait(false);
 
@@ -265,7 +284,6 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
         private ShowDto ConvertShow(Show localshow)
         {
             var coreshow = this.mapper.Map<ShowDto>(localshow);
-            ////new ShowDto { Id = localshow.Id, Name = localshow.Name, ImdbId = localshow.ImdbId, ImdbRating = localshow.ImdbRating };
 
             coreshow.CastMembers.AddRange(localshow.ShowCastMembers
                 .Select(scm => this.mapper.Map<CastMemberDto>(scm.CastMember)));
@@ -275,7 +293,6 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
         private Show ConvertShow(ShowDto coreshow)
         {
             var modelshow = this.mapper.Map<Show>(coreshow);
-            ////new Show { Id = coreshow.Id, Name = coreshow.Name, ImdbId = coreshow.ImdbId, ImdbRating = coreshow.ImdbRating };
 
             modelshow.ShowCastMembers.AddRange(coreshow.CastMembers
                 .Select(cm => new ShowCastMember

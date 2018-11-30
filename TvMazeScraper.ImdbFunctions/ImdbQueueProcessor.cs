@@ -31,8 +31,8 @@ namespace TvMazeScraper.ImdbFunctions
         /// Processes the specified queue item.
         /// </summary>
         /// <param name="queueItem">The queue item that triggered this function.</param>
-        /// <param name="cacheTableService">The cache table service.</param>
-        /// <param name="queueService">The queue service.</param>
+        /// <param name="tableCache">The table cache.</param>
+        /// <param name="queueClient">The queue client.</param>
         /// <param name="log">The log to write messages to.</param>
         /// <param name="context">The execution context.</param>
         /// <returns>
@@ -42,12 +42,17 @@ namespace TvMazeScraper.ImdbFunctions
         public static async Task Run(
             [QueueTrigger("imdbratingqueue", Connection = "imdbrating")]
             CloudQueueMessage queueItem,
-            CacheTableService cacheTableService,
-            QueueService queueService,
+            [Table("imdbratingcache", Connection = "imdbrating")]
+            CloudTable tableCache,
+            [Queue("imdbratingqueue", Connection = "imdbrating")]
+            CloudQueue queueClient,
             ILogger log,
             ExecutionContext context)
         {
             log.LogInformation($"C# Queue trigger to process: {queueItem}");
+
+            var cacheTableService = new CacheTableService(tableCache);
+            var queueService = new QueueService(queueClient);
 
             var json = queueItem.AsString;
             var request = JsonConvert.DeserializeObject<RatingRequest>(json);

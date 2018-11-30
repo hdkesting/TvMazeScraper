@@ -72,3 +72,11 @@ Use the OMDb API to get the IMDb rating and store it as part of the show.
 
 As the OMDB API accepts at most 1000 requests per day, add this rating asynchrounously. 
 Use an Azure Function between this application and OMDB that can queue queries and cache the results.
+
+## Structure
+
+The solution is structured in several parts:
+* Core - contains the core functionality of the app: the services. Includes DTOs and interfaces.
+* UI - the UI that presents the results to the user
+* Infrastructure - the part that talks to the outside world (microservices, database, external APIs). There is a dependency *to* Core.
+* Microservices - Azure Functions for specific tasks.
