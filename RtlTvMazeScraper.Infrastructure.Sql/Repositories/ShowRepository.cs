@@ -320,6 +320,8 @@ namespace TvMazeScraper.Infrastructure.Sql.Repositories
         private async Task UpdateShow(Show newShow, Show storedShow)
         {
             storedShow.Name = newShow.Name;
+            storedShow.ImdbId = newShow.ImdbId;
+            storedShow.LastModified = DateTimeOffset.Now;
 
             foreach (var newMember in newShow.ShowCastMembers.Select(scm => scm.CastMember))
             {
