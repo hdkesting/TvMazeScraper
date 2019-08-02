@@ -93,11 +93,11 @@ namespace TvMazeScraper.Core.Support
                 {
                     // get a fresh instance of the service
                     var svcType = sub.ServiceType;
-                    var svc = this.services.GetService(sub.ServiceType);
+                    var svc = this.services.GetService(svcType);
 
                     // get the method to execute
                     var methodName = sub.MethodName;
-                    var actionMethod = sub.ServiceType.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
+                    var actionMethod = svcType.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
 
                     // and execute it, passing the message and expecting a Task as return.
                     var task = (Task)actionMethod.Invoke(svc, new object[] { message });

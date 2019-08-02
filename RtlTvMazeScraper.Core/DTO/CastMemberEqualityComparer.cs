@@ -4,6 +4,7 @@
 
 namespace TvMazeScraper.Core.DTO
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -47,7 +48,7 @@ namespace TvMazeScraper.Core.DTO
         /// </returns>
         public int GetHashCode(CastMemberDto obj)
         {
-            return obj.Id;
+            return obj?.Id ?? throw new ArgumentNullException(nameof(obj));
         }
     }
 }
