@@ -1,9 +1,0 @@
-{
-  "IsEncrypted": false,
-  "Values": {
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-    "imdbrating": "DefaultEndpointsProtocol=https;AccountName=tvmazeimdbrating;AccountKey=gY16EN6gtqYiSdv0MPropwjo6Fj4zEl61IiBiPgz9AEACukXN+m56m93xnkMDfPCJMh8qYWpPaVmjLlbaWOumw==;EndpointSuffix=core.windows.net",
-    "omdbapikey": "40204b22"
-  }
-}
