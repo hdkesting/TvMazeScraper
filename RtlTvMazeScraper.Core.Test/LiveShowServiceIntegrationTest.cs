@@ -80,7 +80,7 @@ namespace TvMazeScraper.Core.Test
             shows.Should().NotBeNull();
             shows.Count.Should().BeLessOrEqualTo(10, because: "I requested a page of size 10.");
 
-            shows.Where(s => s.CastMembers.Any()).Count().Should().BeGreaterThan(0, because: "I expect at least some to have a cast defined.");
+            shows.Count(s => s.CastMembers.Any()).Should().BeGreaterThan(0, because: "I expect at least some to have a cast defined.");
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace TvMazeScraper.Core.Test
             shows3.Count.Should().BeGreaterThan(0, because: "I expect enough stored shows.");
             shows3.Count.Should().BeLessOrEqualTo(10, because: "I requested a page of size 10.");
 
-            shows3.Where(s3 => shows0.Any(s0 => s0.Id == s3.Id)).Count().Should().Be(0, because: "Ï requested a *different* page");
+            shows3.Count(s3 => shows0.Any(s0 => s0.Id == s3.Id)).Should().Be(0, because: "Ï requested a *different* page");
         }
 
         /// <summary>

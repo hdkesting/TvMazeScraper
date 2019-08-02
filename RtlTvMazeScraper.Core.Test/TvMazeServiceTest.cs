@@ -36,7 +36,7 @@ namespace TvMazeScraper.Core.Test
 
             result.Should().NotBeNull();
             result.Count.Should().Be(10, because: "there are 10 shows in the sample.");
-            result.Where(s => s.CastMembers.Any()).Count().Should().Be(0, because: "there is no cast in this show data.");
+            result.Count(s => s.CastMembers.Any()).Should().Be(0, because: "there is no cast in this show data.");
             result.Select(m => m.Id).Distinct().Count().Should().Be(10, because: "ID is unique");
         }
 
@@ -47,7 +47,6 @@ namespace TvMazeScraper.Core.Test
         [TestMethod]
         public async Task TestReadCast()
         {
-            ISettingRepository settingRepo = new MockSettingsRepository();
             var apiRepo = new MockApiRepository();
             apiRepo.ReadContent(typeof(MockApiRepository).Assembly.GetManifestResourceStream(typeof(MockApiRepository), "Data.TvMazeATeamCast.json"));
             var svclogger = new DebugLogger<TvMazeService>();
@@ -57,10 +56,10 @@ namespace TvMazeScraper.Core.Test
 
             result.Should().NotBeNull();
             result.Count.Should().Be(7, because: "there are 7 members in the sample.");
-            result.Where(m => m.Birthdate.HasValue).Count().Should().Be(6, because: "I set one birthdate to null (as happens).");
-            result.Where(m => m.Id <= 0).Any().Should().Be(false, because: "everyone has a positive id number.");
+            result.Count(m => m.Birthdate.HasValue).Should().Be(6, because: "I set one birthdate to null (as happens).");
+            result.Any(m => m.Id <= 0).Should().Be(false, because: "everyone has a positive id number.");
             result.Select(m => m.Id).Distinct().Count().Should().Be(7, because: "ID is unique");
-            result.Where(m => m.Name is null).Any().Should().Be(false, because: "everyone has a name defined.");
+            result.Any(m => m.Name is null).Should().Be(false, because: "everyone has a name defined.");
         }
 
         /// <summary>
@@ -70,7 +69,6 @@ namespace TvMazeScraper.Core.Test
         [TestMethod]
         public async Task TestReadShowAndCast_WithOverload()
         {
-            ISettingRepository settingRepo = new MockSettingsRepository();
             var svclogger = new DebugLogger<TvMazeService>();
             var apiRepo = new MockApiRepository
             {
@@ -78,7 +76,7 @@ namespace TvMazeScraper.Core.Test
             };
 
             var svc = new TvMazeService(apiRepo, svclogger);
-            var (count, shows) = await svc.ScrapeBatchById(999_999).ConfigureAwait(false);
+            var (count, _) = await svc.ScrapeBatchById(999_999).ConfigureAwait(false);
 
             count.Should().Be(1);
         }
@@ -90,7 +88,6 @@ namespace TvMazeScraper.Core.Test
         [TestMethod]
         public async Task TestReadShowAndCast_NothingFound()
         {
-            ISettingRepository settingRepo = new MockSettingsRepository();
             var svclogger = new DebugLogger<TvMazeService>();
             var apiRepo = new MockApiRepository
             {
@@ -115,7 +112,6 @@ namespace TvMazeScraper.Core.Test
         [TestMethod]
         public async Task TestReadShowAndCast_Success()
         {
-            ISettingRepository settingRepo = new MockSettingsRepository();
             var svclogger = new DebugLogger<TvMazeService>();
             var apiRepo = new MockApiRepository();
             apiRepo.ReadContent(typeof(MockApiRepository).Assembly.GetManifestResourceStream(typeof(MockApiRepository), "Data.TvMazeATeamWithCast.json"));
@@ -128,7 +124,7 @@ namespace TvMazeScraper.Core.Test
 
             shows.Count.Should().Be(1);
             shows[0].CastMembers.Count.Should().Be(7);
-            shows[0].CastMembers.Where(m => m.Birthdate.HasValue).Count().Should().Be(6);
+            shows[0].CastMembers.Count(m => m.Birthdate.HasValue).Should().Be(6);
         }
     }
 }

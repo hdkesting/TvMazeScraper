@@ -135,7 +135,6 @@ namespace TvMazeScraper.Infrastructure.Mongo.Repositories
         public async Task StoreShowList(List<ShowDto> list, Func<int, Task<List<CastMemberDto>>> getCastOfShow)
         {
             var mongoinsertlist = new List<ShowWithCast>(list.Count);
-            var mongoupdatelist = new List<ShowWithCast>(list.Count);
 
             foreach (var orgshow in list)
             {
